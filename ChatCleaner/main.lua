@@ -151,6 +151,22 @@ end
 	-- Private Default API
 	-- This mostly contains methods we always want available
 	-----------------------------------------------------------
+	local currentClientPatch, currentClientBuild = GetBuildInfo()
+	currentClientBuild = tonumber(currentClientBuild)
+
+	-- Let's create some constants for faster lookups
+	local MAJOR,MINOR,PATCH = string.split(".", currentClientPatch)
+
+	-- These are defined in FrameXML/BNet.lua
+	-- *Using blizzard constants if they exist,
+	-- using string parsing as a fallback.
+	Private.IsClassic = (WOW_PROJECT_ID) and (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC) or (tonumber(MAJOR) == 1)
+	Private.IsRetail = (WOW_PROJECT_ID) and (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE) or (tonumber(MAJOR) >= 9)
+	Private.IsClassicTBC = tonumber(MAJOR) == 2
+	Private.IsRetailBFA = tonumber(MAJOR) == 8
+	Private.IsRetailShadowlands = tonumber(MAJOR) == 9
+	Private.CurrentClientBuild = currentClientBuild -- Expose the build number too
+
 	-- Parse chat input arguments 
 	local parse = function(msg)
 		msg = string.gsub(msg, "^%s+", "") -- Remove spaces at the start.
