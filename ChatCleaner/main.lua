@@ -118,7 +118,16 @@ local db = (function(db) _G[Addon.."_DB"] = db; return db end)({
 -----------------------------------------------------------
 -- Your event handler.
 -- Any events you add should be handled here.
+-- @input event <string> The name of the event that fired.
+-- @input ... <misc> Any payloads passed by the event handlers.
 Private.OnEvent = function(self, event, ...)
+end
+
+-- Your chat command handler.
+-- @input editBox <table/frame> The editbox the command was entered into. 
+-- @input command <string> The name of the slash command type in.
+-- @input ... <string(s)> Any additional arguments passed to your command, all as strings.
+Private.OnChatCommand = function(self, editBox, command, ...)
 end
 
 -- Initialization.
@@ -162,7 +171,7 @@ end
 		local name = string.upper(Addon.."_CHATCOMMAND_"..command) -- Create a unique uppercase name for the command.
 		_G["SLASH_"..name.."1"] = "/"..command -- Register the chat command, keeping it lowercase.
 		SlashCmdList[name] = function(msg, editBox)
-			(Private[callback] or callback)(Private, editBox, command, parse(string.lower(msg)))
+			(Private[callback] or Private.OnChatCommand or callback)(Private, editBox, command, parse(string.lower(msg)))
 		end 
 	end
 
