@@ -1,8 +1,8 @@
-package-as: YOUR_ADDON
+package-as: ChatCleaner
 enable-nolib-creation: no
 
 move-folders:
-    YOUR_ADDON/YOUR_ADDON: YOUR_ADDON
+    ChatCleaner/ChatCleaner: ChatCleaner
 
 manual-changelog:
     filename: CHANGELOG.md
