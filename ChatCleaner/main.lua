@@ -178,7 +178,7 @@ end
 	-- and will default to the addon folder itself if not.
 	-- Note that we cannot check for file or folder existence 
 	-- from within the WoW API, so you must make sure this is correct.
-	Private.GetMedia = function(name, type) 
+	Private.GetMedia = function(self, name, type) 
 		if (Path) then
 			return ([[Interface\AddOns\%s\%s\%s.%s]]):format(Addon, Path, name, type or "tga") 
 		else
