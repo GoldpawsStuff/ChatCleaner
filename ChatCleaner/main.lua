@@ -167,6 +167,25 @@ end
 	Private.IsRetailShadowlands = tonumber(MAJOR) == 9
 	Private.CurrentClientBuild = currentClientBuild -- Expose the build number too
 
+	-- Set a relative subpath to look for media files in.
+	local Path
+	Private.SetMediaPath = function(self, path)
+		Path = path
+	end
+
+	-- Simple API calls to retrieve a media file.
+	-- Will honor the relativ subpath set above, if defined, 
+	-- and will default to the addon folder itself if not.
+	-- Note that we cannot check for file or folder existence 
+	-- from within the WoW API, so you must make sure this is correct.
+	Private.GetMedia = function(name, type) 
+		if (Path) then
+			return ([[Interface\AddOns\%s\%s\%s.%s]]):format(Addon, Path, name, type or "tga") 
+		else
+			return ([[Interface\AddOns\%s\%s.%s]]):format(Addon, name, type or "tga") 
+		end
+	end
+
 	-- Parse chat input arguments 
 	local parse = function(msg)
 		msg = string.gsub(msg, "^%s+", "") -- Remove spaces at the start.
