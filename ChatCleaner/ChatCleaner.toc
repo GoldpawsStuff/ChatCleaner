@@ -8,4 +8,4 @@
 ## SavedVariables: ChatCleaner_DB
 ## X-License: MIT
 
-main.lua
+Main.lua
