@@ -114,6 +114,11 @@ local db = (function(db) _G[Addon.."_DB"] = db; return db end)({
 -- by your reactive addon code here.
 
 
+-- Addon API
+-----------------------------------------------------------
+-- Add any extra Private environments methods here.
+
+
 -- Addon Core
 -----------------------------------------------------------
 -- Your event handler.

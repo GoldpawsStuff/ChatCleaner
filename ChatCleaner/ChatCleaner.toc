@@ -6,6 +6,9 @@
 ## Version: 1.0-Release
 ## DefaultState: Enabled
 ## SavedVariables: ChatCleaner_DB
-## X-License: MIT
+## X-Category: Interface Enhancements
+## X-Discord: https://discord.gg/MUSfWXd
+## X-Website: https://www.patreon.com/goldpawsstuff
+## X-License: Custom
 
 Main.lua
