@@ -1,0 +1,18 @@
+package-as: ChatCleaner
+enable-nolib-creation: no
+
+move-folders:
+    ChatCleaner/ChatCleaner: ChatCleaner
+
+manual-changelog:
+    filename: CHANGELOG.md
+    markup-type: markdown
+
+license-output: LICENSE.txt
+
+ignore:
+    - CHANGELOG.md
+    - CODE_OF_CONDUCT.md
+    - LICENSE.md
+    - README.md
+    

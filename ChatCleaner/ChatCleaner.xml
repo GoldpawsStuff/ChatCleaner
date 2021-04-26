@@ -1,0 +1,7 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<Include file="core\load_core.xml"/>
+	<Include file="root\load_root.xml"/>
+	<Include file="filters\load_filters.xml"/>
+
+</Ui>

@@ -1,0 +1,7 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<Script file="10-blacklist.lua"/>
+	<Script file="20-replacements.lua"/>
+	<Script file="30-eventfilters.lua"/>
+
+</Ui>

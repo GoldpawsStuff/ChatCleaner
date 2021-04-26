@@ -1,0 +1,8 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<Script file="00-localization.lua"/>
+	<Script file="10-defaults.lua"/>
+	<Script file="20-filters.lua"/>
+	<Script file="30-gui.lua"/>
+
+</Ui>

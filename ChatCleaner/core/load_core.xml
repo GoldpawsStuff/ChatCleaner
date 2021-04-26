@@ -1,0 +1,11 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<Script file="00-compat.lua"/>
+	<Script file="10-init.lua"/>
+	<Script file="10-api.lua"/>
+	<Script file="20-colors.lua"/>
+	<Script file="40-commands.lua"/>
+	<Script file="40-events.lua"/>
+	<Script file="90-modules.lua"/>
+
+</Ui>
