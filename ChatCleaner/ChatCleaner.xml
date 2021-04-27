@@ -1,7 +1,14 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
 	<Include file="core\load_core.xml"/>
-	<Include file="root\load_root.xml"/>
-	<Include file="filters\load_filters.xml"/>
+
+	<Script file="modules\main.lua"/>
+	<Script file="modules\gui.lua"/>
+	<Script file="modules\filters\blacklist.lua"/>
+	<Script file="modules\filters\channels.lua"/>
+	<Script file="modules\filters\colorclass.lua"/>
+	<Script file="modules\filters\colorquality.lua"/>
+	<Script file="modules\filters\money.lua"/>
+	<Script file="modules\filters\playernames.lua"/>
 
 </Ui>

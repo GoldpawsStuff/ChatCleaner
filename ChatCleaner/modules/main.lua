@@ -1,11 +1,17 @@
--- Retrive addon folder name, and our local, private namespace.
 local Addon, Private = ...
+local Core = Private:NewModule("Core")
+
+-- Default settings.
+-----------------------------------------------------------
+local db = (function(db) _G[Addon.."_DB"] = db; return db end)({
+	
+})
 
 -- Localization system.
 -----------------------------------------------------------
 -- Do not modify the function, 
 -- just the locales in the table below!
-Private.L = (function(tbl,defaultLocale) 
+local L = (function(tbl,defaultLocale) 
 	local gameLocale = GetLocale() -- The locale currently used by the game client.
 	local L = tbl[gameLocale] or tbl[defaultLocale] -- Get the localization for the current locale, or use your default.
 	-- Replace the boolean 'true' with the key,
@@ -29,11 +35,6 @@ Private.L = (function(tbl,defaultLocale)
 	end
 	return L
 end)({ 
-	-- ENTER YOUR LOCALIZATION HERE!
-	-----------------------------------------------------------
-	-- * Note that you MUST include a full table for your primary/default locale!
-	-- * Entries where the value (to the right) is the boolean 'true',
-	--   will use the key (to the left) as the value instead!
 	["enUS"] = {
 		-- These are chat channel abbreviations.
 		-- For the most part these match the /slash command to type in these channels, 
@@ -64,3 +65,41 @@ end)({
 -- * You should change this code to your default locale.
 -- * Note that you MUST include a full table for your primary/default locale!
 }, "enUS") 
+
+-- Lua API
+local table_insert = table.insert
+
+-- Register a replacement. 
+-- The order of registration decides the order of parsing. 
+Core.RegisterReplacement = function(self, groupID, pattern, ...)
+	if (not self.Replacements) then
+		self.Replacements = {}
+	end
+	table_insert(self.Replacements, { groupID, pattern, ... })
+end
+
+Core.EnableReplacement = function(self, groupID)
+	if (not self.ReplacementStatus) then
+		self.ReplacementStatus = {}
+	end
+	self.ReplacementStatus[groupID] = true
+end
+
+Core.DisableReplacement = function(self, groupID)
+	local enabled = self.ReplacementStatus and self.ReplacementStatus[groupID]
+	if (not enabled) then
+		return
+	end
+	self.ReplacementStatus[groupID] = nil
+end
+
+Core.OnEvent = function(self, event, ...)
+end
+
+Core.OnInit = function(self)
+	self.db = db
+end
+
+Core.OnEnable = function(self)
+end
+

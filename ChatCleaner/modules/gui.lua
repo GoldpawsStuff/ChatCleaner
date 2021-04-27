@@ -1,4 +1,11 @@
 local Addon, Private = ...
+local Core = Private:GetModule("Core")
+if (not Core) then
+	return
+end
+
+local L = Core.L
+local GUI = Core:NewModule("GUI")
 
 -- Lua API
 local pairs = pairs
@@ -54,11 +61,11 @@ end
 
 -- Addon API
 -----------------------------------------------------------
-Private.CreateGUI = function(self)
+GUI.CreateGUI = function(self)
 end
 
-Private.OpenGUI = function(self)
+GUI.OpenGUI = function(self)
 end
 
-Private.CloseGUI = function(self)
+GUI.CloseGUI = function(self)
 end
