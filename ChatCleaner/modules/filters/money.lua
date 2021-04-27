@@ -12,6 +12,7 @@ local math_mod = math.fmod
 local rawget = rawget
 local rawset = rawset
 local setmetatable = setmetatable
+local string_find = string.find
 local string_format = string.format
 local string_gsub = string.gsub
 local string_match = string.match
@@ -174,6 +175,13 @@ local ParseForMoney = function(message)
 	return gold_amount, silver_amount, copper_amount
 end
 
+local HasMoney = function(self, frame, msg, r, g, b, chatID, ...)
+	local g,s,c = ParseForMoney(msg)
+	if (g+s+c > 0) then
+		return true
+	end
+end
+
 local Filter = function(self, chatFrame, event, message, author, ...) 
 	if (event == "CHAT_MSG_MONEY") then
 		return true 
@@ -181,11 +189,8 @@ local Filter = function(self, chatFrame, event, message, author, ...)
 end
 
 local OnFrameHidden = function(self, frame)
-	if (not MailFrame:IsShown()) then
-		self:ClearHook(MailFrame, "OnHide", "OnFrameHide", "GP_LibChatTool_FrameHide_Merchant")
-	end
-	if (not MerchantFrame:IsShown()) then
-		self:ClearHook(MerchantFrame, "OnHide", "OnFrameHide", "GP_LibChatTool_FrameHide_Mail")
+	if (MailFrame:IsShown()) or (MerchantFrame:IsShown()) then
+		return
 	end
 	local money = GetMoney()
 	if ((self.playerMoney or 0) > money) then
@@ -219,22 +224,7 @@ Module.OnEvent = function(self, event, ...)
 		end
 
 		-- Check for spam frames, and wait for them to hide.
-		local shouldWait
-		if (MerchantFrame:IsShown()) then
-			shouldWait = true
-			if (not self.merchantFrameIsHooked) then
-				MerchantFrame:HookScript("OnHide", self.OnFrameHidden)
-				self.merchantFrameIsHooked = true
-			end
-		end
-		if (MailFrame:IsShown()) then
-			shouldWait = true
-			if (not self.mailFrameIsHooked) then
-				MailFrame:HookScript("OnHide", self.OnFrameHidden)
-				self.mailFrameIsHooked = true
-			end
-		end
-		if (shouldWait) then
+		if (MerchantFrame:IsShown()) or (MailFrame:IsShown()) then
 			return
 		end
 
@@ -271,20 +261,29 @@ Module.OnInit = function(self)
 	self.FilterProxy = function(chatFrame, event, message, author, ...)
 		return Filter(self, chatFrame, event, message, author, ...)
 	end
-	self.OnHideProxy = function(frame)
+	self.OnFrameHidden = function(frame)
 		return OnFrameHidden(self, frame)
 	end
+	MailFrame:HookScript("OnHide", self.OnFrameHidden)
+	MerchantFrame:HookScript("OnHide", self.OnFrameHidden)
 end
+
+
 
 Module.OnEnable = function(self)
 	self.playerMoney = GetMoney()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_MONEY", "OnEvent")
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONEY", self.FilterProxy)
+	-- New 9.0.5 "You gained:"-style of money.
+	-- These are neither system- nor money loot events, 
+	-- they are simply added to the frame.
+	self:GetParent():AddBlacklistMethod(HasMoney)
 end
 
 Module.OnDisable = function(self)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:UnregisterEvent("PLAYER_MONEY", "OnEvent")
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONEY", self.FilterProxy)
+	self:GetParent():RemoveBlacklistMethod(HasMoney)
 end

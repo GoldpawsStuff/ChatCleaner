@@ -67,10 +67,59 @@ end)({
 }, "enUS") 
 
 -- Lua API
+local ipairs = ipairs
+local next = next
 local table_insert = table.insert
 
--- Register a replacement. 
--- The order of registration decides the order of parsing. 
+-- WoW API
+local hooksecurefunc = hooksecurefunc
+
+-- WoW Objects
+local CHAT_FRAMES = CHAT_FRAMES
+
+Core.AddMessageFiltered = function(self, frame, msg, r, g, b, chatID, ...)
+	if (not msg) or (msg == "") then
+		return
+	end
+	if (next(self.blacklist)) then
+		if (self.blacklist(self, frame, msg, r, g, b, chatID, ...)) then
+			return
+		end
+	end
+	return self.MethodCache[frame](frame, msg, r, g, b, chatID, ...)
+end
+
+Core.CacheMessageMethod = function(self, frame)
+	if (not self.MethodCache) then
+		self.MethodCache = {}
+	end
+	if (not self.MethodCache[frame]) then
+		-- Copy the current AddMessage method from the frame.
+		-- *this also functions as our "has been handled" indicator.
+		self.MethodCache[frame] = frame.AddMessage
+	end
+	-- Replace with our filtered AddMessage method.
+	frame.AddMessage = function(...) self:AddMessageFiltered(...) end
+end
+
+Core.AddBlacklistMethod = function(self, func)
+	for _,infunc in next,self.blacklist do
+		if (infunc == func) then 
+			return 
+		end
+	end
+	table_insert(self.blacklist, func)
+end
+
+Core.RemoveBlacklistMethod = function(self, func)
+	for k,infunc in next,self.blacklist do
+		if (infunc == func) then
+			self.blacklist[k] = nil
+			break
+		end
+	end
+end
+
 Core.RegisterReplacement = function(self, groupID, pattern, ...)
 	if (not self.Replacements) then
 		self.Replacements = {}
@@ -93,13 +142,30 @@ Core.DisableReplacement = function(self, groupID)
 	self.ReplacementStatus[groupID] = nil
 end
 
+Core.CacheAllMessageMethods = function(self)
+	for _,chatFrameName in ipairs(CHAT_FRAMES) do 
+		self:CacheMessageMethod(_G[chatFrameName]) 
+	end
+	hooksecurefunc("FCF_OpenTemporaryWindow", function() self:CacheMessageMethod((FCF_GetCurrentChatFrame())) end)
+end
+
 Core.OnEvent = function(self, event, ...)
 end
 
 Core.OnInit = function(self)
 	self.db = db
+	self.blacklist = setmetatable({}, {
+		__call = function(funcs, ...)
+			for _,func in next,funcs do
+				if (func(...)) then
+					return true
+				end
+			end
+		end
+	})
 end
 
 Core.OnEnable = function(self)
+	self:CacheAllMessageMethods()
 end
 
