@@ -5,15 +5,24 @@ if (not Core) then
 end
 local Module = Core:NewModule("QualityColors")
 
+-- Lua API
+local pairs = pairs
+local table_insert = table.insert
+
 Module.OnInit = function(self)
+	self.replacements = {}
+	local Colors = Private.Colors
+	for i,color in pairs(Colors.blizzquality) do
+		table_insert(self.replacements, { color.colorCode, Colors.quality[i].colorCode })
+	end
 end
 
 Module.OnEnable = function(self)
+	self.filterEnabled = true
+	self:GetParent():AddReplacementSet(self.replacements)
 end
 
-local Colors = Private.Colors
-
--- Item quality colors
---for i,color in pairs(Colors.blizzquality) do
---	Private:RegisterReplacement("LOW", "ColorQuality", color.colorCode, Colors.quality[i].colorCode)
---end
+Module.OnDisable = function(self)
+	self.filterEnabled = nil
+	self:GetParent():RemoveReplacementSet(self.replacements)
+end

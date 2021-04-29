@@ -57,7 +57,7 @@ Colors.CreateColorGroup = function(_, ...) return createColorGroup(...) end
 -- since they too do colors this way now. 
 -- Goal is not to be fully interchangeable. 
 ColorTemplate.GetRGB = function(self)
-	return self[1], self[2], self[3]
+	return self[1], self[2], self[3]	
 end
 
 ColorTemplate.GetRGBAsBytes = function(self)
@@ -74,7 +74,6 @@ end
 
 -- Color Table
 -----------------------------------------------------------------
--- Text coloring
 Colors.normal = createColor(229/255, 178/255, 38/255)
 Colors.highlight = createColor(250/255, 250/255, 250/255)
 Colors.title = createColor(255/255, 234/255, 137/255)
@@ -82,7 +81,7 @@ Colors.offwhite = createColor(196/255, 196/255, 196/255)
 Colors.green = createColor(25/255, 178/255, 25/255)
 Colors.red = createColor(204/255, 25/255, 25/255)
 
--- Item rarity coloring
+-- Item Rarity
 Colors.blizzquality = createColorGroup(ITEM_QUALITY_COLORS)
 Colors.quality = {}
 Colors.quality[0] = createColor(157/255, 157/255, 157/255) -- Poor
@@ -95,7 +94,7 @@ Colors.quality[6] = createColor(230/255, 204/255, 128/255) -- Artifact
 Colors.quality[7] = createColor(79/255, 196/255, 225/255) -- Heirloom
 Colors.quality[8] = createColor(79/255, 196/255, 225/255) -- Blizard
 
--- Difficulty coloring
+-- Difficulty
 Colors.quest = {}
 Colors.quest.red = createColor(204/255, 26/255, 26/255)
 Colors.quest.orange = createColor(255/255, 106/255, 26/255)
@@ -103,11 +102,10 @@ Colors.quest.yellow = createColor(255/255, 178/255, 38/255)
 Colors.quest.green = createColor(89/255, 201/255, 89/255)
 Colors.quest.gray = createColor(120/255, 120/255, 120/255)
 
--- Unit Class Coloring
+-- Unit Class
 -- Original colors at https://wow.gamepedia.com/Class#Class_colors
 -- *Note that for classic, SHAMAN and PALADIN are the same.
 Colors.blizzclass = createColorGroup(RAID_CLASS_COLORS)
-
 Colors.class = {}
 Colors.class.DEATHKNIGHT = createColor(176/255, 31/255, 79/255)
 Colors.class.DEMONHUNTER = createColor(163/255, 48/255, 201/255)
@@ -122,5 +120,30 @@ Colors.class.SHAMAN = createColor(32/255, 122/255, 222/255)
 Colors.class.WARLOCK = createColor(148/255, 130/255, 201/255) 
 Colors.class.WARRIOR = createColor(229/255, 156/255, 110/255) 
 Colors.class.UNKNOWN = createColor(195/255, 202/255, 217/255)
+
+-- Reactions
+Colors.reaction = {}
+Colors.reaction[1] = createColor(205/255, 46/255, 36/255) -- hated
+Colors.reaction[2] = createColor(205/255, 46/255, 36/255) -- hostile
+Colors.reaction[3] = createColor(192/255, 68/255, 0/255) -- unfriendly
+Colors.reaction[4] = createColor(249/255, 188/255, 65/255) -- neutral 
+Colors.reaction[5] = createColor( 64/255, 131/255, 38/255) -- friendly
+Colors.reaction[6] = createColor( 64/255, 131/255, 69/255) -- honored
+Colors.reaction[7] = createColor( 64/255, 131/255, 104/255) -- revered
+Colors.reaction[8] = createColor( 64/255, 131/255, 131/255) -- exalted
+Colors.reaction.civilian = createColor(64/255, 131/255, 38/255) -- used for friendly player nameplates
+
+-- Friendship
+-- Just using these as pointers to the reaction colors, 
+-- so there won't be a need to ever edit these.
+Colors.friendship = {}
+Colors.friendship[1] = Colors.reaction[3] -- Stranger
+Colors.friendship[2] = Colors.reaction[4] -- Acquaintance 
+Colors.friendship[3] = Colors.reaction[5] -- Buddy
+Colors.friendship[4] = Colors.reaction[6] -- Friend (honored color)
+Colors.friendship[5] = Colors.reaction[7] -- Good Friend (revered color)
+Colors.friendship[6] = Colors.reaction[8] -- Best Friend (exalted color)
+Colors.friendship[7] = Colors.reaction[8] -- Best Friend (exalted color) - brawler's stuff
+Colors.friendship[8] = Colors.reaction[8] -- Best Friend (exalted color) - brawler's stuff
 
 Private.Colors = Colors

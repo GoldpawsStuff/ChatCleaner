@@ -8,7 +8,10 @@
 	<Script file="modules\filters\channels.lua"/>
 	<Script file="modules\filters\colorclass.lua"/>
 	<Script file="modules\filters\colorquality.lua"/>
+	<Script file="modules\filters\experience.lua"/>
+	<Script file="modules\filters\loot.lua"/>
 	<Script file="modules\filters\money.lua"/>
 	<Script file="modules\filters\playernames.lua"/>
+	<Script file="modules\filters\reputation.lua"/>
 
 </Ui>

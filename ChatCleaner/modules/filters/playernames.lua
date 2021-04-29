@@ -5,14 +5,23 @@ if (not Core) then
 end
 local Module = Core:NewModule("Names")
 
+-- Lua API
+local table_insert = table.insert
+
 Module.OnInit = function(self)
+	self.replacements = {}
+	table_insert(self.replacements, {"|Hplayer:(.-)-(.-):(.-)|h%[|c(%w%w%w%w%w%w%w%w)(.-)-(.-)|r%]|h", "|Hplayer:%1-%2:%3|h|c%4%5|r|h"})
+	table_insert(self.replacements, {"|Hplayer:(.-)-(.-):(.-)|h|c(%w%w%w%w%w%w%w%w)(.-)-(.-)|r|h", "|Hplayer:%1-%2:%3|h|c%4%5|r|h"})
+	table_insert(self.replacements, {"|Hplayer:(.-)|h%[(.-)%]|h", "|Hplayer:%1|h%2|h"})
+	table_insert(self.replacements, {"|HBNplayer:(.-)|h%[(.-)%]|h", "|HBNplayer:%1|h%2|h"})
 end
 
 Module.OnEnable = function(self)
+	self.filterEnabled = true
+	self:GetParent():AddReplacementSet(self.replacements)
 end
 
--- Player names
---Private:RegisterReplacement("Players", "|Hplayer:(.-)-(.-):(.-)|h%[|c(%w%w%w%w%w%w%w%w)(.-)-(.-)|r%]|h", "|Hplayer:%1-%2:%3|h|c%4%5|r|h")
---Private:RegisterReplacement("Players", "|Hplayer:(.-)-(.-):(.-)|h|c(%w%w%w%w%w%w%w%w)(.-)-(.-)|r|h", "|Hplayer:%1-%2:%3|h|c%4%5|r|h")
---Private:RegisterReplacement("Players", "|Hplayer:(.-)|h%[(.-)%]|h", "|Hplayer:%1|h%2|h")
---Private:RegisterReplacement("Players", "|HBNplayer:(.-)|h%[(.-)%]|h", "|HBNplayer:%1|h%2|h")
+Module.OnDisable = function(self)
+	self.filterEnabled = nil
+	self:GetParent():RemoveReplacementSet(self.replacements)
+end

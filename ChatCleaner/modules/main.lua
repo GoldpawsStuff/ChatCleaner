@@ -69,7 +69,9 @@ end)({
 -- Lua API
 local ipairs = ipairs
 local next = next
+local string_gsub = string.gsub
 local table_insert = table.insert
+local unpack = unpack
 
 -- WoW API
 local hooksecurefunc = hooksecurefunc
@@ -77,29 +79,39 @@ local hooksecurefunc = hooksecurefunc
 -- WoW Objects
 local CHAT_FRAMES = CHAT_FRAMES
 
-Core.AddMessageFiltered = function(self, frame, msg, r, g, b, chatID, ...)
+Core.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	if (not msg) or (msg == "") then
 		return
 	end
 	if (next(self.blacklist)) then
-		if (self.blacklist(self, frame, msg, r, g, b, chatID, ...)) then
+		if (self.blacklist(chatFrame, msg, r, g, b, chatID, ...)) then
 			return
 		end
 	end
-	return self.MethodCache[frame](frame, msg, r, g, b, chatID, ...)
+	if (next(self.replacements)) then
+		-- Iterate replacement sets.
+		for i,set in next,self.replacements do
+			-- Iterate replacements within a set.
+			-- Here the order should matter.
+			for k,data in ipairs(set) do
+				msg = string_gsub(msg, unpack(data))
+			end
+		end
+	end
+	return self.MethodCache[chatFrame](chatFrame, msg, r, g, b, chatID, ...)
 end
 
-Core.CacheMessageMethod = function(self, frame)
+Core.CacheMessageMethod = function(self, chatFrame)
 	if (not self.MethodCache) then
 		self.MethodCache = {}
 	end
-	if (not self.MethodCache[frame]) then
+	if (not self.MethodCache[chatFrame]) then
 		-- Copy the current AddMessage method from the frame.
 		-- *this also functions as our "has been handled" indicator.
-		self.MethodCache[frame] = frame.AddMessage
+		self.MethodCache[chatFrame] = chatFrame.AddMessage
 	end
 	-- Replace with our filtered AddMessage method.
-	frame.AddMessage = function(...) self:AddMessageFiltered(...) end
+	chatFrame.AddMessage = function(...) self:AddMessageFiltered(...) end
 end
 
 Core.AddBlacklistMethod = function(self, func)
@@ -120,26 +132,22 @@ Core.RemoveBlacklistMethod = function(self, func)
 	end
 end
 
-Core.RegisterReplacement = function(self, groupID, pattern, ...)
-	if (not self.Replacements) then
-		self.Replacements = {}
+Core.AddReplacementSet = function(self, tbl)
+	for _,intbl in next,self.replacements do
+		if (intbl == tbl) then 
+			return 
+		end
 	end
-	table_insert(self.Replacements, { groupID, pattern, ... })
+	table_insert(self.replacements, tbl)
 end
 
-Core.EnableReplacement = function(self, groupID)
-	if (not self.ReplacementStatus) then
-		self.ReplacementStatus = {}
+Core.RemoveReplacementSet = function(self, tbl)
+	for k,intbl in next,self.replacements do
+		if (intbl == tbl) then
+			self.replacements[k] = nil
+			break
+		end
 	end
-	self.ReplacementStatus[groupID] = true
-end
-
-Core.DisableReplacement = function(self, groupID)
-	local enabled = self.ReplacementStatus and self.ReplacementStatus[groupID]
-	if (not enabled) then
-		return
-	end
-	self.ReplacementStatus[groupID] = nil
 end
 
 Core.CacheAllMessageMethods = function(self)
@@ -149,11 +157,17 @@ Core.CacheAllMessageMethods = function(self)
 	hooksecurefunc("FCF_OpenTemporaryWindow", function() self:CacheMessageMethod((FCF_GetCurrentChatFrame())) end)
 end
 
+Core.GetLocale = function(self) 
+	return L 
+end
+
 Core.OnEvent = function(self, event, ...)
 end
 
 Core.OnInit = function(self)
 	self.db = db
+	self.filters = {}
+	self.replacements = {}
 	self.blacklist = setmetatable({}, {
 		__call = function(funcs, ...)
 			for _,func in next,funcs do

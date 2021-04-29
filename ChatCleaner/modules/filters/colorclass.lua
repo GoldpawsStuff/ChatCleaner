@@ -5,21 +5,36 @@ if (not Core) then
 end
 local Module = Core:NewModule("ClassColors")
 
+-- Lua API
+local pairs = pairs
+local table_insert = table.insert
+
+-- WoW API
+local UnitFactionGroup = UnitFactionGroup
+
 Module.OnInit = function(self)
+	self.replacements = {}
+	local ignored
+	if (Private.IsClassic) then
+		local faction = UnitFactionGroup("player")
+		ignored = (faction == "Alliance") and "SHAMAN" or (faction == "Horde") and "PALADIN"
+	end
+	local Colors = Private.Colors
+	for class,color in pairs(Colors.blizzclass) do
+		if (class ~= ignored) then
+			table_insert(self.replacements, { color.colorCode, Colors.class[class].colorCode })
+		end
+	end
 end
 
 Module.OnEnable = function(self)
+	self.filterEnabled = true
+	self:GetParent():AddReplacementSet(self.replacements)
 end
 
---local Colors = Private.Colors
---local PlayerFaction = UnitFactionGroup("player")
---
----- Class colors
---for i,color in pairs(Colors.blizzquality) do
---	for i,color in pairs(Colors.blizzclass) do
---		local skip = Private.IsClassic and ((PlayerFaction == "Alliance" and i == "SHAMAN") or (PlayerFaction == "Horde" and i == "PALADIN"))
---		if (not skip) then
---			Private:RegisterReplacement("LOW", "ColorClass", color.colorCode, Colors.class[i].colorCode)
---		end
---	end
---end
+Module.OnDisable = function(self)
+	self.filterEnabled = nil
+	self:GetParent():RemoveReplacementSet(self.replacements)
+end
+
+
