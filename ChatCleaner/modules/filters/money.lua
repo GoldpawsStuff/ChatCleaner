@@ -245,7 +245,7 @@ Module.OnEvent = function(self, event, ...)
 
 			elseif (money < 0) then
 
-				local moneyString = CreateMoneyString(gold, silver, copper, red)
+				local moneyString = CreateMoneyString(gold, silver, copper, "|cffcc4444")
 				local moneyMessage = string_format("|cff888888-|r %s", moneyString)
 				local info = ChatTypeInfo["MONEY"]
 				
