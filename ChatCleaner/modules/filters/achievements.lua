@@ -48,7 +48,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		player_name = string_gsub(player_name, "[%[/%]]", "")
 		achievement = string_gsub(achievement, "[%[/%]]", "")
 		
-		return false, string_format(T.ACHIEVEMENT, player_name, achievement), author, ...
+		return false, string_format("!%s: %s", player_name, achievement), author, ...
 	end
 
 	-- Pass everything else through
