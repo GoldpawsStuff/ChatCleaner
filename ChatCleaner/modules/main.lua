@@ -69,11 +69,13 @@ end)({
 -- Lua API
 local ipairs = ipairs
 local next = next
+local setmetatable = setmetatable
 local string_gsub = string.gsub
 local table_insert = table.insert
 local unpack = unpack
 
 -- WoW API
+local FCF_GetCurrentChatFrame = FCF_GetCurrentChatFrame
 local hooksecurefunc = hooksecurefunc
 
 -- WoW Objects

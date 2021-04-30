@@ -9,6 +9,19 @@ local Module = Core:NewModule("Channels")
 local string_match = string.match
 local table_insert = table.insert
 
+-- WoW Globals
+local CHAT_BATTLEGROUND_GET = CHAT_BATTLEGROUND_GET
+local CHAT_BATTLEGROUND_LEADER_GET = CHAT_BATTLEGROUND_LEADER_GET
+local CHAT_GUILD_GET = CHAT_GUILD_GET
+local CHAT_INSTANCE_CHAT_GET = CHAT_INSTANCE_CHAT_GET
+local CHAT_INSTANCE_CHAT_LEADER_GET = CHAT_INSTANCE_CHAT_LEADER_GET
+local CHAT_PARTY_GET = CHAT_PARTY_GET
+local CHAT_PARTY_LEADER_GET = CHAT_PARTY_LEADER_GET
+local CHAT_RAID_GET = CHAT_RAID_GET
+local CHAT_RAID_LEADER_GET = CHAT_RAID_LEADER_GET
+local CHAT_RAID_WARNING_GET = CHAT_RAID_WARNING_GET
+local CHAT_OFFICER_GET = CHAT_OFFICER_GET
+
 Module.OnInit = function(self)
 	local L = self:GetParent():GetLocale()
 	self.replacements = {}

@@ -25,7 +25,7 @@ local ChatTypeInfo = ChatTypeInfo
 local GetMoney = GetMoney
 local UnitOnTaxi = UnitOnTaxi
 
--- WoW Strings
+-- WoW Globals
 local GOLD_AMOUNT = GOLD_AMOUNT
 local GOLD_AMOUNT_SYMBOL = GOLD_AMOUNT_SYMBOL
 local SILVER_AMOUNT = SILVER_AMOUNT
@@ -34,7 +34,7 @@ local COPPER_AMOUNT = COPPER_AMOUNT
 local COPPER_AMOUNT_SYMBOL = COPPER_AMOUNT_SYMBOL
 local LARGE_NUMBER_SEPERATOR = LARGE_NUMBER_SEPERATOR
 
-
+-- Return a coin texture string.
 local Coin = setmetatable({}, { __index = function(t,k) 
 	local useBlizz = Core.db.useBlizzardCoins
 	local frame = DEFAULT_CHAT_FRAME or ChatFrame1 -- do we need this fallback?
@@ -61,6 +61,7 @@ local Coin = setmetatable({}, { __index = function(t,k)
 	end
 end })
 
+-- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
 	msg = string_gsub(msg, "%%d", "(%%d+)")
 	msg = string_gsub(msg, "%%s", "(.+)")

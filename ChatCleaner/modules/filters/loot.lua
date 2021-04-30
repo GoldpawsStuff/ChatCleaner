@@ -15,6 +15,7 @@ local string_sub = string.sub
 local table_insert = table.insert
 local tonumber = tonumber
 
+-- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
 	msg = string_gsub(msg, "%%d", "(%%d+)")
 	msg = string_gsub(msg, "%%s", "(.+)")

@@ -19,6 +19,10 @@ local GetFriendshipReputation = GetFriendshipReputation
 local GetNumFactions = GetNumFactions
 local ExpandFactionHeader = ExpandFactionHeader
 
+-- WoW Globals
+local REPUTATION = REPUTATION
+
+-- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
 	msg = string_gsub(msg, "%%d", "(%%d+)")
 	msg = string_gsub(msg, "%%s", "(.+)")
@@ -97,7 +101,6 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 			end
 		end
 	end
-
 end
 
 Module.OnInit = function(self)
