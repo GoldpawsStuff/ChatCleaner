@@ -14,8 +14,11 @@ local string_gsub = string.gsub
 local string_match = string.match
 
 -- WoW Globals
-local ERR_QUEST_ACCEPTED_S = ERR_QUEST_ACCEPTED_S -- "Quest accepted: %s"
-local ERR_QUEST_COMPLETE_S = ERR_QUEST_COMPLETE_S -- "%s completed."
+local QUEST_ACCEPTED = ERR_QUEST_ACCEPTED_S -- "Quest accepted: %s"
+local QUEST_COMPLETE = ERR_QUEST_COMPLETE_S -- "%s completed."
+local QUEST = BATTLE_PET_SOURCE_2 -- "Quest"
+local ACCEPTED = CALENDAR_STATUS_ACCEPTED -- "Accepted"
+local COMPLETE = COMPLETE -- "Complete"
 
 -- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
@@ -34,16 +37,32 @@ local P = setmetatable({}, { __index = function(t,k)
 end })
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
+	local name
+	
+	name = string_match(message, P[QUEST_ACCEPTED])
+	if (name) then
+		name = string_gsub(name, "[%[/%]]", "")
+		return false, string_format(self.output.objective_status, ACCEPTED, name), author, ...
+	end
+
+	name = string_match(message, P[QUEST_COMPLETE])
+	if (name) then
+		name = string_gsub(name, "[%[/%]]", "")
+		return false, string_format(self.output.objective_status, COMPLETE, name), author, ...
+	end
 end
 
 Module.OnInit = function(self)
+	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 end
 
 Module.OnEnable = function(self)
 	self.filterEnabled = true
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
 end
 
 Module.OnDisable = function(self)
 	self.filterEnabled = nil
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
 end

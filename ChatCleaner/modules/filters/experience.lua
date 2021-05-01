@@ -77,12 +77,12 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 		value,source = fix(string_match(message, P[NAMED]))
 		if (value) then
-			return false, string_format(self.output.xp_multiple, value, XP, source), author, ...
+			return false, string_format(self.output.xp_named, value, XP, source), author, ...
 		end
 
 		value = string_match(message, P[UNNAMED])
 		if (value) then
-			return false, string_format(self.output.xp_single, value, XP), author, ...
+			return false, string_format(self.output.xp_unnamed, value, XP), author, ...
 		end
 
 	elseif (event == "CHAT_MSG_SYSTEM") then
@@ -90,7 +90,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		-- Area discovery 
 		value,source = fix(string_match(message, P[ERR_ZONE_EXPLORED_XP]))
 		if (value) then
-			return false, string_format(self.output.xp_multiple, value, XP, source), author, ...
+			return false, string_format(self.output.xp_named, value, XP, source), author, ...
 		end
 
 		-- Quest Completed (also reported in the XP channel)

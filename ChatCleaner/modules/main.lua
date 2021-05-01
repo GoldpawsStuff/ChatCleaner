@@ -81,6 +81,11 @@ local hooksecurefunc = hooksecurefunc
 -- WoW Objects
 local CHAT_FRAMES = CHAT_FRAMES
 
+-- WoW Globals
+local FRIENDS_LIST_AWAY = FRIENDS_LIST_AWAY
+local FRIENDS_LIST_BUSY = FRIENDS_LIST_BUSY
+local TUTORIAL_TITLE26 = TUTORIAL_TITLE26
+
 Core.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	if (not msg) or (msg == "") then
 		return
@@ -173,13 +178,22 @@ Core.OnInit = function(self)
 	self.output.item_deficit = "|cffcc4444- %s|r"
 	self.output.money = self.output.item_single
 	self.output.money_deficit = "|cff888888-|r %s"
+	self.output.objective_status = "|cff888888+|r |cffeaeaea%s:|r |cffffb200%s|r"
 	self.output.standing = "|cff888888+|r |cfff0f0f0".."%d|r |cffeaeaea%s:|r %s"
 	self.output.standing_generic = "|cff888888+ %s:|r %s"
 	self.output.standing_deficit = "|cffcc4444-|r |cfff0f0f0".."%d|r |cffeaeaea%s:|r %s"
 	self.output.standing_deficit_generic = "|cffcc4444- %s:|r %s"
-	self.output.xp_single = "|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s|r"
-	self.output.xp_multiple = "|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s:|r |cffffb200%s|r"
-
+	self.output.xp_named = "|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s:|r |cffffb200%s|r"
+	self.output.xp_unnamed = "|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s|r"
+	self.output.afk_added = "|cffffb200+ "..FRIENDS_LIST_AWAY.."|r"
+	self.output.afk_added_message = "|cffffb200+ "..FRIENDS_LIST_AWAY..": |r|cfff0f0f0%s|r"
+	self.output.afk_cleared = "|cff00cc00- "..FRIENDS_LIST_AWAY.."|r"
+	self.output.dnd_added = "|cffff6600+ "..FRIENDS_LIST_BUSY.."|r"
+	self.output.dnd_added_message = "|cffff6600+ "..FRIENDS_LIST_BUSY..": |r|cfff0f0f0%s|r"
+	self.output.dnd_cleared = "|cff00cc00- "..FRIENDS_LIST_BUSY.."|r"
+	self.output.rested_added = "|cff888888+ "..TUTORIAL_TITLE26.."|r"
+	self.output.rested_cleared = "|cffffb200- "..TUTORIAL_TITLE26.."|r"
+	
 	self.blacklist = setmetatable({}, {
 		__call = function(funcs, ...)
 			for _,func in next,funcs do
