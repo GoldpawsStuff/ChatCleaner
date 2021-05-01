@@ -17,7 +17,7 @@ local string_gsub = string.gsub
 local string_match = string.match
 
 -- WoW Globals
-local ACHIEVEMENT_BROADCAST = ACHIEVEMENT_BROADCAST
+local ACHIEVEMENT_BROADCAST = ACHIEVEMENT_BROADCAST -- "%s has earned the achievement %s!"
 
 -- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
@@ -36,9 +36,7 @@ local P = setmetatable({}, { __index = function(t,k)
 end })
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
-	-- Achievement announce
-	local achievement_pattern = P[ACHIEVEMENT_BROADCAST] -- "%s has earned the achievement %s!"
-	local player_name, achievement = string_match(message, achievement_pattern)
+	local player_name, achievement = string_match(message, P[ACHIEVEMENT_BROADCAST])
 	if (player_name) and (achievement) then
 
 		-- kill brackets
@@ -47,9 +45,6 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		
 		return false, string_format(self.output.achievement, player_name, achievement), author, ...
 	end
-
-	-- Pass everything else through
-	return false, message, author, ...
 end
 
 Module.OnInit = function(self)

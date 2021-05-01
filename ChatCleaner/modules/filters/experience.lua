@@ -42,6 +42,9 @@ local UNNAMED = COMBATLOG_XPGAIN_FIRSTPERSON_UNNAMED 	-- "You gain %d experience
 -- COMBATLOG_XPGAIN_FIRSTPERSON_UNNAMED_RAID 			-- "You gain %d experience. (-%d raid penalty)"
 -- COMBATLOG_XPGAIN_QUEST 								-- "You gain %d experience. (%s exp %s bonus)"
 
+-- "Congratulations, you have reached |cffFF4E00|Hlevelup:%d:LEVEL_UP_TYPE_CHARACTER|h[Level %d]|h|r!"
+local LEVEL_UP = LEVEL_UP
+
 -- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
 	msg = string_gsub(msg, "%%d", "(%%d+)")
@@ -53,7 +56,9 @@ end
 
 -- Search Pattern Cache.
 -- This will generate the pattern on the first lookup.
-local P = setmetatable({}, { __index = function(t,k) 
+local P = setmetatable({ 
+	[LEVEL_UP] = string_gsub(LEVEL_UP, "(|.+|r)", "(.+)")
+}, { __index = function(t,k) 
 	rawset(t,k,makePattern(k))
 	return rawget(t,k)
 end })
@@ -91,6 +96,13 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		value,source = fix(string_match(message, P[ERR_ZONE_EXPLORED_XP]))
 		if (value) then
 			return false, string_format(self.output.xp_named, value, XP, source), author, ...
+		end
+
+		-- Level up
+		value = string_match(message, P[LEVEL_UP])
+		if (value) then
+			value = string_gsub(value, "[%[/%]]", "")
+			return false, string_format(self.output.xp_levelup, value), author, ...
 		end
 
 		-- Quest Completed (also reported in the XP channel)
