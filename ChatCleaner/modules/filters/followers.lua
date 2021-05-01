@@ -43,14 +43,14 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	local follower_exhausted_pattern = P[GARRISON_FOLLOWER_DISBANDED] -- "%s has been exhausted."
 	local follower_name = string_match(message, follower_exhausted_pattern)
 	if (follower_name) then
-		return false, string_format("|cffcc4444- %s|r", follower_name), author, ...
+		return false, string_format(self.output.item_deficit, follower_name), author, ...
 	end
 
 	-- Removed
 	local follower_removed_pattern = P[GARRISON_FOLLOWER_REMOVED] -- "%s is no longer your follower."
 	follower_name = string_match(message, follower_removed_pattern)
 	if (follower_name) then
-		return false, string_format("|cffcc4444- %s|r", follower_name), author, ...
+		return false, string_format(self.output.item_deficit, follower_name), author, ...
 	end
 
 	-- Added
@@ -58,7 +58,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	follower_name = string_match(message, follower_added_pattern)
 	if (follower_name) then
 		follower_name = string_gsub(follower_name, "[%[/%]]", "") -- kill brackets
-		return false, string_format("|cff888888+|r %s", follower_name), author, ...
+		return false, string_format(self.output.item_single, follower_name), author, ...
 	end
 
 	-- GARRISON_FOLLOWER_LEVEL_UP = "LEVEL UP!"
@@ -68,6 +68,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 end
 
 Module.OnInit = function(self)
+	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 end
 

@@ -91,14 +91,7 @@ Core.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 		end
 	end
 	if (next(self.replacements)) then
-		-- Iterate replacement sets.
-		for i,set in next,self.replacements do
-			-- Iterate replacements within a set.
-			-- Here the order should matter.
-			for k,data in ipairs(set) do
-				msg = string_gsub(msg, unpack(data))
-			end
-		end
+		msg = self.replacements(msg)
 	end
 	return self.MethodCache[chatFrame](chatFrame, msg, r, g, b, chatID, ...)
 end
@@ -159,6 +152,10 @@ Core.CacheAllMessageMethods = function(self)
 	hooksecurefunc("FCF_OpenTemporaryWindow", function() self:CacheMessageMethod((FCF_GetCurrentChatFrame())) end)
 end
 
+Core.GetOutputTemplates = function(self)
+	return self.output
+end
+
 Core.GetLocale = function(self) 
 	return L 
 end
@@ -168,8 +165,21 @@ end
 
 Core.OnInit = function(self)
 	self.db = db
-	self.filters = {}
-	self.replacements = {}
+
+	self.output = {}
+	self.output.achievement = "!%s: %s"
+	self.output.item_single = "|cff888888+|r %s"
+	self.output.item_multiple = "|cff888888+|r %s |cffeaeaea(%d)|r"
+	self.output.item_deficit = "|cffcc4444- %s|r"
+	self.output.money = self.output.item_single
+	self.output.money_deficit = "|cff888888-|r %s"
+	self.output.standing = "|cff888888+|r |cfff0f0f0".."%d|r |cffeaeaea%s:|r %s"
+	self.output.standing_generic = "|cff888888+ %s:|r %s"
+	self.output.standing_deficit = "|cffcc4444-|r |cfff0f0f0".."%d|r |cffeaeaea%s:|r %s"
+	self.output.standing_deficit_generic = "|cffcc4444- %s:|r %s"
+	self.output.xp_single = "|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s|r"
+	self.output.xp_multiple = "|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s:|r |cffffb200%s|r"
+
 	self.blacklist = setmetatable({}, {
 		__call = function(funcs, ...)
 			for _,func in next,funcs do
@@ -177,6 +187,17 @@ Core.OnInit = function(self)
 					return true
 				end
 			end
+		end
+	})
+
+	self.replacements = setmetatable({}, {
+		__call = function(sets, msg)
+			for i,set in next,sets do
+				for k,data in ipairs(set) do
+					msg = string_gsub(msg, unpack(data))
+				end
+			end
+			return msg
 		end
 	})
 end

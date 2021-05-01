@@ -14,13 +14,33 @@ local string_gsub = string.gsub
 local string_match = string.match
 
 -- WoW Globals
-local COMBATLOG_XPGAIN_EXHAUSTION1 = COMBATLOG_XPGAIN_EXHAUSTION1 -- "%s dies, you gain %d experience. (%s exp %s bonus)"
-local COMBATLOG_XPGAIN_FIRSTPERSON = COMBATLOG_XPGAIN_FIRSTPERSON -- "%s dies, you gain %d experience."
-local COMBATLOG_XPGAIN_FIRSTPERSON_UNNAMED = COMBATLOG_XPGAIN_FIRSTPERSON_UNNAMED -- "You gain %d experience."
-local COMBATLOG_XPGAIN_QUEST = COMBATLOG_XPGAIN_QUEST -- "You gain %d experience. (%s exp %s bonus)"
-local ERR_QUEST_REWARD_EXP_I = ERR_QUEST_REWARD_EXP_I -- "Experience gained: %d."
-local ERR_ZONE_EXPLORED_XP = ERR_ZONE_EXPLORED_XP -- "Discovered %s: %d experience gained"
+local ERR_ZONE_EXPLORED_XP = ERR_ZONE_EXPLORED_XP 		-- "Discovered %s: %d experience gained"
+local ERR_QUEST_REWARD_EXP_I = ERR_QUEST_REWARD_EXP_I 	-- "Experience gained: %d."
 local XP = XP
+
+-- All of these contain the first pattern, 
+-- and the first pattern contains all we wish to show.
+local NAMED = COMBATLOG_XPGAIN_FIRSTPERSON 				-- "%s dies, you gain %d experience."
+-- COMBATLOG_XPGAIN_FIRSTPERSON_GROUP					-- "%s dies, you gain %d experience. (+%d group bonus)"
+-- COMBATLOG_XPGAIN_FIRSTPERSON_RAID 					-- "%s dies, you gain %d experience. (-%d raid penalty)"
+-- COMBATLOG_XPGAIN_EXHAUSTION1 						-- "%s dies, you gain %d experience. (%s exp %s bonus)"
+-- COMBATLOG_XPGAIN_EXHAUSTION1_GROUP 					-- "%s dies, you gain %d experience. (%s exp %s bonus, +%d group bonus)"
+-- COMBATLOG_XPGAIN_EXHAUSTION1_RAID 					-- "%s dies, you gain %d experience. (%s exp %s bonus, -%d raid penalty)"
+-- COMBATLOG_XPGAIN_EXHAUSTION2 						-- "%s dies, you gain %d experience. (%s exp %s bonus)"
+-- COMBATLOG_XPGAIN_EXHAUSTION2_GROUP 					-- "%s dies, you gain %d experience. (%s exp %s bonus, +%d group bonus)"
+-- COMBATLOG_XPGAIN_EXHAUSTION2_RAID 					-- "%s dies, you gain %d experience. (%s exp %s bonus, -%d raid penalty)"
+-- COMBATLOG_XPGAIN_EXHAUSTION4 						-- "%s dies, you gain %d experience. (%s exp %s penalty)"
+-- COMBATLOG_XPGAIN_EXHAUSTION4_GROUP 					-- "%s dies, you gain %d experience. (%s exp %s penalty, +%d group bonus)"
+-- COMBATLOG_XPGAIN_EXHAUSTION4_RAID 					-- "%s dies, you gain %d experience. (%s exp %s penalty, -%d raid penalty)"
+-- COMBATLOG_XPGAIN_EXHAUSTION5 						-- "%s dies, you gain %d experience. (%s exp %s penalty)"
+-- COMBATLOG_XPGAIN_EXHAUSTION5_GROUP 					-- "%s dies, you gain %d experience. (%s exp %s penalty, +%d group bonus)"
+-- COMBATLOG_XPGAIN_EXHAUSTION5_RAID 					-- "%s dies, you gain %d experience. (%s exp %s penalty, -%d raid penalty)"
+
+-- Same applies here as above. A single pattern is enough.
+local UNNAMED = COMBATLOG_XPGAIN_FIRSTPERSON_UNNAMED 	-- "You gain %d experience."
+-- COMBATLOG_XPGAIN_FIRSTPERSON_UNNAMED_GROUP 			-- "You gain %d experience. (+%d group bonus)"
+-- COMBATLOG_XPGAIN_FIRSTPERSON_UNNAMED_RAID 			-- "You gain %d experience. (-%d raid penalty)"
+-- COMBATLOG_XPGAIN_QUEST 								-- "You gain %d experience. (%s exp %s bonus)"
 
 -- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
@@ -38,60 +58,50 @@ local P = setmetatable({}, { __index = function(t,k)
 	return rawget(t,k)
 end })
 
-Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
+local fix = function(...)
+	local string,number,n
+	for i,v in next,{...} do
+		n = tonumber(v)
+		if (n) and (n > 0) then
+			number = n
+		elseif (not n) then
+			string = v
+		end
+	end
+	return number,string
+end
 
+Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
+	local value,source
 	if (event == "CHAT_MSG_COMBAT_XP_GAIN") then
 
-		-- Monster with rested bonus
-		local xp_bonus_pattern = P[COMBATLOG_XPGAIN_EXHAUSTION1] -- "%s dies, you gain %d experience. (%s exp %s bonus)"
-		local name, total, xp, bonus = string_match(message, xp_bonus_pattern)
-		if (total) then
-			return false, string_format("|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s:|r |cffffb200%s|r", total, XP, name), author, ...
+		value,source = fix(string_match(message, P[NAMED]))
+		if (value) then
+			return false, string_format(self.output.xp_multiple, value, XP, source), author, ...
 		end
 
-		-- Quest with rested bonus
-		local xp_quest_rested_pattern = P[COMBATLOG_XPGAIN_QUEST] -- "You gain %d experience. (%s exp %s bonus)"
-		name, total, xp, bonus = string_match(message, xp_bonus_pattern)
-		if (total) then
-			return false, string_format("|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s:|r |cffffb200%s|r", total, XP, name), author, ...
-		end
-
-		-- Named monster
-		local xp_normal_pattern = P[COMBATLOG_XPGAIN_FIRSTPERSON] -- "%s dies, you gain %d experience."
-		name, total = string_match(message, xp_normal_pattern)
-		if (total) then
-			return false, string_format("|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s:|r |cffffb200%s|r", total, XP, name), author, ...
-		end
-
-		-- Quest
-		local xp_quest_pattern = P[COMBATLOG_XPGAIN_FIRSTPERSON_UNNAMED] -- "You gain %d experience."
-		total = string_match(message, xp_quest_pattern)
-		if (total) then
-			return false, string_format("|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s|r", total, XP), author, ...
+		value = string_match(message, P[UNNAMED])
+		if (value) then
+			return false, string_format(self.output.xp_single, value, XP), author, ...
 		end
 
 	elseif (event == "CHAT_MSG_SYSTEM") then
 
-		-- Unknown
-		local xp_quest_pattern = P[ERR_QUEST_REWARD_EXP_I] -- "Experience gained: %d."
-		total = string_match(message, xp_quest_pattern)
-		if (total) then
-			return false, string_format("|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s|r", total, XP), author, ...
-		end
-		
-		-- Possibly CHAT_MSG_SYSTEM
-		-- Discovery XP?
-		local xp_discovery_pattern = P[ERR_ZONE_EXPLORED_XP] -- "Discovered %s: %d experience gained"
-		local name, total = string_match(message, xp_discovery_pattern)
-		if (total) then
-			return false, string_format("|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s:|r |cffffb200%s|r", total, XP, name), author, ...
+		-- Area discovery 
+		value,source = fix(string_match(message, P[ERR_ZONE_EXPLORED_XP]))
+		if (value) then
+			return false, string_format(self.output.xp_multiple, value, XP, source), author, ...
 		end
 
+		-- Quest Completed (also reported in the XP channel)
+		if (string_match(message, P[ERR_QUEST_REWARD_EXP_I])) then
+			return true
+		end
 	end
-
 end
 
 Module.OnInit = function(self)
+	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 end
 

@@ -35,9 +35,6 @@ local P = setmetatable({}, { __index = function(t,k)
 	return rawget(t,k)
 end })
 
-Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
-end
-
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	-- Achievement announce
 	local achievement_pattern = P[ACHIEVEMENT_BROADCAST] -- "%s has earned the achievement %s!"
@@ -48,7 +45,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		player_name = string_gsub(player_name, "[%[/%]]", "")
 		achievement = string_gsub(achievement, "[%[/%]]", "")
 		
-		return false, string_format("!%s: %s", player_name, achievement), author, ...
+		return false, string_format(self.output.achievement, player_name, achievement), author, ...
 	end
 
 	-- Pass everything else through
@@ -56,8 +53,8 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 end
 
 Module.OnInit = function(self)
+	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
-	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
 end
 
 Module.OnEnable = function(self)

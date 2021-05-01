@@ -38,9 +38,9 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 				local countString = string_sub(message, last + 1)
 				local count = tonumber(string_match(countString, "(%d+)"))
 				if (count) and (count > 1) then
-					return false, string_format("|cff888888+|r %s |cffeaeaea(%d)|r", item, count), author, ...
+					return false, string_format(self.output.item_multiple, item, count), author, ...
 				else
-					return false, string_format("|cff888888+|r %s", item), author, ...
+					return false, string_format(self.output.item_single, item), author, ...
 				end
 			else
 				return false, message, author, ...
@@ -51,6 +51,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 end
 
 Module.OnInit = function(self)
+	self.output = self:GetParent():GetOutputTemplates()
 	self.patterns = {}
 	for i,global in ipairs({
 		"LOOT_ITEM_CREATED_SELF", 					-- "You create: %s."

@@ -243,12 +243,12 @@ Module.OnEvent = function(self, event, ...)
 			local c = math_mod(value, 100)
 
 			if (money > 0) then
-				local msg = string_format("|cff888888+|r %s", formatMoney(g,s,c))
+				local msg = string_format(self.output.money, formatMoney(g,s,c))
 				local info = ChatTypeInfo["MONEY"]
 				DEFAULT_CHAT_FRAME:AddMessage(msg, info.r, info.g, info.b, info.id)
 
 			elseif (money < 0) then
-				local msg = string_format("|cff888888-|r %s", formatMoney(g,s,c, "|cffcc4444"))
+				local msg = string_format(self.output.money_deficit, formatMoney(g,s,c, "|cffcc4444"))
 				local info = ChatTypeInfo["MONEY"]
 				DEFAULT_CHAT_FRAME:AddMessage(msg, info.r, info.g, info.b, info.id)
 			end
@@ -258,6 +258,7 @@ Module.OnEvent = function(self, event, ...)
 end
 
 Module.OnInit = function(self)
+	self.output = self:GetParent():GetOutputTemplates()
 	local proxy = function(...) return (self.filterEnabled) and self:MailOrMerchantWasHidden(...) end
 	MailFrame:HookScript("OnHide", proxy)
 	MerchantFrame:HookScript("OnHide", proxy)

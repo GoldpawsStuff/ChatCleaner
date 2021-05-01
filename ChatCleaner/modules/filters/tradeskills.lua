@@ -34,23 +34,20 @@ local P = setmetatable({}, { __index = function(t,k)
 	return rawget(t,k)
 end })
 
-Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
-end
-
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	local skillup_pattern = P[SKILL_RANK_UP] -- "Your skill in %s has increased to %d."
 	local skill, gain = string_match(message, skillup_pattern)
 	if (skill and gain) then
 		gain = tonumber(gain)
 		if (gain) then
-			return false, string_format("|cff888888+|r %s |cffeaeaea(%d)|r", skill, gain), author, ...
+			return false, string_format(self.output.item_multiple, skill, gain), author, ...
 		end
 	end
 end
 
 Module.OnInit = function(self)
+	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
-	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
 end
 
 Module.OnEnable = function(self)
