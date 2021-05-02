@@ -75,8 +75,8 @@ end
 -- Search Pattern Cache.
 -- This will generate the pattern on the first lookup.
 local P = setmetatable({
-	[ANIMA] = "(%d+) "..ANIMA,
-	[ANIMA_V2] = "(%d+) "..ANIMA_V2,
+	[ANIMA] = "^(%d+) "..ANIMA,
+	[ANIMA_V2] = "^(%d+) "..ANIMA_V2,
 }, { __index = function(t,k) 
 	rawset(t,k,makePattern(k))
 	return rawget(t,k)
