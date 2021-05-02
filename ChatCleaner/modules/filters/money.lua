@@ -33,6 +33,8 @@ local SILVER_AMOUNT_SYMBOL = SILVER_AMOUNT_SYMBOL
 local COPPER_AMOUNT = COPPER_AMOUNT
 local COPPER_AMOUNT_SYMBOL = COPPER_AMOUNT_SYMBOL
 local LARGE_NUMBER_SEPERATOR = LARGE_NUMBER_SEPERATOR
+local ANIMA = POWER_TYPE_ANIMA
+local ANIMA_V2 = POWER_TYPE_ANIMA_V2
 
 -- Return a coin texture string.
 local Coin = setmetatable({}, { __index = function(t,k) 
@@ -72,7 +74,10 @@ end
 
 -- Search Pattern Cache.
 -- This will generate the pattern on the first lookup.
-local P = setmetatable({}, { __index = function(t,k) 
+local P = setmetatable({
+	[ANIMA] = "(%d+) "..ANIMA,
+	[ANIMA_V2] = "(%d+) "..ANIMA_V2,
+}, { __index = function(t,k) 
 	rawset(t,k,makePattern(k))
 	return rawget(t,k)
 end })
@@ -196,19 +201,6 @@ local parseForMoney = function(message)
 	return gold_amount, silver_amount, copper_amount
 end
 
-local onChatEvent = function(chatFrame, event, message, author, ...) 
-	-- We always hide this when this filter is active, 
-	-- so no need for any checks of any sort here.
-	return true 
-end
-
-local onAddMessage = function(chatFrame, msg, r, g, b, chatID, ...)
-	local g,s,c = parseForMoney(msg)
-	if (g+s+c > 0) then
-		return true
-	end
-end
-
 Module.MailOrMerchantWasHidden = function(self, frame)
 	if (MailFrame:IsShown()) or (MerchantFrame:IsShown()) then
 		return
@@ -219,6 +211,45 @@ Module.MailOrMerchantWasHidden = function(self, frame)
 		return
 	end
 	self:OnEvent("PLAYER_MONEY")
+end
+
+Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
+	local g,s,c = parseForMoney(msg)
+	if (g+s+c > 0) then
+		return true
+	end
+end
+
+Module.OnChatEvent = function(self, chatFrame, event, message, author, ...) 
+	if (event == "CHAT_MSG_MONEY") then
+		-- We always hide this when this filter is active, 
+		-- so no need for any checks of any sort here.
+		return true 
+
+	--elseif (event == "CHAT_MSG_SYSTEM") then
+	--	local anima = string_match(message, P[ANIMA])
+	--	if (anima) then 
+	--		return false, string_format(self.output.currency, anima, ANIMA), author, ...
+	--	end
+	--
+	--	anima = string_match(message, P[ANIMA_V2])
+	--	if (anima) then 
+	--		return false, string_format(self.output.currency, anima, ANIMA), author, ...
+	--	end
+	end
+end
+
+-- This might be triggered by C_CovenantSanctumUI.DepositAnima(),
+-- and not sent into any chat channels or through any event handlers.
+Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
+	local anima = string_match(msg, P[ANIMA])
+	if (anima) then 
+		return string_format(self.output.currency, anima, ANIMA)
+	end
+	anima = string_match(msg, P[ANIMA_V2])
+	if (anima) then 
+		return string_format(self.output.currency, anima, ANIMA)
+	end
 end
 
 Module.OnEvent = function(self, event, ...)
@@ -259,6 +290,9 @@ end
 
 Module.OnInit = function(self)
 	self.output = self:GetParent():GetOutputTemplates()
+	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
+	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
+	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
 	local proxy = function(...) return (self.filterEnabled) and self:MailOrMerchantWasHidden(...) end
 	MailFrame:HookScript("OnHide", proxy)
 	MerchantFrame:HookScript("OnHide", proxy)
@@ -269,14 +303,16 @@ Module.OnEnable = function(self)
 	self.playerMoney = GetMoney()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_MONEY", "OnEvent")
-	self:GetParent():AddBlacklistMethod(onAddMessage)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONEY", onChatEvent)
+	self:GetParent():AddBlacklistMethod(self.OnAddMessageProxy)
+	self:GetParent():AddReplacementSet(self.OnReplacementSetProxy)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONEY", self.OnChatEventProxy)
 end
 
 Module.OnDisable = function(self)
 	self.filterEnabled = nil
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:UnregisterEvent("PLAYER_MONEY", "OnEvent")
-	self:GetParent():RemoveBlacklistMethod(onAddMessage)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONEY", onChatEvent)
+	self:GetParent():RemoveBlacklistMethod(self.OnAddMessageProxy)
+	self:GetParent():RemoveReplacementSet(self.OnReplacementSetProxy)
+	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONEY", self.OnChatEventProxy)
 end

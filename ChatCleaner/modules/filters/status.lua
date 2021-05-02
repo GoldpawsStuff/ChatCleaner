@@ -14,6 +14,15 @@ local string_gsub = string.gsub
 local string_match = string.match
 
 -- WoW Globals
+local CLEARED_AFK = CLEARED_AFK -- "You are no longer AFK."
+local CLEARED_DND = CLEARED_DND -- "You are no longer marked DND."
+local DEFAULT_AFK_MESSAGE = DEFAULT_AFK_MESSAGE -- "Away from Keyboard"
+local DEFAULT_DND_MESSAGE = DEFAULT_DND_MESSAGE -- "Do not Disturb"
+local MARKED_AFK = MARKED_AFK -- "You are now AFK."
+local MARKED_AFK_MESSAGE = MARKED_AFK_MESSAGE -- "You are now AFK: %s"
+local MARKED_DND = MARKED_DND -- "You are now DND: %s."
+local EXHAUSTION_NORMAL = ERR_EXHAUSTION_NORMAL -- "You feel normal."
+local EXHAUSTION_WELLRESTED = ERR_EXHAUSTION_WELLRESTED -- "You feel well rested."
 
 -- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
@@ -33,16 +42,6 @@ end })
 
 Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 end
-
-local CLEARED_AFK = CLEARED_AFK -- "You are no longer AFK."
-local CLEARED_DND = CLEARED_DND -- "You are no longer marked DND."
-local DEFAULT_AFK_MESSAGE = DEFAULT_AFK_MESSAGE -- "Away from Keyboard"
-local DEFAULT_DND_MESSAGE = DEFAULT_DND_MESSAGE -- "Do not Disturb"
-local MARKED_AFK = MARKED_AFK -- "You are now AFK."
-local MARKED_AFK_MESSAGE = MARKED_AFK_MESSAGE -- "You are now AFK: %s"
-local MARKED_DND = MARKED_DND -- "You are now DND: %s."
-local EXHAUSTION_NORMAL = ERR_EXHAUSTION_NORMAL -- "You feel normal."
-local EXHAUSTION_WELLRESTED = ERR_EXHAUSTION_WELLRESTED -- "You feel well rested."
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 

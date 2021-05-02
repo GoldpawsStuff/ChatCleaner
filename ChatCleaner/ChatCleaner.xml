@@ -7,6 +7,7 @@
 
 	<Script file="modules\filters\development.lua"/>
 	<Script file="modules\filters\achievements.lua"/>
+	<Script file="modules\filters\auctions.lua"/>
 	<Script file="modules\filters\blacklist.lua"/>
 	<Script file="modules\filters\channels.lua"/>
 	<Script file="modules\filters\colorclass.lua"/>

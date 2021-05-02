@@ -57,6 +57,7 @@ end
 -- Search Pattern Cache.
 -- This will generate the pattern on the first lookup.
 local P = setmetatable({ 
+	-- Special handling. We capture the entire colored, clickable level link.
 	[LEVEL_UP] = string_gsub(LEVEL_UP, "(|.+|r)", "(.+)")
 }, { __index = function(t,k) 
 	rawset(t,k,makePattern(k))

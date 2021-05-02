@@ -16,8 +16,16 @@ local table_insert = table.insert
 local tonumber = tonumber
 
 -- WoW Globals
+local LEARN_COMPANION = ERR_LEARN_COMPANION_S -- "You have added the pet %s to your collection."
+local LEARN_MOUNT = ERR_LEARN_MOUNT_S -- "You have added the mount %s to your collection."
 local LEARN_TOY = ERR_LEARN_TOY_S -- "%s has been added to your Toy Box."
+local LEARN_TRANSMOG = ERR_LEARN_TRANSMOG_S -- "%s has been added to your appearance collection."
+local COMPANIONS = COMPANIONS -- "Companions"
+local MOUNTS = MOUNTS -- "Mounts"
 local TOY_BOX = TOY_BOX -- "Toy Box"
+local WARDROBE = WARDROBE -- "Appearances"
+local LOOT_SPEC_CHANGED = ERR_LOOT_SPEC_CHANGED_S -- "Loot Specialization set to: %s"
+local SELECT_LOOT_SPECIALIZATION = SELECT_LOOT_SPECIALIZATION -- "Loot Specialization"
 
 -- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
@@ -38,6 +46,7 @@ end })
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	if (event == "CHAT_MSG_LOOT") or (event == "CHAT_MSG_CURRENCY") then
 		for i,pattern in ipairs(self.patterns) do
+
 			local item, count = string_match(message,pattern)
 			if (item) then
 				-- The patterns above tend to fail on the number,
@@ -54,20 +63,58 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 					else
 						return false, string_format(self.output.item_single, item), author, ...
 					end
-				--else
-					--return false, message, author, ...
-					-- return false, string_gsub(message, "|", "||"), author, ... -- debug output
 				end
 			end
 		end
 
 	elseif (event == "CHAT_MSG_SYSTEM") then
+
 		-- When new toys are learned and put into the toy box.
 		local toy = string_match(message, P[LEARN_TOY])
 		if (toy) then
 			return false, string_format(self.output.item_transfer, TOY_BOX, toy), author, ...
 		end
+
+		-- When new transmogs are learned and put into the appearance collection.
+		local appearance = string_match(message, P[LEARN_TRANSMOG])
+		if (appearance) then
+			return false, string_format(self.output.item_transfer, WARDROBE, toy), author, ...
+		end
+
+		-- When a new mount is learned
+		local mount = string_match(message, P[LEARN_MOUNT])
+		if (mount) then
+			return false, string_format(self.output.item_transfer, MOUNTS, mount), author, ...
+		end
+
+		-- When a new companion is learned
+		local companion = string_match(message, P[LEARN_COMPANION])
+		if (companion) then
+			return false, string_format(self.output.item_transfer, COMPANIONS, companion), author, ...
+		end
+
+		-- Loot spec changed, or just reported
+		-- This one fires on manual changes after login.
+		-- The initial message on reloads or login is not captured here, 
+		-- as the chat frames haven't yet been registered for user events at that point.
+		local lootspec = string_match(message, P[LOOT_SPEC_CHANGED])
+		if (lootspec) then 
+			return false, string_format(self.output.objective_status, SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
+		end
+
 	end
+end
+
+Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
+
+	-- Loot spec changed, or just reported
+	-- This one will fire at the initial PLAYER_ENTERING_WORLD, 
+	-- as the chat frames haven't yet been registered for user events at that point.
+	local lootspec = string_match(msg, P[LOOT_SPEC_CHANGED])
+	if (lootspec) then
+		return string_format(self.output.objective_status, SELECT_LOOT_SPECIALIZATION, lootspec)
+	end
+
 end
 
 Module.OnInit = function(self)
@@ -90,10 +137,12 @@ Module.OnInit = function(self)
 		end
 	end
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
+	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
 end
 
 Module.OnEnable = function(self)
 	self.filterEnabled = true
+	self:GetParent():AddReplacementSet(self.OnReplacementSetProxy)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_CURRENCY", self.OnChatEventProxy)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", self.OnChatEventProxy)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
@@ -101,6 +150,7 @@ end
 
 Module.OnDisable = function(self)
 	self.filterEnabled = nil
+	self:GetParent():RemoveReplacementSet(self.OnReplacementSetProxy)
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_CURRENCY", self.OnChatEventProxy)
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_LOOT", self.OnChatEventProxy)
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)

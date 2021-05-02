@@ -82,9 +82,13 @@ local hooksecurefunc = hooksecurefunc
 local CHAT_FRAMES = CHAT_FRAMES
 
 -- WoW Globals
+local AUCTION_SOLD_MAIL_SUBJECT = AUCTION_SOLD_MAIL_SUBJECT -- "Auction successful: %s"
+local AUCTION_REMOVED_MAIL_SUBJECT = AUCTION_REMOVED_MAIL_SUBJECT -- "Auction cancelled: %s"
 local FRIENDS_LIST_AWAY = FRIENDS_LIST_AWAY
 local FRIENDS_LIST_BUSY = FRIENDS_LIST_BUSY
 local TUTORIAL_TITLE26 = TUTORIAL_TITLE26
+
+--UIParent:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
 Core.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	if (not msg) or (msg == "") then
@@ -96,7 +100,7 @@ Core.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 		end
 	end
 	if (next(self.replacements)) then
-		msg = self.replacements(msg)
+		msg = self.replacements(msg, r, g, b, chatID, ...)
 	end
 	return self.MethodCache[chatFrame](chatFrame, msg, r, g, b, chatID, ...)
 end
@@ -132,18 +136,18 @@ Core.RemoveBlacklistMethod = function(self, func)
 	end
 end
 
-Core.AddReplacementSet = function(self, tbl)
-	for _,intbl in next,self.replacements do
-		if (intbl == tbl) then 
+Core.AddReplacementSet = function(self, set)
+	for _,inset in next,self.replacements do
+		if (inset == set) then 
 			return 
 		end
 	end
-	table_insert(self.replacements, tbl)
+	table_insert(self.replacements, set)
 end
 
-Core.RemoveReplacementSet = function(self, tbl)
-	for k,intbl in next,self.replacements do
-		if (intbl == tbl) then
+Core.RemoveReplacementSet = function(self, set)
+	for k,inset in next,self.replacements do
+		if (inset == set) then
 			self.replacements[k] = nil
 			break
 		end
@@ -168,25 +172,29 @@ end
 Core.OnEvent = function(self, event, ...)
 end
 
+
 Core.OnInit = function(self)
 	self.db = db
 
 	self.output = {}
-	self.output.achievement = "|cffeaeaea!|r%s: %s"
+	self.output.achievement = "|cffdddddd!|r%s: %s"
+	self.output.auction_sold = "|cff888888+|r |cffdddddd"..AUCTION_SOLD_MAIL_SUBJECT.."|r"
+	self.output.auction_canceled = "|cffcc4444-|r |cffdddddd"..AUCTION_REMOVED_MAIL_SUBJECT.."|r"
 	self.output.item_single = "|cff888888+|r %s"
-	self.output.item_multiple = "|cff888888+|r %s |cffeaeaea(%d)|r"
+	self.output.item_multiple = "|cff888888+|r %s |cffdddddd(%d)|r"
 	self.output.item_deficit = "|cffcc4444- %s|r"
-	self.output.item_transfer = "|cff888888+|r |cffeaeaea%s:|r %s"
+	self.output.item_transfer = "|cff888888+|r |cffdddddd%s:|r %s"
+	self.output.currency = "|cff888888+|r |cfff0f0f0%d|r |cffdddddd%s|r"
 	self.output.money = self.output.item_single
 	self.output.money_deficit = "|cff888888-|r %s"
-	self.output.objective_status = "|cff888888+|r |cffeaeaea%s:|r |cffffb200%s|r"
-	self.output.standing = "|cff888888+|r |cfff0f0f0".."%d|r |cffeaeaea%s:|r %s"
+	self.output.objective_status = "|cff888888+|r |cffdddddd%s:|r |cffffb200%s|r"
+	self.output.standing = "|cff888888+|r |cfff0f0f0".."%d|r |cffdddddd%s:|r %s"
 	self.output.standing_generic = "|cff888888+ %s:|r %s"
-	self.output.standing_deficit = "|cffcc4444-|r |cfff0f0f0".."%d|r |cffeaeaea%s:|r %s"
+	self.output.standing_deficit = "|cffcc4444-|r |cfff0f0f0".."%d|r |cffdddddd%s:|r %s"
 	self.output.standing_deficit_generic = "|cffcc4444- %s:|r %s"
-	self.output.xp_named = "|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s:|r |cffffb200%s|r"
-	self.output.xp_unnamed = "|cff888888+|r |cfff0f0f0%d|r |cffeaeaea%s|r"
-	self.output.xp_levelup = "|cffeaeaea!|r%s|cffeaeaea!|r"
+	self.output.xp_named = "|cff888888+|r |cfff0f0f0%d|r |cffdddddd%s:|r |cffffb200%s|r"
+	self.output.xp_unnamed = self.output.currency
+	self.output.xp_levelup = "|cffdddddd!|r%s|cffdddddd!|r"
 	self.output.afk_added = "|cffffb200+ "..FRIENDS_LIST_AWAY.."|r"
 	self.output.afk_added_message = "|cffffb200+ "..FRIENDS_LIST_AWAY..": |r|cfff0f0f0%s|r"
 	self.output.afk_cleared = "|cff00cc00- "..FRIENDS_LIST_AWAY.."|r"
@@ -207,10 +215,18 @@ Core.OnInit = function(self)
 	})
 
 	self.replacements = setmetatable({}, {
-		__call = function(sets, msg)
+		__call = function(sets, msg, ...)
 			for i,set in next,sets do
-				for k,data in ipairs(set) do
-					msg = string_gsub(msg, unpack(data))
+				if (type(set) == "table") then
+					for k,data in ipairs(set) do
+						if (type(data) == "table") then
+							msg = string_gsub(msg, unpack(data))
+						elseif (type(data == "func")) then
+							msg = func(msg, ...) or msg
+						end
+					end
+				elseif (type(set == "func")) then
+					msg = set(msg, ...) or msg
 				end
 			end
 			return msg
