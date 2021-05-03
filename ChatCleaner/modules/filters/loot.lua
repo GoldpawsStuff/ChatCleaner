@@ -78,7 +78,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		-- When new transmogs are learned and put into the appearance collection.
 		local appearance = string_match(message, P[LEARN_TRANSMOG])
 		if (appearance) then
-			return false, string_format(self.output.item_transfer, WARDROBE, toy), author, ...
+			return false, string_format(self.output.item_transfer, WARDROBE, appearance), author, ...
 		end
 
 		-- When a new mount is learned
