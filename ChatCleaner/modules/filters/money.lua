@@ -225,22 +225,15 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		-- We always hide this when this filter is active, 
 		-- so no need for any checks of any sort here.
 		return true 
-
-	--elseif (event == "CHAT_MSG_SYSTEM") then
-	--	local anima = string_match(message, P[ANIMA])
-	--	if (anima) then 
-	--		return false, string_format(self.output.currency, anima, ANIMA), author, ...
-	--	end
-	--
-	--	anima = string_match(message, P[ANIMA_V2])
-	--	if (anima) then 
-	--		return false, string_format(self.output.currency, anima, ANIMA), author, ...
-	--	end
 	end
 end
 
 -- This might be triggered by C_CovenantSanctumUI.DepositAnima(),
 -- and not sent into any chat channels or through any event handlers.
+-- Good thing about this is that we don't need to parse for sender,
+-- or make exceptions to avoid false positives from normal chat.
+-- If it starts with the number, it can't be a player message, 
+-- because the channel or their name link would then be first.
 Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 	local anima = string_match(msg, P[ANIMA])
 	if (anima) then 
