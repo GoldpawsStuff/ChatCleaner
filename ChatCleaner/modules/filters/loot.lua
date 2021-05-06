@@ -27,6 +27,8 @@ local WARDROBE = WARDROBE -- "Appearances"
 local LOOT_SPEC_CHANGED = ERR_LOOT_SPEC_CHANGED_S -- "Loot Specialization set to: %s"
 local SELECT_LOOT_SPECIALIZATION = SELECT_LOOT_SPECIALIZATION -- "Loot Specialization"
 
+local _,playerClass = UnitClass("player")
+
 -- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
 	msg = string_gsub(msg, "%%d", "(%%d+)")
@@ -99,7 +101,8 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		-- as the chat frames haven't yet been registered for user events at that point.
 		local lootspec = string_match(message, P[LOOT_SPEC_CHANGED])
 		if (lootspec) then 
-			return false, string_format(self.output.objective_status, SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
+			lootspec = Private.Colors.class[playerClass].colorCode .. lootspec .. "|r"
+			return false, string_format(self.output.item_transfer, SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
 		end
 
 	end
@@ -112,7 +115,8 @@ Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 	-- as the chat frames haven't yet been registered for user events at that point.
 	local lootspec = string_match(msg, P[LOOT_SPEC_CHANGED])
 	if (lootspec) then
-		return string_format(self.output.objective_status, SELECT_LOOT_SPECIALIZATION, lootspec)
+		lootspec = Private.Colors.class[playerClass].colorCode .. lootspec .. "|r"
+		return string_format(self.output.item_transfer, SELECT_LOOT_SPECIALIZATION, lootspec)
 	end
 
 end
