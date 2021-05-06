@@ -36,6 +36,9 @@ local LARGE_NUMBER_SEPERATOR = LARGE_NUMBER_SEPERATOR
 local ANIMA = POWER_TYPE_ANIMA
 local ANIMA_V2 = POWER_TYPE_ANIMA_V2
 
+-- Colorize the anima label.
+local ANIMA_LABEL = Private.Colors.quality.Rare.colorCode .. ANIMA .. "|r"
+
 -- Return a coin texture string.
 local Coin = setmetatable({}, { __index = function(t,k) 
 	local useBlizz = Core.db.useBlizzardCoins
@@ -237,11 +240,11 @@ end
 Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 	local anima = string_match(msg, P[ANIMA])
 	if (anima) then 
-		return string_format(self.output.currency, anima, ANIMA)
+		return string_format(self.output.currency, anima, ANIMA_LABEL)
 	end
 	anima = string_match(msg, P[ANIMA_V2])
 	if (anima) then 
-		return string_format(self.output.currency, anima, ANIMA)
+		return string_format(self.output.currency, anima, ANIMA_LABEL)
 	end
 end
 
