@@ -94,6 +94,17 @@ Colors.quality[6] = createColor(230/255, 204/255, 128/255) -- Artifact
 Colors.quality[7] = createColor(79/255, 196/255, 225/255) -- Heirloom
 Colors.quality[8] = createColor(79/255, 196/255, 225/255) -- Blizard
 
+Colors.quality.Poor = Colors.quality[0]
+Colors.quality.Common = Colors.quality[1]
+Colors.quality.Uncommon = Colors.quality[2]
+Colors.quality.Rare = Colors.quality[3]
+Colors.quality.Epic = Colors.quality[4]
+Colors.quality.Legendary = Colors.quality[5]
+Colors.quality.Artifact = Colors.quality[6]
+Colors.quality.Heirloom = Colors.quality[7]
+Colors.quality.WoWToken = Colors.quality[8]
+Colors.quality.Blizard = Colors.quality[8]
+
 -- Difficulty
 Colors.quest = {}
 Colors.quest.red = createColor(204/255, 26/255, 26/255)
