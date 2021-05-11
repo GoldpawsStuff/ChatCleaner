@@ -89,7 +89,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 			return false, string_format(self.output.item_transfer, MOUNTS, mount), author, ...
 		end
 
-		-- When a new companion is learned
+		-- When a new companion is learned (doesn't do "has been added to your pet journal!")
 		local companion = string_match(message, P[LEARN_COMPANION])
 		if (companion) then
 			return false, string_format(self.output.item_transfer, COMPANIONS, companion), author, ...

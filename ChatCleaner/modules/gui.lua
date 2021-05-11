@@ -69,3 +69,18 @@ end
 
 GUI.CloseGUI = function(self)
 end
+
+GUI.ToggleGUI = function(self)
+end
+
+GUI.OnInit = function(self)
+	
+	self:RegisterChatCommand("ccleaner", "ToggleGUI")
+	self:RegisterChatCommand("chatcleaner", "ToggleGUI")
+end
+
+GUI.OnEnable = function(self)
+end
+
+GUI.OnDisable = function(self)
+end

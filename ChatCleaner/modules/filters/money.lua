@@ -240,11 +240,14 @@ end
 Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 	local anima = string_match(msg, P[ANIMA])
 	if (anima) then 
-		return string_format(self.output.currency, anima, ANIMA_LABEL)
+		--return string_format(self.output.currency, anima, ANIMA_LABEL)
+		return string_format(self.output.item_multiple, ANIMA_LABEL, anima)
+
 	end
 	anima = string_match(msg, P[ANIMA_V2])
 	if (anima) then 
-		return string_format(self.output.currency, anima, ANIMA_LABEL)
+		--return string_format(self.output.currency, anima, ANIMA_LABEL)
+		return string_format(self.output.item_multiple, ANIMA_LABEL, anima)
 	end
 end
 
