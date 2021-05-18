@@ -88,8 +88,6 @@ local FRIENDS_LIST_AWAY = FRIENDS_LIST_AWAY
 local FRIENDS_LIST_BUSY = FRIENDS_LIST_BUSY
 local TUTORIAL_TITLE26 = TUTORIAL_TITLE26
 
---UIParent:UnregisterEvent("PLAYER_ENTERING_WORLD")
-
 Core.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	if (not msg) or (msg == "") then
 		return
@@ -158,7 +156,10 @@ Core.CacheAllMessageMethods = function(self)
 	for _,chatFrameName in ipairs(CHAT_FRAMES) do 
 		self:CacheMessageMethod(_G[chatFrameName]) 
 	end
-	hooksecurefunc("FCF_OpenTemporaryWindow", function() self:CacheMessageMethod((FCF_GetCurrentChatFrame())) end)
+	if (not self.tempWindowsHooked) then
+		self.tempWindowsHooked = true
+		hooksecurefunc("FCF_OpenTemporaryWindow", function() self:CacheMessageMethod((FCF_GetCurrentChatFrame())) end)
+	end
 end
 
 Core.GetOutputTemplates = function(self)
@@ -178,7 +179,8 @@ Core.OnInit = function(self)
 
 	self.output = {}
 	self.output.achievement = "|cffe0e0e0!|r%s: %s"
-	self.output.auction_sold = "|cff888888+|r |cffe0e0e0"..AUCTION_SOLD_MAIL_SUBJECT.."|r"
+	--self.output.auction_sold = "|cff888888+|r |cffe0e0e0"..AUCTION_SOLD_MAIL_SUBJECT.."|r"
+	self.output.auction_sold = "|cffe0e0e0!|r|cfff0f0f0"..string_gsub(AUCTION_SOLD_MAIL_SUBJECT, "%%s", "|cffffb200%%s|r").."|r"
 	self.output.auction_single = "|cff888888+|r |cffe0e0e0"..string_gsub(ERR_AUCTION_STARTED, "%.", "").."|r"
 	self.output.auction_multiple = "|cff888888+|r |cfff0f0f0"..string_gsub(ERR_AUCTION_STARTED, "%.", "").."|r |cffe0e0e0(%d)|r"
 	self.output.auction_canceled = "|cffcc4444-|r |cfff0f0f0"..AUCTION_REMOVED_MAIL_SUBJECT.."|r"
