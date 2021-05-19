@@ -82,11 +82,14 @@ local hooksecurefunc = hooksecurefunc
 local CHAT_FRAMES = CHAT_FRAMES
 
 -- WoW Globals
-local AUCTION_SOLD_MAIL_SUBJECT = AUCTION_SOLD_MAIL_SUBJECT -- "Auction successful: %s"
-local AUCTION_REMOVED_MAIL_SUBJECT = AUCTION_REMOVED_MAIL_SUBJECT -- "Auction cancelled: %s"
-local FRIENDS_LIST_AWAY = FRIENDS_LIST_AWAY
-local FRIENDS_LIST_BUSY = FRIENDS_LIST_BUSY
-local TUTORIAL_TITLE26 = TUTORIAL_TITLE26
+local ACCEPTED = CALENDAR_STATUS_ACCEPTED -- "Accepted"
+local AUCTION_SOLD = AUCTION_SOLD_MAIL_SUBJECT -- "Auction successful: %s"
+local AUCTION_CANCELLED = AUCTION_REMOVED_MAIL_SUBJECT -- "Auction cancelled: %s"
+local AUCTION_CREATED = string_gsub(ERR_AUCTION_STARTED, "%.", "")
+local AWAY = FRIENDS_LIST_AWAY -- "Away"
+local BUSY = FRIENDS_LIST_BUSY -- "Busy"
+local COMPLETE = COMPLETE -- "Complete"
+local RESTED = TUTORIAL_TITLE26 -- "Rested"
 
 Core.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	if (not msg) or (msg == "") then
@@ -173,41 +176,56 @@ end
 Core.OnEvent = function(self, event, ...)
 end
 
-
 Core.OnInit = function(self)
 	self.db = db
 
-	self.output = {}
-	self.output.achievement = "|cffe0e0e0!|r%s: %s"
-	--self.output.auction_sold = "|cff888888+|r |cffe0e0e0"..AUCTION_SOLD_MAIL_SUBJECT.."|r"
-	self.output.auction_sold = "|cffe0e0e0!|r|cfff0f0f0"..string_gsub(AUCTION_SOLD_MAIL_SUBJECT, "%%s", "|cffffb200%%s|r").."|r"
-	self.output.auction_single = "|cff888888+|r |cffe0e0e0"..string_gsub(ERR_AUCTION_STARTED, "%.", "").."|r"
-	self.output.auction_multiple = "|cff888888+|r |cfff0f0f0"..string_gsub(ERR_AUCTION_STARTED, "%.", "").."|r |cffe0e0e0(%d)|r"
-	self.output.auction_canceled = "|cffcc4444-|r |cfff0f0f0"..AUCTION_REMOVED_MAIL_SUBJECT.."|r"
-	self.output.item_single = "|cff888888+|r %s"
-	self.output.item_multiple = "|cff888888+|r %s |cffe0e0e0(%d)|r"
-	self.output.item_deficit = "|cffcc4444- %s|r"
-	self.output.item_transfer = "|cff888888+|r |cffe0e0e0%s:|r %s"
-	self.output.currency = "|cff888888+|r |cfff0f0f0%d|r %s"
+	-- Output patterns. 
+	-- Let's add a simple color tag system for new strings as well. 
+	self.output = setmetatable({}, { __newindex = function(t,k,msg) 
+		msg = string_gsub(msg, "%*title%*", Private.Colors.title.colorCode)
+		msg = string_gsub(msg, "%*white%*", Private.Colors.highlight.colorCode)
+		msg = string_gsub(msg, "%*offwhite%*", Private.Colors.offwhite.colorCode)
+		msg = string_gsub(msg, "%*red%*", Private.Colors.quest.red.colorCode) -- cc4444
+		msg = string_gsub(msg, "%*orange%*", Private.Colors.quest.orange.colorCode)
+		msg = string_gsub(msg, "%*yellow%*", Private.Colors.quest.yellow.colorCode)
+		msg = string_gsub(msg, "%*green%*", Private.Colors.quest.green.colorCode) -- 00cc00
+		msg = string_gsub(msg, "%*gray%*", Private.Colors.quest.gray.colorCode)
+		msg = string_gsub(msg, "%*%*", "|r")
+		rawset(t,k,msg)
+	end })
+
+	self.output.achievement = "*offwhite*!**%s: %s"
+	self.output.auction_sold = "*green*!***green*"..string_gsub(AUCTION_SOLD, "%%s", "*white*%%s**").."**"
+	self.output.auction_single = "*gray*+** *offwhite*"..string_gsub(AUCTION_CREATED, "%.", "").."**"
+	self.output.auction_multiple = "*gray*+** *white*"..string_gsub(AUCTION_CREATED, "%.", "").."** *offwhite*(%d)**"
+	self.output.auction_canceled = "*red*-** *white*"..AUCTION_CANCELLED.."**"
+	self.output.item_single = "*gray*+** %s"
+	self.output.item_multiple = "*gray*+** %s *offwhite*(%d)**"
+	self.output.item_deficit = "*red*- %s**"
+	self.output.item_transfer = "*gray*+** *offwhite*%s:** %s"
+	self.output.currency = "*gray*+** *white*%d** %s"
 	self.output.money = self.output.item_single
-	self.output.money_deficit = "|cff888888-|r %s"
-	self.output.objective_status = "|cff888888+|r |cffe0e0e0%s:|r |cffffb200%s|r"
-	self.output.standing = "|cff888888+|r |cfff0f0f0".."%d|r |cffe0e0e0%s:|r %s"
-	self.output.standing_generic = "|cff888888+ %s:|r %s"
-	self.output.standing_deficit = "|cffcc4444-|r |cfff0f0f0".."%d|r |cffe0e0e0%s:|r %s"
-	self.output.standing_deficit_generic = "|cffcc4444- %s:|r %s"
-	self.output.xp_named = "|cff888888+|r |cfff0f0f0%d|r |cffe0e0e0%s:|r |cffffb200%s|r"
-	self.output.xp_unnamed = "|cff888888+|r |cfff0f0f0%d|r |cffe0e0e0%s|r"
-	self.output.xp_levelup = "|cffe0e0e0!|r%s|cffe0e0e0!|r"
-	self.output.afk_added = "|cffffb200+ "..FRIENDS_LIST_AWAY.."|r"
-	self.output.afk_added_message = "|cffffb200+ "..FRIENDS_LIST_AWAY..": |r|cfff0f0f0%s|r"
-	self.output.afk_cleared = "|cff00cc00- "..FRIENDS_LIST_AWAY.."|r"
-	self.output.dnd_added = "|cffff6600+ "..FRIENDS_LIST_BUSY.."|r"
-	self.output.dnd_added_message = "|cffff6600+ "..FRIENDS_LIST_BUSY..": |r|cfff0f0f0%s|r"
-	self.output.dnd_cleared = "|cff00cc00- "..FRIENDS_LIST_BUSY.."|r"
-	self.output.rested_added = "|cff888888+ "..TUTORIAL_TITLE26.."|r"
-	self.output.rested_cleared = "|cffffb200- "..TUTORIAL_TITLE26.."|r"
-	
+	self.output.money_deficit = "*gray*-** %s"
+	self.output.objective_status = "*gray*+** *offwhite*%s:** *yellow*%s**"
+	self.output.standing = "*gray*+** *white*".."%d** *offwhite*%s:** %s"
+	self.output.standing_generic = "*gray*+ %s:** %s"
+	self.output.standing_deficit = "*red*-** *white*".."%d** *offwhite*%s:** %s"
+	self.output.standing_deficit_generic = "*red*- %s:** %s"
+	self.output.xp_named = "*gray*+** *white*%d** *offwhite*%s:** *yellow*%s**"
+	self.output.xp_unnamed = "*gray*+** *white*%d** *offwhite*%s**"
+	self.output.xp_levelup = "*offwhite*!**%s*offwhite*!**"
+	self.output.afk_added = "*orange*+ "..AWAY.."**"
+	self.output.afk_added_message = "*orange*+ "..AWAY..": ***white*%s**"
+	self.output.afk_cleared = "*green*- "..AWAY.."**"
+	self.output.dnd_added = "|cffff6600+ "..BUSY.."**"
+	self.output.dnd_added_message = "|cffff6600+ "..BUSY..": ***white*%s**"
+	self.output.dnd_cleared = "*green*- "..BUSY.."**"
+	self.output.rested_added = "*gray*+ "..RESTED.."**"
+	self.output.rested_cleared = "*orange*- "..RESTED.."**"
+
+	self.output.quest_accepted = "*gray*+** *offwhite*%s:** *yellow*%s**"
+	self.output.quest_complete = "*gray*+** *offwhite*%s:** *yellow*%s**"
+
 	self.blacklist = setmetatable({}, {
 		__call = function(funcs, ...)
 			for _,func in next,funcs do
