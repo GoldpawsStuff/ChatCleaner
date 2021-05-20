@@ -42,13 +42,13 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	name = string_match(message, P[QUEST_ACCEPTED])
 	if (name) then
 		name = string_gsub(name, "[%[/%]]", "")
-		return false, string_format(self.output.objective_status, ACCEPTED, name), author, ...
+		return false, string_format(self.output.quest_accepted, ACCEPTED, name), author, ...
 	end
 
 	name = string_match(message, P[QUEST_COMPLETE])
 	if (name) then
 		name = string_gsub(name, "[%[/%]]", "")
-		return false, string_format(self.output.objective_status, COMPLETE, name), author, ...
+		return false, string_format(self.output.quest_complete, COMPLETE, name), author, ...
 	end
 end
 

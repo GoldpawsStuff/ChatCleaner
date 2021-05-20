@@ -185,10 +185,10 @@ Core.OnInit = function(self)
 		msg = string_gsub(msg, "%*title%*", Private.Colors.title.colorCode)
 		msg = string_gsub(msg, "%*white%*", Private.Colors.highlight.colorCode)
 		msg = string_gsub(msg, "%*offwhite%*", Private.Colors.offwhite.colorCode)
-		msg = string_gsub(msg, "%*red%*", Private.Colors.quest.red.colorCode) -- cc4444
+		msg = string_gsub(msg, "%*red%*", Private.Colors.quest.red.colorCode)
 		msg = string_gsub(msg, "%*orange%*", Private.Colors.quest.orange.colorCode)
 		msg = string_gsub(msg, "%*yellow%*", Private.Colors.quest.yellow.colorCode)
-		msg = string_gsub(msg, "%*green%*", Private.Colors.quest.green.colorCode) -- 00cc00
+		msg = string_gsub(msg, "%*green%*", Private.Colors.quest.green.colorCode)
 		msg = string_gsub(msg, "%*gray%*", Private.Colors.quest.gray.colorCode)
 		msg = string_gsub(msg, "%*%*", "|r")
 		rawset(t,k,msg)
