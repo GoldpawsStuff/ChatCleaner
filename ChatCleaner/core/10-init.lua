@@ -24,16 +24,10 @@ Private.ClientMajor = tonumber(major)
 Private.ClientMinor = tonumber(minor)
 Private.ClientBuild = tonumber(build)
 
--- Sourced from FrameXML/BNet.lua
-if (WOW_PROJECT_ID) then
-	Private.IsClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-	Private.IsRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-else
-	Private.IsClassic = Private.ClientMajor == 1
-	Private.IsRetail = Private.ClientMajor >= 9
-end
-
+-- Simple flags for version checks
+Private.IsClassic = Private.ClientMajor == 1
 Private.IsTBC = Private.ClientMajor == 2
+Private.IsRetail = Private.ClientMajor >= 9
 Private.IsShadowlands = Private.ClientMajor == 9
 
 -- Addon libraries

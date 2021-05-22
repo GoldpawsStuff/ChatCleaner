@@ -22,10 +22,15 @@ local isEventRegistered = frame_index.IsEventRegistered
 -- Fire the events for a single module.
 -- This is a table mimicking a function, 
 -- and will be called by the metatable below.
+-- events[event][module](event, ...)
 local event_mt = {
 	__call = function(funcs, module, event, ...)
 		for _,func in next,funcs do
-			func(module, event, ...)
+			if (type(func) == "string") then
+				module[func](module, event, ...)
+			else
+				func(module, event, ...)
+			end
 		end
 	end
 }
@@ -35,7 +40,12 @@ local event_mt = {
 local events_mt = {
 	__call = function(modules, event, ...)
 		for module,funcs in next,modules do
-			funcs(module, event, ...) -- funcs can be a function or a table
+			 -- funcs can be a function, a method name, or a table of those.
+			if (type(funcs) == "string") then
+				module[funcs](module, event, ...)
+			else
+				funcs(module, event, ...)
+			end
 		end
 	end
 }
@@ -69,10 +79,10 @@ end
 --------------------------------------------------
 module_template.RegisterEvent = function(self, event, callback)
 	-- If the callback is a method, transform it into a function.
-	if (type(callback) == "string") then
-		local method = callback
-		callback = function(self, ...) self[method](self,...) end
-	end
+	--if (type(callback) == "string") then
+	--	local method = callback
+	--	callback = function(self, ...) self[method](self,...) end
+	--end
 	local curev = events[event][self]
 	if (curev) then
 		local kind = type(curev)
@@ -105,9 +115,9 @@ module_template.UnregisterEvent = function(self, event, callback)
 	local curev = events[event][self]
 
 	-- Retrieve the actual function if listed as a method.
-	if (type(callback) == "string") then
-		callback = self[callback]
-	end
+	--if (type(callback) == "string") then
+	--	callback = self[callback]
+	--end
 
 	-- We have multiple event registrations on the module,
 	-- so iterate them all and remove only the current.
