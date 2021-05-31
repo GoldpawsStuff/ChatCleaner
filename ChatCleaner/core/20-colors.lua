@@ -77,6 +77,7 @@ end
 Colors.normal = createColor(229/255, 178/255, 38/255)
 Colors.highlight = createColor(250/255, 250/255, 250/255)
 Colors.title = createColor(255/255, 234/255, 137/255)
+Colors.white = createColor(220/255, 220/255, 220/255)
 Colors.offwhite = createColor(196/255, 196/255, 196/255)
 Colors.green = createColor(25/255, 178/255, 25/255)
 Colors.red = createColor(204/255, 25/255, 25/255)

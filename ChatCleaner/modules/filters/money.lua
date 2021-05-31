@@ -204,8 +204,8 @@ local parseForMoney = function(message)
 	return gold_amount, silver_amount, copper_amount
 end
 
-Module.MailOrMerchantWasHidden = function(self, frame)
-	if (MailFrame:IsShown()) or (MerchantFrame:IsShown()) then
+Module.SpecialFrameWasHidden = function(self, frame)
+	if (MailFrame:IsShown()) or (MerchantFrame:IsShown()) or (ClassTrainerFrame and ClassTrainerFrame:IsShown()) then
 		return
 	end
 	local money = GetMoney()
@@ -257,7 +257,12 @@ Module.OnEvent = function(self, event, ...)
 
 	elseif (event == "PLAYER_MONEY") then
 		local currentMoney = GetMoney()
-		if (MerchantFrame:IsShown()) or (MailFrame:IsShown()) then
+		if (MerchantFrame:IsShown()) or (MailFrame:IsShown()) or (ClassTrainerFrame and ClassTrainerFrame:IsShown()) then
+			-- The trainer frame is an addon, just hook it on-the-fly, don't check for loading.
+			if (ClassTrainerFrame) and (not self.hooks[ClassTrainerFrame]) then
+				self.hooks[ClassTrainerFrame] = true
+				ClassTrainerFrame:HookScript("OnHide", self.hooks.proxy)
+			end
 			return
 		end
 		if (AuctionHouseFrame and AuctionHouseFrame:IsShown()) or (AuctionFrame and AuctionFrame:IsShown()) or (UnitOnTaxi("player")) then 
@@ -288,13 +293,13 @@ Module.OnEvent = function(self, event, ...)
 end
 
 Module.OnInit = function(self)
+	self.hooks = { proxy = function(...) return (self.filterEnabled) and self:SpecialFrameWasHidden(...) end }
 	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
 	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
-	local proxy = function(...) return (self.filterEnabled) and self:MailOrMerchantWasHidden(...) end
-	MailFrame:HookScript("OnHide", proxy)
-	MerchantFrame:HookScript("OnHide", proxy)
+	MailFrame:HookScript("OnHide", self.hooks.proxy)
+	MerchantFrame:HookScript("OnHide", self.hooks.proxy)
 end
 
 Module.OnEnable = function(self)

@@ -195,25 +195,25 @@ Core.OnInit = function(self)
 	end })
 
 	self.output.achievement = "*offwhite*!**%s: %s"
-	self.output.auction_sold = "*green*!***green*"..string_gsub(AUCTION_SOLD, "%%s", "*white*%%s**").."**"
-	self.output.auction_single = "*gray*+** *offwhite*"..string_gsub(AUCTION_CREATED, "%.", "").."**"
+	self.output.auction_sold = "*offwhite*!***green*"..string_gsub(AUCTION_SOLD, "%%s", "*white*%%s**").."**"
+	self.output.auction_single = "*gray*+** *white*"..string_gsub(AUCTION_CREATED, "%.", "").."**"
 	self.output.auction_multiple = "*gray*+** *white*"..string_gsub(AUCTION_CREATED, "%.", "").."** *offwhite*(%d)**"
 	self.output.auction_canceled = "*red*-** *white*"..AUCTION_CANCELLED.."**"
 	self.output.item_single = "*gray*+** %s"
-	self.output.item_multiple = "*gray*+** %s *offwhite*(%d)**"
+	self.output.item_multiple = "*gray*+** %s *white*(%d)**"
 	self.output.item_deficit = "*red*- %s**"
-	self.output.item_transfer = "*gray*+** *offwhite*%s:** %s"
+	self.output.item_transfer = "*gray*+** *white*%s:** %s"
 	self.output.currency = "*gray*+** *white*%d** %s"
 	self.output.money = self.output.item_single
 	self.output.money_deficit = "*gray*-** %s"
-	self.output.objective_status = "*gray*+** *offwhite*%s:** *yellow*%s**"
-	self.output.standing = "*gray*+** *white*".."%d** *offwhite*%s:** %s"
+	self.output.objective_status = "*gray*+** *white*%s:** *yellow*%s**"
+	self.output.standing = "*gray*+** *white*".."%d** *white*%s:** %s"
 	self.output.standing_generic = "*gray*+ %s:** %s"
-	self.output.standing_deficit = "*red*-** *white*".."%d** *offwhite*%s:** %s"
+	self.output.standing_deficit = "*red*-** *white*".."%d** *white*%s:** %s"
 	self.output.standing_deficit_generic = "*red*- %s:** %s"
-	self.output.xp_named = "*gray*+** *white*%d** *offwhite*%s:** *yellow*%s**"
-	self.output.xp_unnamed = "*gray*+** *white*%d** *offwhite*%s**"
-	self.output.xp_levelup = "*offwhite*!**%s*offwhite*!**"
+	self.output.xp_named = "*gray*+** *white*%d** *white*%s:** *yellow*%s**"
+	self.output.xp_unnamed = "*gray*+** *white*%d** *white*%s**"
+	self.output.xp_levelup = "*offwhite*!**%s*white*!**"
 	self.output.afk_added = "*orange*+ "..AWAY.."**"
 	self.output.afk_added_message = "*orange*+ "..AWAY..": ***white*%s**"
 	self.output.afk_cleared = "*green*- "..AWAY.."**"
@@ -223,8 +223,8 @@ Core.OnInit = function(self)
 	self.output.rested_added = "*gray*+ "..RESTED.."**"
 	self.output.rested_cleared = "*orange*- "..RESTED.."**"
 
-	self.output.quest_accepted = "*gray*+** *offwhite*%s:** *yellow*%s**"
-	self.output.quest_complete = "*gray*+** *offwhite*%s:** *yellow*%s**"
+	self.output.quest_accepted = "*gray*+** *white*%s:** *yellow*%s**"
+	self.output.quest_complete = "*gray*+** *white*%s:** *yellow*%s**"
 
 	self.blacklist = setmetatable({}, {
 		__call = function(funcs, ...)
