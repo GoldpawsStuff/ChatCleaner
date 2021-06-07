@@ -14,6 +14,7 @@ local string_gsub = string.gsub
 local string_match = string.match
 
 -- WoW Globals
+local AUCTION_REMOVED = ERR_AUCTION_REMOVED -- "Auction cancelled."
 local AUCTION_SOLD = ERR_AUCTION_SOLD_S -- "A buyer has been found for your auction of %s."
 local AUCTION_STARTED = ERR_AUCTION_STARTED -- "Auction created."
 local AUCTIONS = AUCTIONS -- "Auctions"
@@ -39,9 +40,15 @@ Module.AuctionFrameWasHidden = function(self)
 	if (frame and frame:IsShown()) then
 		return
 	end
-	if (self.queued) then
-		local msg = (self.queued > 1) and string_format(self.output.auction_multiple, self.queued) or self.output.auction_single
-		self.queued = nil
+	if (self.queuedRemoved) then
+		local msg = (self.queuedRemoved > 1) and string_format(self.output.auction_canceled_multiple, self.queuedRemoved) or self.output.auction_canceled_single
+		self.queuedRemoved = nil
+		local info = ChatTypeInfo["SYSTEM"]
+		DEFAULT_CHAT_FRAME:AddMessage(msg, info.r, info.g, info.b, info.id)
+	end
+	if (self.queuedStarted) then
+		local msg = (self.queuedStarted > 1) and string_format(self.output.auction_multiple, self.queuedStarted) or self.output.auction_single
+		self.queuedStarted = nil
 		local info = ChatTypeInfo["SYSTEM"]
 		DEFAULT_CHAT_FRAME:AddMessage(msg, info.r, info.g, info.b, info.id)
 	end
@@ -51,7 +58,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 	-- Auction created. Let's queue them?
 	if (message == AUCTION_STARTED) then
-		self.queued = (self.queued or 0) + 1
+		self.queuedStarted = (self.queuedStarted or 0) + 1
 		local frame = AuctionHouseFrame or AuctionFrame
 		if (frame and frame:IsShown()) then
 			if (not self.proxied) then
@@ -60,8 +67,22 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 			end
 			return true
 		else
-			local message = (self.queued > 1) and string_format(self.output.auction_multiple, self.queued) or self.output.auction_single
-			self.queued = nil
+			local message = (self.queuedStarted > 1) and string_format(self.output.auction_multiple, self.queuedStarted) or self.output.auction_single
+			self.queuedStarted = nil
+			return false, message, author, ...
+		end
+	elseif (message == AUCTION_REMOVED) then
+		self.queuedRemoved = (self.queuedRemoved or 0) + 1
+		local frame = AuctionHouseFrame or AuctionFrame
+		if (frame and frame:IsShown()) then
+			if (not self.proxied) then
+				frame:HookScript("OnHide", self.AuctionFrameWasHiddenProxy)
+				self.proxied = true
+			end
+			return true
+		else
+			local message = (self.queuedRemoved > 1) and string_format(self.output.auction_canceled_multiple, self.queuedRemoved) or self.output.auction_canceled_single
+			self.queuedRemoved = nil
 			return false, message, author, ...
 		end
 	end
@@ -82,12 +103,14 @@ end
 
 Module.OnEnable = function(self)
 	self.filterEnabled = true
-	self.queued = nil
+	self.queuedStarted = nil
+	self.queuedRemoved = nil
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
 end
 
 Module.OnDisable = function(self)
 	self.filterEnabled = nil
-	self.queued = nil
+	self.queuedStarted = nil
+	self.queuedRemoved = nil
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
 end

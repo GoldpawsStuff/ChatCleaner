@@ -5,6 +5,8 @@
 	<Script file="modules\main.lua"/>
 	<Script file="modules\gui.lua"/>
 
+	<Script file="modules\widgets\checkbutton.lua"/>
+
 	<Script file="modules\filters\development.lua"/>
 	<Script file="modules\filters\achievements.lua"/>
 	<Script file="modules\filters\auctions.lua"/>

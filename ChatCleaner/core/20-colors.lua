@@ -81,6 +81,7 @@ Colors.white = createColor(220/255, 220/255, 220/255)
 Colors.offwhite = createColor(196/255, 196/255, 196/255)
 Colors.green = createColor(25/255, 178/255, 25/255)
 Colors.red = createColor(204/255, 25/255, 25/255)
+Colors.palered = createColor(204/255, 68/255, 68/255)
 
 -- Item Rarity
 Colors.blizzquality = createColorGroup(ITEM_QUALITY_COLORS)

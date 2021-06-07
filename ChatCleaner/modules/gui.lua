@@ -59,24 +59,49 @@ local GetMedia = function(name, type)
 	return ([[Interface\AddOns\%s\media\%s.%s]]):format(Addon, name, type or "tga") 
 end
 
+-- Widget API
+-----------------------------------------------------------
+GUI.RegisterWidget = function(self)
+end
+
+
 -- Addon API
 -----------------------------------------------------------
-GUI.CreateGUI = function(self)
+GUI.GetGUI = function(self)
+	if (not self.gui) then
+	end
+	return self.gui
 end
 
 GUI.OpenGUI = function(self)
+	local gui = self:GetGUI()
+	if (not gui) then
+		return
+	end
+	gui:Show()
 end
 
 GUI.CloseGUI = function(self)
+	local gui = self:GetGUI()
+	if (not gui) then
+		return
+	end
+	gui:Hide()
 end
 
 GUI.ToggleGUI = function(self)
+	local gui = self:GetGUI()
+	if (not gui) then
+		return
+	end
+	gui:SetShown((not gui:IsShown()))
 end
 
 GUI.OnInit = function(self)
+	self.widgets = {}
 	
-	self:RegisterChatCommand("ccleaner", "ToggleGUI")
-	self:RegisterChatCommand("chatcleaner", "ToggleGUI")
+	-- This command will be changed before release.
+	self:RegisterChatCommand("cc", "ToggleGUI")
 end
 
 GUI.OnEnable = function(self)

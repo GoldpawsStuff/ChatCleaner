@@ -283,7 +283,7 @@ Module.OnEvent = function(self, event, ...)
 				DEFAULT_CHAT_FRAME:AddMessage(msg, info.r, info.g, info.b, info.id)
 
 			elseif (money < 0) then
-				local msg = string_format(self.output.money_deficit, formatMoney(g,s,c, "|cffcc4444"))
+				local msg = string_format(self.output.money_deficit, formatMoney(g,s,c, Private.Colors.palered.colorCode))
 				local info = ChatTypeInfo["MONEY"]
 				DEFAULT_CHAT_FRAME:AddMessage(msg, info.r, info.g, info.b, info.id)
 			end
