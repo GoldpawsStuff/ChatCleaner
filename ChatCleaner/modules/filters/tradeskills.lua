@@ -58,7 +58,6 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 end
 
 Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
-
 	-- Loot spec changed, or just reported
 	-- This one will fire at the initial PLAYER_ENTERING_WORLD, 
 	-- as the chat frames haven't yet been registered for user events at that point.
@@ -69,9 +68,13 @@ Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 end
 
 Module.OnInit = function(self)
+	self.db = self:GetParent():GetSavedSettings()
 	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
+	if (self.db["DisableFilter:"..self:GetName()]) then
+		return self:SetUserDisabled()
+	end
 end
 
 Module.OnEnable = function(self)

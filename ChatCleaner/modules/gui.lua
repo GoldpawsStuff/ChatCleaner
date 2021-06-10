@@ -97,8 +97,13 @@ GUI.ToggleGUI = function(self)
 	gui:SetShown((not gui:IsShown()))
 end
 
+GUI.RegisterModule = function(self, module, title, description)
+	self.cards[module] = { title = title, description = description }
+end
+
 GUI.OnInit = function(self)
 	self.widgets = {}
+	self.cards = {}
 	
 	-- This command will be changed before release.
 	self:RegisterChatCommand("cc", "ToggleGUI")

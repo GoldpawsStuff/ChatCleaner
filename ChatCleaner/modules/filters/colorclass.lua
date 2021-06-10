@@ -13,6 +13,7 @@ local table_insert = table.insert
 local UnitFactionGroup = UnitFactionGroup
 
 Module.OnInit = function(self)
+	self.db = self:GetParent():GetSavedSettings()
 	self.replacements = {}
 	local ignored
 	if (Private.IsClassic) then
@@ -24,6 +25,9 @@ Module.OnInit = function(self)
 		if (class ~= ignored) then
 			table_insert(self.replacements, { color.colorCode, Colors.class[class].colorCode })
 		end
+	end
+	if (self.db["DisableFilter:"..self:GetName()]) then
+		return self:SetUserDisabled()
 	end
 end
 

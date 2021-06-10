@@ -122,6 +122,7 @@ Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 end
 
 Module.OnInit = function(self)
+	self.db = self:GetParent():GetSavedSettings()
 	self.output = self:GetParent():GetOutputTemplates()
 	self.patterns = {}
 	for i,global in ipairs({
@@ -142,6 +143,9 @@ Module.OnInit = function(self)
 	end
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
+	if (self.db["DisableFilter:"..self:GetName()]) then
+		return self:SetUserDisabled()
+	end
 end
 
 Module.OnEnable = function(self)

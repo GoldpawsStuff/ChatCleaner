@@ -39,3 +39,6 @@ Private.Frame_MT = { __index = _G.CreateFrame("Frame") } -- Frame metatable.
 Private.Modules = {} -- Module registry.
 Private.Module = {} -- Module template.
 Private.Module_MT = { __index = Private.Module } -- Module template metatable.
+Private.InitializedModules = {} -- Initialized modules. Only runs once.
+Private.EnabledModules = {} -- Currently enabled modules.
+Private.UserDisabledModules = {} -- Currently user disabled modules.

@@ -23,8 +23,10 @@ local CHAT_RAID_WARNING_GET = CHAT_RAID_WARNING_GET
 local CHAT_OFFICER_GET = CHAT_OFFICER_GET
 
 Module.OnInit = function(self)
-	local L = self:GetParent():GetLocale()
+	self.db = self:GetParent():GetSavedSettings()
 	self.replacements = {}
+
+	local L = self:GetParent():GetLocale()
 	if (Private.IsClassic) then
 		table_insert(self.replacements, {"%["..string_match(CHAT_BATTLEGROUND_LEADER_GET, "%[(.-)%]") .. "%]", L["BGL"]})
 		table_insert(self.replacements, {"%["..string_match(CHAT_BATTLEGROUND_GET, "%[(.-)%]") .. "%]", L["BG"]})
@@ -40,6 +42,10 @@ Module.OnInit = function(self)
 	table_insert(self.replacements, {"%["..string_match(CHAT_RAID_WARNING_GET, "%[(.-)%]") .. "%]", "|cffff0000!|r"})
 	table_insert(self.replacements, {"|Hchannel:(%w+):(%d)|h%[(%d)%. (%w+)%]|h", "|Hchannel:%1:%2|h%3.|h"})
 	table_insert(self.replacements, {"|Hchannel:(%w+)|h%[(%w+)%]|h", "|Hchannel:%1|h%2|h"})
+
+	if (self.db["DisableFilter:"..self:GetName()]) then
+		return self:SetUserDisabled()
+	end
 end
 
 Module.OnEnable = function(self)

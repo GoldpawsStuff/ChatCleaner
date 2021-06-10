@@ -13,6 +13,9 @@ local IsLoggedIn = IsLoggedIn
 local modules = Private.Modules
 local module_template = Private.Module
 local module_template_mt = Private.Module_MT
+local initializedModules = Private.InitializedModules
+local enabledModules = Private.EnabledModules
+local userDisabledModules = Private.UserDisabledModules
 
 -- Module name registry
 local Name = { [Private] = Addon }
@@ -52,30 +55,71 @@ module_template.GetModule = function(self, name)
 	return Private.GetModule(self, name) 
 end
 
-module_template.Init = function(self)
-	if (self.OnInit) then
-		self:OnInit()
+module_template.SetUserDisabled = function(self, disable)
+	if (disable) then
+		userDisabledModules[self] = true
+	else
+		userDisabledModules[self] = nil
 	end
-	for name,subModule in next,modules[self] do
-		subModule:Init()
+end
+
+module_template.IsUserDisabled = function(self)
+	return userDisabledModules[self]
+end
+
+module_template.IsEnabled = function(self)
+	return enabledModules[self]
+end
+
+module_template.IsInitialized = function(self)
+	return initializedModules[self]
+end
+
+module_template.Init = function(self, ...)
+	if (self:IsUserDisabled()) then
+		return
+	end
+	if (not initializedModules[self]) then 
+		initializedModules[self] = true
+		if (self.OnInit) then
+			self:OnInit(...)
+		end
+		for name,subModule in next,modules[self] do
+			subModule:Init(...)
+		end
 	end
 end
 
 module_template.Enable = function(self)
-	if (self.OnEnable) then
-		self:OnEnable()
+	if (self:IsUserDisabled()) then
+		return
 	end
-	for name,subModule in next,modules[self] do
-		subModule:Enable()
+	if (not enabledModules[self]) then 
+		if (not initializedModules[self]) then 
+			self:Init("Forced")
+			if (self:IsUserDisabled()) then
+				return
+			end
+		end
+		enabledModules[self] = true
+		if (self.OnEnable) then
+			self:OnEnable()
+		end
+		for name,subModule in next,modules[self] do
+			subModule:Enable()
+		end
 	end
 end
 
 module_template.Disable = function(self)
-	if (self.OnDisable) then
-		self:OnDisable()
-	end
-	for name,subModule in next,modules[self] do
-		subModule:Disable()
+	if (enabledModules[self]) then 
+		enabledModules[self] = false
+		if (self.OnDisable) then
+			self:OnDisable()
+		end
+		for name,subModule in next,modules[self] do
+			subModule:Disable()
+		end
 	end
 end
 

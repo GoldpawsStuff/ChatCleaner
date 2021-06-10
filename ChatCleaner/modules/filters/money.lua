@@ -293,6 +293,7 @@ Module.OnEvent = function(self, event, ...)
 end
 
 Module.OnInit = function(self)
+	self.db = self:GetParent():GetSavedSettings()
 	self.hooks = { proxy = function(...) return (self.filterEnabled) and self:SpecialFrameWasHidden(...) end }
 	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
@@ -300,6 +301,9 @@ Module.OnInit = function(self)
 	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
 	MailFrame:HookScript("OnHide", self.hooks.proxy)
 	MerchantFrame:HookScript("OnHide", self.hooks.proxy)
+	if (self.db["DisableFilter:"..self:GetName()]) then
+		return self:SetUserDisabled()
+	end
 end
 
 Module.OnEnable = function(self)

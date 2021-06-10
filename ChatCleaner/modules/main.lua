@@ -170,6 +170,10 @@ Core.GetOutputTemplates = function(self)
 	return self.output
 end
 
+Core.GetSavedSettings = function(self)
+	return db
+end
+
 Core.GetLocale = function(self) 
 	return L 
 end
@@ -225,7 +229,6 @@ Core.OnInit = function(self)
 	self.output.dnd_cleared = "*green*- "..BUSY.."**"
 	self.output.rested_added = "*gray*+ "..RESTED.."**"
 	self.output.rested_cleared = "*orange*- "..RESTED.."**"
-
 	self.output.quest_accepted = "*gray*+** *white*%s:** *yellow*%s**"
 	self.output.quest_complete = "*gray*+** *white*%s:** *yellow*%s**"
 

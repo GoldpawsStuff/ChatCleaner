@@ -96,9 +96,13 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 end
 
 Module.OnInit = function(self)
+	self.db = self:GetParent():GetSavedSettings()
 	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.AuctionFrameWasHiddenProxy = function(...) return (self.filterEnabled) and self:AuctionFrameWasHidden(...) end
+	if (self.db["DisableFilter:"..self:GetName()]) then
+		return self:SetUserDisabled()
+	end
 end
 
 Module.OnEnable = function(self)
