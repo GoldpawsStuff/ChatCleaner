@@ -13,7 +13,7 @@ local SlashCmdList = SlashCmdList
 -- Your callback will be called as callback(Private, editBox, commandName, ...) where (...) are all the input parameters.
 local module_template = Private.Module
 module_template.RegisterChatCommand = function(self, command, callback)
-	command = string_gsub(command, "^\\", "") -- Remove any backslash at the start.
+	command = string_gsub(command, "^/", "") -- Remove any slash at the start.
 	command = string_lower(command) -- Make it lowercase, keep it case-insensitive.
 	local name = string_upper(Addon.."_CHATCOMMAND_"..command) -- Create a unique uppercase name for the command.
 	_G["SLASH_"..name.."1"] = "/"..command -- Register the chat command, keeping it lowercase.

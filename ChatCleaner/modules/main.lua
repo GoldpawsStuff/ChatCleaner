@@ -36,6 +36,7 @@ local L = (function(tbl,defaultLocale)
 	return L
 end)({ 
 	["enUS"] = {
+
 		-- These are chat channel abbreviations.
 		-- For the most part these match the /slash command to type in these channels, 
 		-- so unless that command is something else in different regions, don't localize it!
@@ -48,7 +49,11 @@ end)({
 		["IL"] = true, 		-- Instance Leader (WoW Retail)
 		["I"] = true, 		-- Instance (WoW Retail)
 		["G"] = true, 		-- Guild
-		["O"] = true 		-- Officer
+		["O"] = true, 		-- Officer
+
+		-- Will use a WoW global if it's available, but have a fallback if not.
+		["Achievements"] = TRACKER_HEADER_ACHIEVEMENTS or "Achievements"
+
 	},
 	["deDE"] = {},
 	["esES"] = {},

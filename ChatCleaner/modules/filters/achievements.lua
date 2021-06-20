@@ -51,6 +51,13 @@ Module.OnInit = function(self)
 	self.db = self:GetParent():GetSavedSettings()
 	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
+
+	local GUI = Core:GetModule("GUI")
+	if (GUI) then
+		local L = self:GetParent():GetLocale()
+		GUI:RegisterModule(self, L["Achievements"], L[""])
+	end
+
 	if (self.db["DisableFilter:"..self:GetName()]) then
 		return self:SetUserDisabled()
 	end

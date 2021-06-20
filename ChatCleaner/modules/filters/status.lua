@@ -72,7 +72,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		return false, string_format(self.output.dnd_added_message, dnd_message), author, ...
 	end
 
-	-- Rested
+	-- Rested TODO: Move to XP!
 	if (message == EXHAUSTION_WELLRESTED) then 
 		return false, self.output.rested_added, author, ...
 	end

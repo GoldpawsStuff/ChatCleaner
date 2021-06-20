@@ -9,6 +9,9 @@ local table_insert = table.insert
 local unpack = unpack
 
 local split = function(str, sep)
+	if (not str) or (str == "") then 
+		return str
+	end
 	local result = setmetatable({}, {__mode="kv"})
 	local regex = ("([^%s]+)"):format(sep)
 	for each in str:gmatch(regex) do
