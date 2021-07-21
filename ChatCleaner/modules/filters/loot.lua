@@ -16,12 +16,16 @@ local table_insert = table.insert
 local tonumber = tonumber
 
 -- WoW Globals
+local LEARN_BATTLE_PET = BATTLE_PET_NEW_PET -- "%s has been added to your pet journal!"
 local LEARN_COMPANION = ERR_LEARN_COMPANION_S -- "You have added the pet %s to your collection."
+local LEARN_HEIRLOOM = ERR_LEARN_HEIRLOOM_S -- "%s has been added to your heirloom collection."
 local LEARN_MOUNT = ERR_LEARN_MOUNT_S -- "You have added the mount %s to your collection."
 local LEARN_TOY = ERR_LEARN_TOY_S -- "%s has been added to your Toy Box."
 local LEARN_TRANSMOG = ERR_LEARN_TRANSMOG_S -- "%s has been added to your appearance collection."
 local COMPANIONS = COMPANIONS -- "Companions"
+local HEIRLOOMS = HEIRLOOMS -- "Heirlooms"
 local MOUNTS = MOUNTS -- "Mounts"
+local PETS = PETS -- "Pets"
 local TOY_BOX = TOY_BOX -- "Toy Box"
 local WARDROBE = WARDROBE -- "Appearances"
 local LOOT_SPEC_CHANGED = ERR_LOOT_SPEC_CHANGED_S -- "Loot Specialization set to: %s"
@@ -89,12 +93,24 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 			return false, string_format(self.output.item_transfer, MOUNTS, mount), author, ...
 		end
 
-		-- When a new companion is learned (doesn't do "has been added to your pet journal!")
+		-- When a new companion is learned
 		local companion = string_match(message, P[LEARN_COMPANION])
 		if (companion) then
 			return false, string_format(self.output.item_transfer, COMPANIONS, companion), author, ...
 		end
 
+		-- When a new battle pet is learned
+		local pet = string_match(message, P[LEARN_BATTLE_PET])
+		if (pet) then
+			return false, string_format(self.output.item_transfer, PETS, companion), author, ...
+		end
+		
+		-- When a new battle pet is learned
+		local heirloom = string_match(message, P[LEARN_HEIRLOOM])
+		if (heirloom) then
+			return false, string_format(self.output.item_transfer, HEIRLOOMS, companion), author, ...
+		end
+		
 		-- Loot spec changed, or just reported
 		-- This one fires on manual changes after login.
 		-- The initial message on reloads or login is not captured here, 
