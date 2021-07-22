@@ -102,13 +102,13 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		-- When a new battle pet is learned
 		local pet = string_match(message, P[LEARN_BATTLE_PET])
 		if (pet) then
-			return false, string_format(self.output.item_transfer, PETS, companion), author, ...
+			return false, string_format(self.output.item_transfer, PETS, pet), author, ...
 		end
 		
 		-- When a new battle pet is learned
 		local heirloom = string_match(message, P[LEARN_HEIRLOOM])
 		if (heirloom) then
-			return false, string_format(self.output.item_transfer, HEIRLOOMS, companion), author, ...
+			return false, string_format(self.output.item_transfer, HEIRLOOMS, heirloom), author, ...
 		end
 		
 		-- Loot spec changed, or just reported
