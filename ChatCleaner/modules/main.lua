@@ -206,7 +206,7 @@ Core.OnInit = function(self)
 	end })
 
 	self.output.achievement = "*offwhite*!**%s: %s"
-	self.output.achievement2 = "*offwhite*!***offwhite*%s:** %s"
+	self.output.achievement2 = "*offwhite*!***green*%s:** *white*%s**"
 	self.output.auction_sold = "*offwhite*!***green*"..string_gsub(AUCTION_SOLD_MAIL, "%%s", "*white*%%s**").."**"
 	self.output.auction_single = "*gray*+** *white*"..AUCTION_CREATED.."**"
 	self.output.auction_multiple = "*gray*+** *white*"..AUCTION_CREATED.."** *offwhite*(%d)**"

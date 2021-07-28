@@ -117,7 +117,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		-- as the chat frames haven't yet been registered for user events at that point.
 		local lootspec = string_match(message, P[LOOT_SPEC_CHANGED])
 		if (lootspec) then 
-			lootspec = Private.Colors.class[playerClass].colorCode .. lootspec .. "|r"
+			--lootspec = Private.Colors.class[playerClass].colorCode .. lootspec .. "|r"
 			--return false, string_format(self.output.item_transfer, SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
 			return false, string_format(self.output.achievement2, SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
 		end
@@ -132,7 +132,7 @@ Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 	-- as the chat frames haven't yet been registered for user events at that point.
 	local lootspec = string_match(msg, P[LOOT_SPEC_CHANGED])
 	if (lootspec) then
-		lootspec = Private.Colors.class[playerClass].colorCode .. lootspec .. "|r"
+		--lootspec = Private.Colors.class[playerClass].colorCode .. lootspec .. "|r"
 		--return string_format(self.output.item_transfer, SELECT_LOOT_SPECIALIZATION, lootspec)
 		return string_format(self.output.achievement2, SELECT_LOOT_SPECIALIZATION, lootspec)
 	end
