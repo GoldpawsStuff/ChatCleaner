@@ -189,19 +189,25 @@ end
 Core.OnInit = function(self)
 	self.db = db
 
+	self.tags = {
+		["%*title%*"] = Private.Colors.title.colorCode,
+		["%*white%*"] = Private.Colors.highlight.colorCode,
+		["%*offwhite%*"] = Private.Colors.offwhite.colorCode,
+		["%*palered%*"] = Private.Colors.palered.colorCode,
+		["%*red%*"] = Private.Colors.quest.red.colorCode,
+		["%*orange%*"] = Private.Colors.quest.orange.colorCode,
+		["%*yellow%*"] = Private.Colors.quest.yellow.colorCode,
+		["%*green%*"] = Private.Colors.quest.green.colorCode,
+		["%*gray%*"] = Private.Colors.quest.gray.colorCode,
+		["%*%*"] = "|r"
+	}
+
 	-- Output patterns. 
 	-- Let's add a simple color tag system for new strings as well. 
 	self.output = setmetatable({}, { __newindex = function(t,k,msg) 
-		msg = string_gsub(msg, "%*title%*", Private.Colors.title.colorCode)
-		msg = string_gsub(msg, "%*white%*", Private.Colors.highlight.colorCode)
-		msg = string_gsub(msg, "%*offwhite%*", Private.Colors.offwhite.colorCode)
-		msg = string_gsub(msg, "%*palered%*", Private.Colors.palered.colorCode)
-		msg = string_gsub(msg, "%*red%*", Private.Colors.quest.red.colorCode)
-		msg = string_gsub(msg, "%*orange%*", Private.Colors.quest.orange.colorCode)
-		msg = string_gsub(msg, "%*yellow%*", Private.Colors.quest.yellow.colorCode)
-		msg = string_gsub(msg, "%*green%*", Private.Colors.quest.green.colorCode)
-		msg = string_gsub(msg, "%*gray%*", Private.Colors.quest.gray.colorCode)
-		msg = string_gsub(msg, "%*%*", "|r")
+		for tag,replacement in pairs(self.tags) do 
+			msg = string_gsub(msg, tag, replacement) 
+		end
 		rawset(t,k,msg)
 	end })
 
