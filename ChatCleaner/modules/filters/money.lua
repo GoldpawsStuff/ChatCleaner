@@ -85,6 +85,13 @@ local P = setmetatable({
 	return rawget(t,k)
 end })
 
+-- Remove large number formatting 
+local simplifyNumbers = function(message)
+	return string_gsub(message, "(%d)%"..LARGE_NUMBER_SEPERATOR.."(%d)", "%1%2")
+end
+
+-- Add pretty spacing to large numbers
+-- *commas as separators are moronic
 local prettify = function(value)
 	local valueString
 	if (value >= 1e9) then
@@ -125,7 +132,7 @@ end
 local parseForMoney = function(message)
 
 	-- Remove large number formatting 
-	message = string_gsub(message, "(%d)%"..LARGE_NUMBER_SEPERATOR.."(%d)", "%1%2")
+	message = simplifyNumbers(message)
 
 	-- Basic old-style parsing first.
 	-- Doing it in two steps to limit number of needed function calls.
@@ -238,15 +245,12 @@ end
 -- If it starts with the number, it can't be a player message, 
 -- because the channel or their name link would then be first.
 Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
-	local anima = string_match(msg, P[ANIMA])
+	local anima = string_match(simplifyNumbers(msg), P[ANIMA])
 	if (anima) then 
-		--return string_format(self.output.currency, anima, ANIMA_LABEL)
 		return string_format(self.output.item_multiple, ANIMA_LABEL, anima)
-
 	end
-	anima = string_match(msg, P[ANIMA_V2])
+	anima = string_match(simplifyNumbers(msg), P[ANIMA_V2])
 	if (anima) then 
-		--return string_format(self.output.currency, anima, ANIMA_LABEL)
 		return string_format(self.output.item_multiple, ANIMA_LABEL, anima)
 	end
 end
