@@ -211,6 +211,9 @@ GUI.RegisterModule = function(self, module, title, description)
 end
 
 GUI.OnInit = function(self)
+	if (Private.Version ~= "Development2") then
+		return
+	end
 	self:RegisterChatCommand("cc", "ToggleGUI")
 end
 
