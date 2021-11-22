@@ -9,8 +9,6 @@
 ## Author: Lars Norberg
 
 ## X-Category: Interface Enhancements
-## X-Discord: https://discord.gg/MUSfWXd
-## X-Website: https://www.patreon.com/goldpawsstuff
 ## X-Curse-Project-ID: 531109
 ## X-Wago-ID: baNDwAGo
 ## X-License: Custom
