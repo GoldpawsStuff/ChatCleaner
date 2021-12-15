@@ -50,24 +50,87 @@ local P = setmetatable({}, { __index = function(t,k)
 end })
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
-	if (event == "CHAT_MSG_LOOT") or (event == "CHAT_MSG_CURRENCY") then
+	if (event == "CHAT_MSG_CURRENCY") then
 		for i,pattern in ipairs(self.patterns) do
-
+			-- We use the pattern only as an identifier, not for information.
 			local item, count = string_match(message,pattern)
 			if (item) then
+				-- Note: Currencies don't appear to be the same format as this.
 				-- The patterns above tend to fail on the number,
 				-- so we do this ugly non-localized hack instead.
 				-- |cffffffff|Hitem:itemID:::::|h[display name]|h|r
 				local first, last = string_find(message, "|c(.+)|r")
 				if (first and last) then
+					-- Find the actual item name
 					local item = string_sub(message, first, last)
 					item = string_gsub(item, "[%[/%]]", "") -- kill brackets
+					-- Parse our way to the item count
 					local countString = string_sub(message, last + 1)
 					local count = tonumber(string_match(countString, "(%d+)"))
 					if (count) and (count > 1) then
-						return false, string_format(self.output.item_multiple, item, count), author, ...
+						if (name) then
+							return false, string_format(self.output.item_multiple_other, name, item, count), author, ...
+						else
+							return false, string_format(self.output.item_multiple, item, count), author, ...
+						end
 					else
-						return false, string_format(self.output.item_single, item), author, ...
+						if (name) then
+							return false, string_format(self.output.item_single_other, name, item), author, ...
+						else
+							return false, string_format(self.output.item_single, item), author, ...
+						end
+					end
+				end
+			end
+		end
+
+	elseif (event == "CHAT_MSG_LOOT") then
+		for i,pattern in ipairs(self.patterns) do
+			-- We use the pattern only as an identifier, not for information.
+			local item, count = string_match(message,pattern)
+			if (item) then
+				-- Check for the existance of a player name.
+				local name
+				local namefirst, namelast = string_find(message, "|Hplayer(.+)|h")
+				if (not namefirst or not namelast) then
+					local namefirst, namelast = string_find(message, "|Hplayer:(.-)-(.-):(.-)|h%[|c(%w%w%w%w%w%w%w%w)(.-)-(.-)|r%]|h")
+				end
+				if (not namefirst or not namelast) then
+					local namefirst, namelast = string_find(message, "|Hplayer:(.-)-(.-):(.-)|h|c(%w%w%w%w%w%w%w%w)(.-)-(.-)|r|h")
+				end
+				if (not namefirst or not namelast) then
+					local namefirst, namelast = string_find(message, "|Hplayer:(.-)|h%[(.-)%]|h")
+				end
+				if (namefirst and namelast) then
+					name = string_sub(message, namefirst, namelast)
+					name = string_gsub(item, "[%[/%]]", "") -- kill brackets
+				end
+				-- The patterns above tend to fail on the number,
+				-- so we do this ugly non-localized hack instead.
+				-- |cffffffff|Hitem:itemID:::::|h[display name]|h|r
+				local hasItem = string_find(message, "|c%x%x%x%x%x%x%x%x|Hitem")
+				if (hasItem) then
+					local first, last = string_find(message, "|c(.+)|r", hasItem)
+					if (first and last) then
+						-- Find the actual item name
+						local item = string_sub(message, first, last)
+						item = string_gsub(item, "[%[/%]]", "") -- kill brackets
+						-- Parse our way to the item count
+						local countString = string_sub(message, last + 1)
+						local count = tonumber(string_match(countString, "(%d+)"))
+						if (count) and (count > 1) then
+							if (name) then
+								return false, string_format(self.output.item_multiple_other, name, item, count), author, ...
+							else
+								return false, string_format(self.output.item_multiple, item, count), author, ...
+							end
+						else
+							if (name) then
+								return false, string_format(self.output.item_single_other, name, item), author, ...
+							else
+								return false, string_format(self.output.item_single, item), author, ...
+							end
+						end
 					end
 				end
 			end
@@ -149,11 +212,24 @@ Module.OnInit = function(self)
 		"LOOT_ITEM_SELF", 							-- "You receive loot: %s."
 		"LOOT_ITEM_PUSHED_SELF_MULTIPLE", 			-- "You receive item: %sx%d."
 		"LOOT_ITEM_PUSHED_SELF", 					-- "You receive item: %s."
+		"LOOT_ITEM_REFUND", 						-- "You are refunded: %s."
+		"LOOT_ITEM_REFUND_MULTIPLE", 				-- "You are refunded: %sx%d."
 		"CURRENCY_GAINED", 							-- "You receive currency: %s."
 		"CURRENCY_GAINED_MULTIPLE", 				-- "You receive currency: %s x%d."
 		"CURRENCY_GAINED_MULTIPLE_BONUS", 			-- "You receive currency: %s x%d. (Bonus Objective)" -- Redundant?
+
+		-- These apply to other players and will include player links,
+		-- but should hopefully still work as identifiers for the messages. Needs testing. 
+		"LOOT_ITEM", 								-- "%s receives loot: %s."
+		"LOOT_ITEM_BONUS_ROLL", 					-- "%s receives bonus loot: %s."
+		"LOOT_ITEM_BONUS_ROLL_MULTIPLE", 			-- "%s receives bonus loot: %sx%d."
+		"LOOT_ITEM_MULTIPLE", 						-- "%s receives loot: %sx%d."
+		"LOOT_ITEM_PUSHED", 						-- "%s receives item: %s."
+		"LOOT_ITEM_PUSHED_MULTIPLE", 				-- "%s receives item: %sx%d."
 	}) do 
-		-- Currency globals dont exist in Classic.
+		-- Always check if the global exists, 
+		-- as a lot of these strings and filters 
+		-- do not apply to the classic clients.
 		local msg = _G[global]
 		if (msg) then 
 			table_insert(self.patterns, makePattern(msg))

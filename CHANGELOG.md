@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.5-Release] 2021-12-15
+### Added
+- Added filters for group member looting. Needs testing.
+
+### Fixed
+- Fixed an issue where player currency loot would get pass our filters.
+
 ## [1.0.4-Release] 2021-11-17
 - Bump Classic Era toc to client patch 1.14.1.
 
