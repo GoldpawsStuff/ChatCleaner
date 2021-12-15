@@ -13,6 +13,7 @@ local string_gsub = string.gsub
 local string_match = string.match
 local string_sub = string.sub
 local table_insert = table.insert
+local table_remove = table.remove
 local tonumber = tonumber
 
 -- WoW Globals
@@ -87,52 +88,47 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	elseif (event == "CHAT_MSG_LOOT") then
 		for i,pattern in ipairs(self.patterns) do
 			-- We use the pattern only as an identifier, not for information.
-			local item, count = string_match(message,pattern)
-			if (item) then
-				-- Check for the existance of a player name.
-				local name
-				local namefirst, namelast = string_find(message, "|Hplayer(.+)|h")
-				if (not namefirst or not namelast) then
-					local namefirst, namelast = string_find(message, "|Hplayer:(.-)-(.-):(.-)|h%[|c(%w%w%w%w%w%w%w%w)(.-)-(.-)|r%]|h")
-				end
-				if (not namefirst or not namelast) then
-					local namefirst, namelast = string_find(message, "|Hplayer:(.-)-(.-):(.-)|h|c(%w%w%w%w%w%w%w%w)(.-)-(.-)|r|h")
-				end
-				if (not namefirst or not namelast) then
-					local namefirst, namelast = string_find(message, "|Hplayer:(.-)|h%[(.-)%]|h")
-				end
-				if (namefirst and namelast) then
-					name = string_sub(message, namefirst, namelast)
-					name = string_gsub(item, "[%[/%]]", "") -- kill brackets
-				end
-				-- The patterns above tend to fail on the number,
-				-- so we do this ugly non-localized hack instead.
-				-- |cffffffff|Hitem:itemID:::::|h[display name]|h|r
-				local hasItem = string_find(message, "|c%x%x%x%x%x%x%x%x|Hitem")
-				if (hasItem) then
-					local first, last = string_find(message, "|c(.+)|r", hasItem)
-					if (first and last) then
-						-- Find the actual item name
-						local item = string_sub(message, first, last)
-						item = string_gsub(item, "[%[/%]]", "") -- kill brackets
-						-- Parse our way to the item count
-						local countString = string_sub(message, last + 1)
-						local count = tonumber(string_match(countString, "(%d+)"))
-						if (count) and (count > 1) then
-							if (name) then
-								return false, string_format(self.output.item_multiple_other, name, item, count), author, ...
-							else
-								return false, string_format(self.output.item_multiple, item, count), author, ...
-							end
-						else
-							if (name) then
-								return false, string_format(self.output.item_single_other, name, item), author, ...
-							else
-								return false, string_format(self.output.item_single, item), author, ...
-							end
-						end
+			local results = { string_match(message,pattern) }
+			if (#results > 0) then 
+
+				local item, count, player
+				for i,j in ipairs(results) do
+					local k = tonumber(j)
+					if (k) then
+						table_remove(results,i)
+						count = k
+						break
 					end
 				end
+
+				if (#results == 2) then
+					for i,j in ipairs(results) do
+						if (string_find(j, "|c%x%x%x%x%x%x%x%x|Hitem")) then 
+							item = table_remove(results,i)
+							item = string_gsub(results[1], "[%[/%]]", "") -- kill brackets
+							break
+						end
+					end
+					name = string_gsub(results[1], "[%[/%]]", "")
+
+				elseif (#results == 1) then
+					item = string_gsub(results[1], "[%[/%]]", "") -- kill brackets
+				end
+
+				if (count) and (count > 1) then
+					if (name) then
+						return false, string_format(self.output.item_multiple_other, name, item, count), author, ...
+					else
+						return false, string_format(self.output.item_multiple, item, count), author, ...
+					end
+				else
+					if (name) then
+						return false, string_format(self.output.item_single_other, name, item), author, ...
+					else
+						return false, string_format(self.output.item_single, item), author, ...
+					end
+				end
+
 			end
 		end
 
@@ -207,6 +203,9 @@ Module.OnInit = function(self)
 	self.output = self:GetParent():GetOutputTemplates()
 	self.patterns = {}
 	for i,global in ipairs({
+
+		-- These all return item, 
+		-- and optionally an item count.
 		"LOOT_ITEM_CREATED_SELF", 					-- "You create: %s."
 		"LOOT_ITEM_SELF_MULTIPLE", 					-- "You receive loot: %sx%d."
 		"LOOT_ITEM_SELF", 							-- "You receive loot: %s."
@@ -218,7 +217,7 @@ Module.OnInit = function(self)
 		"CURRENCY_GAINED_MULTIPLE", 				-- "You receive currency: %s x%d."
 		"CURRENCY_GAINED_MULTIPLE_BONUS", 			-- "You receive currency: %s x%d. (Bonus Objective)" -- Redundant?
 
-		-- These apply to other players and will include player links,
+		-- These apply to other players and will include player NAMES, not always links.
 		-- but should hopefully still work as identifiers for the messages. Needs testing. 
 		"LOOT_ITEM", 								-- "%s receives loot: %s."
 		"LOOT_ITEM_BONUS_ROLL", 					-- "%s receives bonus loot: %s."
@@ -226,6 +225,12 @@ Module.OnInit = function(self)
 		"LOOT_ITEM_MULTIPLE", 						-- "%s receives loot: %sx%d."
 		"LOOT_ITEM_PUSHED", 						-- "%s receives item: %s."
 		"LOOT_ITEM_PUSHED_MULTIPLE", 				-- "%s receives item: %sx%d."
+
+		-- Don't filter these here, 
+		-- they are pure text for both names and items!
+		--"CREATED_ITEM", 							-- "%s creates: %s."
+		--"CREATED_ITEM_MULTIPLE", 					-- "%s creates: %sx%d."
+
 	}) do 
 		-- Always check if the global exists, 
 		-- as a lot of these strings and filters 
