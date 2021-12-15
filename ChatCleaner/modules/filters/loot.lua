@@ -105,27 +105,31 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 					for i,j in ipairs(results) do
 						if (string_find(j, "|c%x%x%x%x%x%x%x%x|Hitem")) then 
 							item = table_remove(results,i)
-							item = string_gsub(results[1], "[%[/%]]", "") -- kill brackets
+							item = string_gsub(item, "[%[/%]]", "") -- kill brackets
 							break
 						end
 					end
-					name = string_gsub(results[1], "[%[/%]]", "")
+					--if (item) then
+						name = string_gsub(results[1], "[%[/%]]", "")
+					--end
 
 				elseif (#results == 1) then
 					item = string_gsub(results[1], "[%[/%]]", "") -- kill brackets
 				end
 
-				if (count) and (count > 1) then
-					if (name) then
-						return false, string_format(self.output.item_multiple_other, name, item, count), author, ...
+				if (item) then
+					if (count) and (count > 1) then
+						if (name) then
+							return false, string_format(self.output.item_multiple_other, name, item, count), author, ...
+						else
+							return false, string_format(self.output.item_multiple, item, count), author, ...
+						end
 					else
-						return false, string_format(self.output.item_multiple, item, count), author, ...
-					end
-				else
-					if (name) then
-						return false, string_format(self.output.item_single_other, name, item), author, ...
-					else
-						return false, string_format(self.output.item_single, item), author, ...
+						if (name) then
+							return false, string_format(self.output.item_single_other, name, item), author, ...
+						else
+							return false, string_format(self.output.item_single, item), author, ...
+						end
 					end
 				end
 
