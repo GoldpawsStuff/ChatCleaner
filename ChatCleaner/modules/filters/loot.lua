@@ -91,7 +91,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 			local results = { string_match(message,pattern) }
 			if (#results > 0) then 
 
-				local item, count, player
+				local item, count, name
 				for i,j in ipairs(results) do
 					local k = tonumber(j)
 					if (k) then
@@ -109,9 +109,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 							break
 						end
 					end
-					--if (item) then
-						name = string_gsub(results[1], "[%[/%]]", "")
-					--end
+					name = string_gsub(results[1], "[%[/%]]", "")
 
 				elseif (#results == 1) then
 					item = string_gsub(results[1], "[%[/%]]", "") -- kill brackets
