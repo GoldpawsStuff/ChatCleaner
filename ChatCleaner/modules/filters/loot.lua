@@ -208,6 +208,7 @@ Module.OnInit = function(self)
 
 		-- These all return item, 
 		-- and optionally an item count.
+		"LOOT_ITEM_CREATED_SELF_MULTIPLE", 			-- "You create: %sx%d."
 		"LOOT_ITEM_CREATED_SELF", 					-- "You create: %s."
 		"LOOT_ITEM_SELF_MULTIPLE", 					-- "You receive loot: %sx%d."
 		"LOOT_ITEM_SELF", 							-- "You receive loot: %s."
