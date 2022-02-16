@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.9-Release] 2022-02-16
+- ToC bumps and license update.
+
 ## [1.0.8-Release] 2022-02-06
 ### Fixed
 - Chat messages from creating multiple items at once, like when conjuring food or water, should be properly displayed.
