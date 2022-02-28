@@ -95,10 +95,46 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 end
 
+Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
+
+	-- Auction created. Let's queue them?
+	if (msg == AUCTION_STARTED) then
+		self.queuedStarted = (self.queuedStarted or 0) + 1
+		local frame = AuctionHouseFrame or AuctionFrame
+		if (frame and frame:IsShown()) then
+			if (not self.proxied) then
+				frame:HookScript("OnHide", self.AuctionFrameWasHiddenProxy)
+				self.proxied = true
+			end
+			return true
+		else
+			local message = (self.queuedStarted > 1) and string_format(self.output.auction_multiple, self.queuedStarted) or self.output.auction_single
+			self.queuedStarted = nil
+			return message
+		end
+	elseif (msg == AUCTION_REMOVED) then
+		self.queuedRemoved = (self.queuedRemoved or 0) + 1
+		local frame = AuctionHouseFrame or AuctionFrame
+		if (frame and frame:IsShown()) then
+			if (not self.proxied) then
+				frame:HookScript("OnHide", self.AuctionFrameWasHiddenProxy)
+				self.proxied = true
+			end
+			return true
+		else
+			local message = (self.queuedRemoved > 1) and string_format(self.output.auction_canceled_multiple, self.queuedRemoved) or self.output.auction_canceled_single
+			self.queuedRemoved = nil
+			return message
+		end
+	end
+	
+end
+
 Module.OnInit = function(self)
 	self.db = self:GetParent():GetSavedSettings()
 	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
+	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
 	self.AuctionFrameWasHiddenProxy = function(...) return (self.filterEnabled) and self:AuctionFrameWasHidden(...) end
 	if (self.db["DisableFilter:"..self:GetName()]) then
 		return self:SetUserDisabled()
@@ -109,6 +145,7 @@ Module.OnEnable = function(self)
 	self.filterEnabled = true
 	self.queuedStarted = nil
 	self.queuedRemoved = nil
+	self:GetParent():AddBlacklistMethod(self.OnAddMessageProxy)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
 end
 
@@ -116,5 +153,6 @@ Module.OnDisable = function(self)
 	self.filterEnabled = nil
 	self.queuedStarted = nil
 	self.queuedRemoved = nil
+	self:GetParent():RemoveBlacklistMethod(self.OnAddMessageProxy)
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
 end
