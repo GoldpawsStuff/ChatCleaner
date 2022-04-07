@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.12-Release] 2022-04-07
+- Bump for BCC client patch 2.5.4.
+
 ## [1.0.11-Release] 2022-02-28
 ### Changed
 - Now parsing AddMessage for auction created and removed, as this appears to have been moved from system messages to direct output in WoW client patch 9.2.0.
