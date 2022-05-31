@@ -1,8 +1,11 @@
 # ChatCleaner Change Log
 All notable changes to this project will be documented in this file. Be aware that the [Unreleased] features are not yet available in the official tagged builds.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/) 
+The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+
+## [1.0.13-Release] 2022-05-31
+- Bump toc to WoW client patch 9.2.5.
 
 ## [1.0.12-Release] 2022-04-07
 - Bump for BCC client patch 2.5.4.
