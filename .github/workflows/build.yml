@@ -39,3 +39,8 @@ jobs:
         uses: BigWigsMods/packager@v2
         with:
           args: -g bcc -m .pkgmeta
+
+      - name: Package Wratch
+        uses: BigWigsMods/packager@v2
+        with:
+          args: -g wrath -m .pkgmeta

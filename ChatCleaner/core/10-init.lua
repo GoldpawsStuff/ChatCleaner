@@ -6,7 +6,7 @@ local tostring = tostring
 
 -- Addon version
 ------------------------------------------------------
--- Keyword substitution requires the packager, 
+-- Keyword substitution requires the packager,
 -- and does not affect direct GitHub repo pulls.
 local version = "@project-version@"
 if (version:find("project%-version")) then
@@ -27,8 +27,10 @@ Private.ClientBuild = tonumber(build)
 -- Simple flags for version checks
 Private.IsClassic = Private.ClientMajor == 1
 Private.IsTBC = Private.ClientMajor == 2
+Private.IsWotLK = Private.ClientMajor == 3
 Private.IsRetail = Private.ClientMajor >= 9
 Private.IsShadowlands = Private.ClientMajor == 9
+Private.IsDragonflight = Private.ClientMajor == 10
 
 -- Addon libraries
 ------------------------------------------------------
