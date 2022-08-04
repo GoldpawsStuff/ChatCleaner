@@ -16,7 +16,7 @@ Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 end
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
-	-- Should add a check for chat bubbles, 
+	-- Should add a check for chat bubbles,
 	-- and have a reactive option that hides when bubbles are visible.
 	if (event == "CHAT_MSG_MONSTER_SAY") then
 		return true
@@ -33,13 +33,13 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		return true
 
 	elseif (event == "CHAT_MSG_RAID_BOSS_EMOTE") then
-		-- Don't do this, the RaidBossEmoteFrame does this 
+		-- Don't do this, the RaidBossEmoteFrame does this
 		-- by default for boss emotes and boss whispers!
 		--RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo["RAID_BOSS_EMOTE"])
 		return true
 
 	elseif (event == "CHAT_MSG_RAID_BOSS_WHISPER") then
-		-- Don't do this, the RaidBossEmoteFrame does this 
+		-- Don't do this, the RaidBossEmoteFrame does this
 		-- by default for boss emotes and boss whispers!
 		--RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo["RAID_BOSS_EMOTE"])
 		return true

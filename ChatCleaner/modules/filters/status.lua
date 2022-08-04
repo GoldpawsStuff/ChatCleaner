@@ -35,7 +35,7 @@ end
 
 -- Search Pattern Cache.
 -- This will generate the pattern on the first lookup.
-local P = setmetatable({}, { __index = function(t,k) 
+local P = setmetatable({}, { __index = function(t,k)
 	rawset(t,k,makePattern(k))
 	return rawget(t,k)
 end })
@@ -46,40 +46,40 @@ end
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 	-- AFK
-	if (message == MARKED_AFK) then 
+	if (message == MARKED_AFK) then
 		return false, self.output.afk_added, author, ...
 	end
-	if (message == CLEARED_AFK) then 
+	if (message == CLEARED_AFK) then
 		return false, self.output.afk_cleared, author, ...
 	end
 	local afk_message = string_match(message, P[MARKED_AFK_MESSAGE])
 	if (afk_message) then
-		if (afk_message == DEFAULT_AFK_MESSAGE) then 
+		if (afk_message == DEFAULT_AFK_MESSAGE) then
 			return false, self.output.afk_added, author, ...
 		end
 		return false, string_format(self.output.afk_added_message, afk_message), author, ...
 	end
 
 	-- DND
-	if (message == CLEARED_DND) then 
+	if (message == CLEARED_DND) then
 		return false, self.output.dnd_cleared, author, ...
 	end
 	local dnd_message = string_match(message, P[MARKED_DND] )
 	if (dnd_message) then
-		if (dnd_message == DEFAULT_DND_MESSAGE) then 
+		if (dnd_message == DEFAULT_DND_MESSAGE) then
 			return false, self.output.dnd_added, author, ...
 		end
 		return false, string_format(self.output.dnd_added_message, dnd_message), author, ...
 	end
 
 	-- Rested TODO: Move to XP!
-	if (message == EXHAUSTION_WELLRESTED) then 
+	if (message == EXHAUSTION_WELLRESTED) then
 		return false, self.output.rested_added, author, ...
 	end
-	if (message == EXHAUSTION_NORMAL) then 
+	if (message == EXHAUSTION_NORMAL) then
 		return false, self.output.rested_cleared, author, ...
 	end
-	
+
 end
 
 Module.OnInit = function(self)

@@ -4,29 +4,29 @@ local Core = Private:NewModule("Core")
 -- Default settings.
 -----------------------------------------------------------
 local db = (function(db) _G[Addon.."_DB"] = db; return db end)({
-	
+
 })
 
 -- Localization system.
 -----------------------------------------------------------
--- Do not modify the function, 
+-- Do not modify the function,
 -- just the locales in the table below!
-local L = (function(tbl,defaultLocale) 
+local L = (function(tbl,defaultLocale)
 	local gameLocale = GetLocale() -- The locale currently used by the game client.
 	local L = tbl[gameLocale] or tbl[defaultLocale] -- Get the localization for the current locale, or use your default.
 	-- Replace the boolean 'true' with the key,
 	-- to simplify locale creation and reduce space needed.
-	for i in pairs(L) do 
-		if (L[i] == true) then 
+	for i in pairs(L) do
+		if (L[i] == true) then
 			L[i] = i
 		end
-	end 
-	-- If the game client is in another locale than your default, 
-	-- fill in any missing localization in the client's locale 
+	end
+	-- If the game client is in another locale than your default,
+	-- fill in any missing localization in the client's locale
 	-- with entries from your default locale.
-	if (gameLocale ~= defaultLocale) then 
-		for i,msg in pairs(tbl[defaultLocale]) do 
-			if (not L[i]) then 
+	if (gameLocale ~= defaultLocale) then
+		for i,msg in pairs(tbl[defaultLocale]) do
+			if (not L[i]) then
 				-- Replace the boolean 'true' with the key,
 				-- to simplify locale creation and reduce space needed.
 				L[i] = (msg == true) and i or msg
@@ -34,11 +34,11 @@ local L = (function(tbl,defaultLocale)
 		end
 	end
 	return L
-end)({ 
+end)({
 	["enUS"] = {
 
 		-- These are chat channel abbreviations.
-		-- For the most part these match the /slash command to type in these channels, 
+		-- For the most part these match the /slash command to type in these channels,
 		-- so unless that command is something else in different regions, don't localize it!
 		["BGL"] = true, 	-- Battleground Leader (WoW Classic)
 		["BG"] = true, 		-- Battleground (WoW Classic)
@@ -65,11 +65,11 @@ end)({
 	["ruRU"] = {},
 	["zhCN"] = {},
 	["zhTW"] = {}
-	
+
 -- The primary/default locale of your addon.
 -- * You should change this code to your default locale.
 -- * Note that you MUST include a full table for your primary/default locale!
-}, "enUS") 
+}, "enUS")
 
 -- Lua API
 local ipairs = ipairs
@@ -127,8 +127,8 @@ end
 
 Core.AddBlacklistMethod = function(self, func)
 	for _,infunc in next,self.blacklist do
-		if (infunc == func) then 
-			return 
+		if (infunc == func) then
+			return
 		end
 	end
 	table_insert(self.blacklist, func)
@@ -145,8 +145,8 @@ end
 
 Core.AddReplacementSet = function(self, set)
 	for _,inset in next,self.replacements do
-		if (inset == set) then 
-			return 
+		if (inset == set) then
+			return
 		end
 	end
 	table_insert(self.replacements, set)
@@ -162,8 +162,8 @@ Core.RemoveReplacementSet = function(self, set)
 end
 
 Core.CacheAllMessageMethods = function(self)
-	for _,chatFrameName in ipairs(CHAT_FRAMES) do 
-		self:CacheMessageMethod(_G[chatFrameName]) 
+	for _,chatFrameName in ipairs(CHAT_FRAMES) do
+		self:CacheMessageMethod(_G[chatFrameName])
 	end
 	if (not self.tempWindowsHooked) then
 		self.tempWindowsHooked = true
@@ -179,8 +179,8 @@ Core.GetSavedSettings = function(self)
 	return db
 end
 
-Core.GetLocale = function(self) 
-	return L 
+Core.GetLocale = function(self)
+	return L
 end
 
 Core.OnEvent = function(self, event, ...)
@@ -189,62 +189,76 @@ end
 Core.OnInit = function(self)
 	self.db = db
 
-	self.tags = {
-		["%*title%*"] = Private.Colors.title.colorCode,
-		["%*white%*"] = Private.Colors.highlight.colorCode,
-		["%*offwhite%*"] = Private.Colors.offwhite.colorCode,
-		["%*palered%*"] = Private.Colors.palered.colorCode,
-		["%*red%*"] = Private.Colors.quest.red.colorCode,
-		["%*orange%*"] = Private.Colors.quest.orange.colorCode,
-		["%*yellow%*"] = Private.Colors.quest.yellow.colorCode,
-		["%*green%*"] = Private.Colors.quest.green.colorCode,
-		["%*gray%*"] = Private.Colors.quest.gray.colorCode,
-		["%*%*"] = "|r"
-	}
-
-	-- Output patterns. 
-	-- Let's add a simple color tag system for new strings as well. 
-	self.output = setmetatable({}, { __newindex = function(t,k,msg) 
-		for tag,replacement in pairs(self.tags) do 
-			msg = string_gsub(msg, tag, replacement) 
+	-- Output patterns.
+	-- *uses a simple color tag system for new strings.
+	local colors = Private.Colors
+	local output = setmetatable({}, { __newindex = function(t,k,msg)
+		for tag,replacement in pairs({
+			-- The order matters.
+			["%*title%*"] 		= colors.title.colorCode,
+			["%*white%*"] 		= colors.highlight.colorCode,
+			["%*offwhite%*"] 	= colors.offwhite.colorCode,
+			["%*palered%*"] 	= colors.palered.colorCode,
+			["%*red%*"] 		= colors.quest.red.colorCode,
+			["%*darkorange%*"] 	= colors.quality.Legendary.colorCode,
+			["%*orange%*"] 		= colors.quest.orange.colorCode,
+			["%*yellow%*"] 		= colors.quest.yellow.colorCode,
+			["%*green%*"] 		= colors.quest.green.colorCode,
+			["%*gray%*"] 		= colors.quest.gray.colorCode,
+			-- Always keep this at the end.
+			["%*%*"] = "|r"
+		}) do
+			msg = string_gsub(msg, tag, replacement)
 		end
 		rawset(t,k,msg)
 	end })
 
-	self.output.achievement = "*offwhite*!**%s: %s"
-	self.output.achievement2 = "*offwhite*!***green*%s:** *white*%s**"
-	self.output.auction_sold = "*offwhite*!***green*"..string_gsub(AUCTION_SOLD_MAIL, "%%s", "*white*%%s**").."**"
-	self.output.auction_single = "*gray*+** *white*"..AUCTION_CREATED.."**"
-	self.output.auction_multiple = "*gray*+** *white*"..AUCTION_CREATED.."** *offwhite*(%d)**"
-	self.output.auction_canceled_single = "*palered*- "..AUCTION_REMOVED.."**"
-	self.output.auction_canceled_multiple = "*palered*- "..AUCTION_REMOVED.."** *offwhite*(%d)**"
-	self.output.item_single = "*gray*+** %s"
-	self.output.item_multiple = "*gray*+** %s *offwhite*(%d)**"
-	self.output.item_single_other = "*offwhite*!**%s*gray*:** %s"
-	self.output.item_multiple_other = "*offwhite*!**%s*gray*:** %s *offwhite*(%d)**"
-	self.output.item_deficit = "*red*- %s**"
-	self.output.item_transfer = "*gray*+** *white*%s:** %s"
-	self.output.currency = "*gray*+** *white*%d** %s"
-	self.output.money = self.output.item_single
-	self.output.money_deficit = "*gray*-** %s"
-	self.output.objective_status = "*gray*+** *white*%s:** *yellow*%s**"
-	self.output.standing = "*gray*+** *white*".."%d** *white*%s:** %s"
-	self.output.standing_generic = "*gray*+ %s:** %s"
-	self.output.standing_deficit = "*red*-** *white*".."%d** *white*%s:** %s"
-	self.output.standing_deficit_generic = "*red*-** *palered** %s:** %s"
-	self.output.xp_named = "*gray*+** *white*%d** *white*%s:** *yellow*%s**"
-	self.output.xp_unnamed = "*gray*+** *white*%d** *white*%s**"
-	self.output.xp_levelup = "*offwhite*!**%s*white*!**"
-	self.output.afk_added = "*orange*+ "..AWAY.."**"
-	self.output.afk_added_message = "*orange*+ "..AWAY..": ***white*%s**"
-	self.output.afk_cleared = "*green*- "..AWAY.."**"
-	self.output.dnd_added = "|cffff6600+ "..BUSY.."**"
-	self.output.dnd_added_message = "|cffff6600+ "..BUSY..": ***white*%s**"
-	self.output.dnd_cleared = "*green*- "..BUSY.."**"
-	self.output.rested_added = "*gray*+ "..RESTED.."**"
-	self.output.rested_cleared = "*orange*- "..RESTED.."**"
-	self.output.quest_accepted = "*gray*+** *white*%s:** *yellow*%s**"
-	self.output.quest_complete = "*gray*+** *white*%s:** *yellow*%s**"
+	-- Templates we use for multiple things
+	-- *don't use these directly in the modules,
+	--  only use them in the definitions below.
+	output.__gain = "*gray*+** %s"
+	output.__gain_yellow = "*gray*+** *white*%s:** *yellow*%s**"
+
+	-- Output formats used in the modules.
+	-- *everything should be gathered here, in this file.
+	output.achievement = "*offwhite*!**%s: %s"
+	output.achievement2 = "*offwhite*!***green*%s:** *white*%s**"
+	output.afk_added = "*orange*+ "..AWAY.."**"
+	output.afk_added_message = "*orange*+ "..AWAY..": ***white*%s**"
+	output.afk_cleared = "*green*- "..AWAY.."**"
+	output.auction_sold = "*offwhite*!***green*"..string_gsub(AUCTION_SOLD_MAIL, "%%s", "*white*%%s**").."**"
+	output.auction_single = "*gray*+** *white*"..AUCTION_CREATED.."**"
+	output.auction_multiple = "*gray*+** *white*"..AUCTION_CREATED.."** *offwhite*(%d)**"
+	output.auction_canceled_single = "*palered*- "..AUCTION_REMOVED.."**"
+	output.auction_canceled_multiple = "*palered*- "..AUCTION_REMOVED.."** *offwhite*(%d)**"
+	output.currency = "*gray*+** *white*%d** %s"
+	output.dnd_added = "*darkorange*+ "..BUSY.."**"
+	output.dnd_added_message = "*darkorange*+ "..BUSY..": ***white*%s**"
+	output.dnd_cleared = "*green*- "..BUSY.."**"
+	output.item_single = output.__gain
+	output.item_multiple = "*gray*+** %s *offwhite*(%d)**"
+	output.item_single_other = "*offwhite*!**%s*gray*:** %s"
+	output.item_multiple_other = "*offwhite*!**%s*gray*:** %s *offwhite*(%d)**"
+	output.item_deficit = "*red*- %s**"
+	output.item_transfer = "*gray*+** *white*%s:** %s"
+	output.money = output.__gain
+	output.money_deficit = "*gray*-** %s"
+	output.objective_status = output.__gain_yellow
+	output.quest_accepted = output.__gain_yellow
+	output.quest_complete = output.__gain_yellow
+	output.rested_added = "*gray*+ "..RESTED.."**"
+	output.rested_cleared = "*orange*- "..RESTED.."**"
+	output.set_complete = output.__gain_yellow
+	output.standing = "*gray*+** *white*".."%d** *white*%s:** %s"
+	output.standing_generic = "*gray*+ %s:** %s"
+	output.standing_deficit = "*red*-** *white*".."%d** *white*%s:** %s"
+	output.standing_deficit_generic = "*red*-** *palered** %s:** %s"
+	output.xp_levelup = "*offwhite*!**%s*white*!**"
+	output.xp_named = "*gray*+** *white*%d** *white*%s:** *yellow*%s**"
+	output.xp_unnamed = "*gray*+** *white*%d** *white*%s**"
+
+	-- Give the modules access
+	self.output = output
 
 	self.blacklist = setmetatable({}, {
 		__call = function(funcs, ...)

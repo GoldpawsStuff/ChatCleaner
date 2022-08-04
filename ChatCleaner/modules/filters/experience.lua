@@ -18,7 +18,7 @@ local ERR_ZONE_EXPLORED_XP = ERR_ZONE_EXPLORED_XP 		-- "Discovered %s: %d experi
 local ERR_QUEST_REWARD_EXP_I = ERR_QUEST_REWARD_EXP_I 	-- "Experience gained: %d."
 local XP = XP
 
--- All of these contain the first pattern, 
+-- All of these contain the first pattern,
 -- and the first pattern contains all we wish to show.
 local NAMED = COMBATLOG_XPGAIN_FIRSTPERSON 				-- "%s dies, you gain %d experience."
 -- COMBATLOG_XPGAIN_FIRSTPERSON_GROUP					-- "%s dies, you gain %d experience. (+%d group bonus)"
@@ -56,10 +56,10 @@ end
 
 -- Search Pattern Cache.
 -- This will generate the pattern on the first lookup.
-local P = setmetatable({ 
+local P = setmetatable({
 	-- Special handling. We capture the entire colored, clickable level link.
 	[LEVEL_UP] = string_gsub(LEVEL_UP, "(|.+|r)", "(.+)")
-}, { __index = function(t,k) 
+}, { __index = function(t,k)
 	rawset(t,k,makePattern(k))
 	return rawget(t,k)
 end })
@@ -93,7 +93,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 	elseif (event == "CHAT_MSG_SYSTEM") then
 
-		-- Area discovery 
+		-- Area discovery
 		value,source = fix(string_match(message, P[ERR_ZONE_EXPLORED_XP]))
 		if (value) then
 			return false, string_format(self.output.xp_named, value, XP, source), author, ...

@@ -37,7 +37,7 @@ end
 
 -- Search Pattern Cache.
 -- This will generate the pattern on the first lookup.
-local P = setmetatable({}, { __index = function(t,k) 
+local P = setmetatable({}, { __index = function(t,k)
 	rawset(t,k,makePattern(k))
 	return rawget(t,k)
 end })
@@ -68,9 +68,9 @@ Module.GetFactionColored = function(self, faction)
 
 			if (Private.IsRetail) then
 				local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID)
-				if (friendID) then 
+				if (friendID) then
 					isFriend = true
-				end 
+				end
 			end
 
 			if (factionID) and (standingID) then
@@ -96,9 +96,9 @@ Module.GetFactionColored = function(self, faction)
 
 				if (Private.IsRetail) then
 					local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID)
-					if (friendID) then 
+					if (friendID) then
 						isFriend = true
-					end 
+					end
 				end
 
 				if (factionID) and (standingID) then

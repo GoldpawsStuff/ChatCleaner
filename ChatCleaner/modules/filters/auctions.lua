@@ -30,7 +30,7 @@ end
 
 -- Search Pattern Cache.
 -- This will generate the pattern on the first lookup.
-local P = setmetatable({}, { __index = function(t,k) 
+local P = setmetatable({}, { __index = function(t,k)
 	rawset(t,k,makePattern(k))
 	return rawget(t,k)
 end })
@@ -127,7 +127,7 @@ Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 			return message
 		end
 	end
-	
+
 end
 
 Module.OnInit = function(self)

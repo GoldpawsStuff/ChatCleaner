@@ -32,7 +32,7 @@ end
 
 -- Search Pattern Cache.
 -- This will generate the pattern on the first lookup.
-local P = setmetatable({}, { __index = function(t,k) 
+local P = setmetatable({}, { __index = function(t,k)
 	rawset(t,k,makePattern(k))
 	return rawget(t,k)
 end })
@@ -59,7 +59,7 @@ end
 
 Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 	-- Loot spec changed, or just reported
-	-- This one will fire at the initial PLAYER_ENTERING_WORLD, 
+	-- This one will fire at the initial PLAYER_ENTERING_WORLD,
 	-- as the chat frames haven't yet been registered for user events at that point.
 	local craft = string_match(msg, P[LEARN_RECIPE])
 	if (craft) then

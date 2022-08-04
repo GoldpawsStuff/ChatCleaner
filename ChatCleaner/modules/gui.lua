@@ -58,7 +58,7 @@ end
 
 -- Retrieve media from the disk
 local GetMedia = function(name, type)
-	return ([[Interface\AddOns\%s\media\%s.%s]]):format(Addon, name, type or "tga") 
+	return ([[Interface\AddOns\%s\media\%s.%s]]):format(Addon, name, type or "tga")
 end
 
 local SortByName = function(a,b)
@@ -68,7 +68,7 @@ local SortByName = function(a,b)
 		else
 			return (a.title) and true or false
 		end
-	else 
+	else
 		return (a) and true or false
 	end
 end
@@ -142,9 +142,9 @@ GUI.GetGUI = function(self)
 			self:SetPropagateKeyboardInput(true)
 		end
 
-		local onKeyDown = function(self, key) 
+		local onKeyDown = function(self, key)
 			if (key == "ESCAPE") then
-				-- If Escape is pressed, consume the input, 
+				-- If Escape is pressed, consume the input,
 				-- to prevent it from closing any other windows than ours.
 				self:SetPropagateKeyboardInput(false)
 				self:Hide()
@@ -201,7 +201,7 @@ GUI.RegisterModule = function(self, module, title, description)
 	if (not self.cards) then
 		self.cards = {}
 	end
-	table_insert(self.cards, card) 
+	table_insert(self.cards, card)
 	table_sort(self.cards, SortByName)
 
 	if (not self.cardsByModule) then

@@ -45,7 +45,7 @@ end
 
 -- Search Pattern Cache.
 -- This will generate the pattern on the first lookup.
-local P = setmetatable({}, { __index = function(t,k) 
+local P = setmetatable({}, { __index = function(t,k)
 	rawset(t,k,makePattern(k))
 	return rawget(t,k)
 end })
@@ -89,7 +89,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		for i,pattern in ipairs(self.patterns) do
 			-- We use the pattern only as an identifier, not for information.
 			local results = { string_match(message,pattern) }
-			if (#results > 0) then 
+			if (#results > 0) then
 
 				local item, count, name
 				for i,j in ipairs(results) do
@@ -103,7 +103,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 				if (#results == 2) then
 					for i,j in ipairs(results) do
-						if (string_find(j, "|c%x%x%x%x%x%x%x%x|Hitem")) then 
+						if (string_find(j, "|c%x%x%x%x%x%x%x%x|Hitem")) then
 							item = table_remove(results,i)
 							item = string_gsub(item, "[%[/%]]", "") -- kill brackets
 							break
@@ -165,19 +165,19 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		if (pet) then
 			return false, string_format(self.output.item_transfer, PETS, pet), author, ...
 		end
-		
+
 		-- When a new battle pet is learned
 		local heirloom = string_match(message, P[LEARN_HEIRLOOM])
 		if (heirloom) then
 			return false, string_format(self.output.item_transfer, HEIRLOOMS, heirloom), author, ...
 		end
-		
+
 		-- Loot spec changed, or just reported
 		-- This one fires on manual changes after login.
-		-- The initial message on reloads or login is not captured here, 
+		-- The initial message on reloads or login is not captured here,
 		-- as the chat frames haven't yet been registered for user events at that point.
 		local lootspec = string_match(message, P[LOOT_SPEC_CHANGED])
-		if (lootspec) then 
+		if (lootspec) then
 			--lootspec = Private.Colors.class[playerClass].colorCode .. lootspec .. "|r"
 			--return false, string_format(self.output.item_transfer, SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
 			return false, string_format(self.output.achievement2, SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
@@ -189,7 +189,7 @@ end
 Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 
 	-- Loot spec changed, or just reported
-	-- This one will fire at the initial PLAYER_ENTERING_WORLD, 
+	-- This one will fire at the initial PLAYER_ENTERING_WORLD,
 	-- as the chat frames haven't yet been registered for user events at that point.
 	local lootspec = string_match(msg, P[LOOT_SPEC_CHANGED])
 	if (lootspec) then
@@ -206,7 +206,7 @@ Module.OnInit = function(self)
 	self.patterns = {}
 	for i,global in ipairs({
 
-		-- These all return item, 
+		-- These all return item,
 		-- and optionally an item count.
 		"LOOT_ITEM_CREATED_SELF_MULTIPLE", 			-- "You create: %sx%d."
 		"LOOT_ITEM_CREATED_SELF", 					-- "You create: %s."
@@ -221,7 +221,7 @@ Module.OnInit = function(self)
 		"CURRENCY_GAINED_MULTIPLE_BONUS", 			-- "You receive currency: %s x%d. (Bonus Objective)" -- Redundant?
 
 		-- These apply to other players and will include player NAMES, not always links.
-		-- but should hopefully still work as identifiers for the messages. Needs testing. 
+		-- but should hopefully still work as identifiers for the messages. Needs testing.
 		"LOOT_ITEM", 								-- "%s receives loot: %s."
 		"LOOT_ITEM_BONUS_ROLL", 					-- "%s receives bonus loot: %s."
 		"LOOT_ITEM_BONUS_ROLL_MULTIPLE", 			-- "%s receives bonus loot: %sx%d."
@@ -229,17 +229,17 @@ Module.OnInit = function(self)
 		"LOOT_ITEM_PUSHED", 						-- "%s receives item: %s."
 		"LOOT_ITEM_PUSHED_MULTIPLE", 				-- "%s receives item: %sx%d."
 
-		-- Don't filter these here, 
+		-- Don't filter these here,
 		-- they are pure text for both names and items!
 		--"CREATED_ITEM", 							-- "%s creates: %s."
 		--"CREATED_ITEM_MULTIPLE", 					-- "%s creates: %sx%d."
 
-	}) do 
-		-- Always check if the global exists, 
-		-- as a lot of these strings and filters 
+	}) do
+		-- Always check if the global exists,
+		-- as a lot of these strings and filters
 		-- do not apply to the classic clients.
 		local msg = _G[global]
-		if (msg) then 
+		if (msg) then
 			table_insert(self.patterns, makePattern(msg))
 		end
 	end

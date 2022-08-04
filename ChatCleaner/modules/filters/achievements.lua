@@ -30,7 +30,7 @@ end
 
 -- Search Pattern Cache.
 -- This will generate the pattern on the first lookup.
-local P = setmetatable({}, { __index = function(t,k) 
+local P = setmetatable({}, { __index = function(t,k)
 	rawset(t,k,makePattern(k))
 	return rawget(t,k)
 end })
@@ -42,7 +42,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		-- kill brackets
 		player_name = string_gsub(player_name, "[%[/%]]", "")
 		achievement = string_gsub(achievement, "[%[/%]]", "")
-		
+
 		return false, string_format(self.output.achievement, player_name, achievement), author, ...
 	end
 end

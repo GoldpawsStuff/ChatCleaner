@@ -1,7 +1,7 @@
 local Addon, Private = ...
 -- Only run this module on GitHub repo downloads or my own local version.
 if (Private.Version ~= "Development") then
-	return 
+	return
 end
 local Core = Private:GetModule("Core")
 if (not Core) then

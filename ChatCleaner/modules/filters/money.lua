@@ -40,7 +40,7 @@ local ANIMA_V2 = POWER_TYPE_ANIMA_V2
 local ANIMA_LABEL = Private.Colors.quality.Rare.colorCode .. ANIMA .. "|r"
 
 -- Return a coin texture string.
-local Coin = setmetatable({}, { __index = function(t,k) 
+local Coin = setmetatable({}, { __index = function(t,k)
 	local useBlizz = Core.db.useBlizzardCoins
 	local frame = DEFAULT_CHAT_FRAME or ChatFrame1 -- do we need this fallback?
 	local _,size = frame:GetFont()
@@ -80,12 +80,12 @@ end
 local P = setmetatable({
 	[ANIMA] = "^(%d+) "..ANIMA,
 	[ANIMA_V2] = "^(%d+) "..ANIMA_V2,
-}, { __index = function(t,k) 
+}, { __index = function(t,k)
 	rawset(t,k,makePattern(k))
 	return rawget(t,k)
 end })
 
--- Remove large number formatting 
+-- Remove large number formatting
 local simplifyNumbers = function(message)
 	return string_gsub(message, "(%d)%"..LARGE_NUMBER_SEPERATOR.."(%d)", "%1%2")
 end
@@ -117,21 +117,21 @@ end
 local formatMoney = function(gold, silver, copper, colorCode)
 	colorCode = colorCode or "|cfff0f0f0"
 	local msg
-	if (gold > 0) then 
+	if (gold > 0) then
 		msg = string_format(colorCode.."%s|r%s", prettify(gold), Coin["Gold"])
 	end
-	if (silver > 0) then 
+	if (silver > 0) then
 		msg = (msg and msg.." " or "") .. string_format(colorCode.."%d|r%s", silver, Coin["Silver"])
 	end
-	if (copper > 0) then 
+	if (copper > 0) then
 		msg = (msg and msg.." " or "") .. string_format(colorCode.."%d|r%s", copper, Coin["Copper"])
-	end 
+	end
 	return msg
 end
 
 local parseForMoney = function(message)
 
-	-- Remove large number formatting 
+	-- Remove large number formatting
 	message = simplifyNumbers(message)
 
 	-- Basic old-style parsing first.
@@ -145,7 +145,7 @@ local parseForMoney = function(message)
 	local copper = string_match(message, P[COPPER_AMOUNT]) -- "%d Copper"
 	local copper_amount = copper and tonumber(copper) or 0
 
-	-- Now we have to do it the hard way. 
+	-- Now we have to do it the hard way.
 	if (gold_amount == 0) and (silver_amount == 0) and (copper_amount == 0) then
 
 		-- Discover icon and currency existence.
@@ -163,11 +163,11 @@ local parseForMoney = function(message)
 
 		-- These patterns should work for both coins and symbols. Let's parse!
 		if (hasGold) or (hasSilver) or (hasCopper) then
-			
-			-- Now kill off texture strings, replace with space for number separation.
-			message = string_gsub(message, "\124T(.-)\124t", " ") 
 
-			-- Kill off color codes. They might fuck up this thing. 
+			-- Now kill off texture strings, replace with space for number separation.
+			message = string_gsub(message, "\124T(.-)\124t", " ")
+
+			-- Kill off color codes. They might fuck up this thing.
 			message = string_gsub(message, "\124[cC]%x%x%x%x%x%x%x%x", "")
 			message = string_gsub(message, "\124[rR]", "")
 
@@ -205,7 +205,7 @@ local parseForMoney = function(message)
 				return 0,0, tonumber(copper_amount) or 0
 			end
 		end
-		
+
 	end
 
 	return gold_amount, silver_amount, copper_amount
@@ -230,11 +230,11 @@ Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	end
 end
 
-Module.OnChatEvent = function(self, chatFrame, event, message, author, ...) 
+Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	if (event == "CHAT_MSG_MONEY") then
-		-- We always hide this when this filter is active, 
+		-- We always hide this when this filter is active,
 		-- so no need for any checks of any sort here.
-		return true 
+		return true
 	end
 end
 
@@ -242,15 +242,15 @@ end
 -- and not sent into any chat channels or through any event handlers.
 -- Good thing about this is that we don't need to parse for sender,
 -- or make exceptions to avoid false positives from normal chat.
--- If it starts with the number, it can't be a player message, 
+-- If it starts with the number, it can't be a player message,
 -- because the channel or their name link would then be first.
 Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 	local anima = string_match(simplifyNumbers(msg), P[ANIMA])
-	if (anima) then 
+	if (anima) then
 		return string_format(self.output.item_multiple, ANIMA_LABEL, anima)
 	end
 	anima = string_match(simplifyNumbers(msg), P[ANIMA_V2])
-	if (anima) then 
+	if (anima) then
 		return string_format(self.output.item_multiple, ANIMA_LABEL, anima)
 	end
 end
@@ -269,7 +269,7 @@ Module.OnEvent = function(self, event, ...)
 			end
 			return
 		end
-		if (AuctionHouseFrame and AuctionHouseFrame:IsShown()) or (AuctionFrame and AuctionFrame:IsShown()) or (UnitOnTaxi("player")) then 
+		if (AuctionHouseFrame and AuctionHouseFrame:IsShown()) or (AuctionFrame and AuctionFrame:IsShown()) or (UnitOnTaxi("player")) then
 			self.playerMoney = currentMoney
 			return
 		end
