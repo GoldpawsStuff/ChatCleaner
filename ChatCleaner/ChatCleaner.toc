@@ -16,5 +16,4 @@
 
 ## SavedVariables: ChatCleaner_DB
 
-TaintLess.xml
 ChatCleaner.xml
