@@ -1,0 +1,25 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<Include file="core\load_core.xml"/>
+
+	<Script file="modules\main.lua"/>
+	<Script file="modules\gui.lua"/>
+
+	<Script file="modules\filters\development.lua"/>
+	<Script file="modules\filters\achievements.lua"/>
+	<Script file="modules\filters\auctions.lua"/>
+	<Script file="modules\filters\blacklist.lua"/>
+	<Script file="modules\filters\channels.lua"/>
+	<Script file="modules\filters\colorclass.lua"/>
+	<Script file="modules\filters\colorquality.lua"/>
+	<Script file="modules\filters\creatures.lua"/>
+	<Script file="modules\filters\experience.lua"/>
+	<Script file="modules\filters\loot.lua"/>
+	<Script file="modules\filters\money.lua"/>
+	<Script file="modules\filters\playernames.lua"/>
+	<Script file="modules\filters\quests.lua"/>
+	<Script file="modules\filters\reputation.lua"/>
+	<Script file="modules\filters\status.lua"/>
+	<Script file="modules\filters\tradeskills.lua"/>
+
+</Ui>
