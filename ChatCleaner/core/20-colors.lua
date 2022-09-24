@@ -10,13 +10,13 @@ local ColorTemplate = {}
 
 -- Utility
 -----------------------------------------------------------------
--- Convert a Blizzard Color or RGB value set 
--- into our own custom color table format. 
+-- Convert a Blizzard Color or RGB value set
+-- into our own custom color table format.
 local createColor = function(...)
 	local tbl
 	if (select("#", ...) == 1) then
 		local old = ...
-		if (old.r) then 
+		if (old.r) then
 			tbl = {}
 			tbl[1] = old.r or 1
 			tbl[2] = old.g or 1
@@ -28,7 +28,7 @@ local createColor = function(...)
 		tbl = { ... }
 	end
 	-- Do NOT use a metatable, just embed.
-	for name,method in pairs(ColorTemplate) do 
+	for name,method in pairs(ColorTemplate) do
 		tbl[name] = method
 	end
 	if (#tbl == 3) then
@@ -41,11 +41,11 @@ end
 -- Convert a whole Blizzard color table
 local createColorGroup = function(group)
 	local tbl = {}
-	for i,v in pairs(group) do 
+	for i,v in pairs(group) do
 		tbl[i] = createColor(v)
-	end 
+	end
 	return tbl
-end 
+end
 
 -- Assign proxies to the color table, for modules to use
 Colors.CreateColor = function(_, ...) return createColor(...) end
@@ -53,11 +53,11 @@ Colors.CreateColorGroup = function(_, ...) return createColorGroup(...) end
 
 -- Color Template
 -----------------------------------------------------------------
--- Emulate some of the Blizzard methods, 
--- since they too do colors this way now. 
--- Goal is not to be fully interchangeable. 
+-- Emulate some of the Blizzard methods,
+-- since they too do colors this way now.
+-- Goal is not to be fully interchangeable.
 ColorTemplate.GetRGB = function(self)
-	return self[1], self[2], self[3]	
+	return self[1], self[2], self[3]
 end
 
 ColorTemplate.GetRGBAsBytes = function(self)
@@ -123,15 +123,16 @@ Colors.class = {}
 Colors.class.DEATHKNIGHT = createColor(176/255, 31/255, 79/255)
 Colors.class.DEMONHUNTER = createColor(163/255, 48/255, 201/255)
 Colors.class.DRUID = createColor(225/255, 125/255, 35/255)
-Colors.class.HUNTER = createColor(191/255, 232/255, 115/255) 
+Colors.class.EVOKER = createColor(51/255, 147/255, 127/255)
+Colors.class.HUNTER = createColor(191/255, 232/255, 115/255)
 Colors.class.MAGE = createColor(105/255, 204/255, 240/255)
 Colors.class.MONK = createColor(0/255, 255/255, 150/255)
 Colors.class.PALADIN = createColor(225/255, 160/255, 226/255)
 Colors.class.PRIEST = createColor(176/255, 200/255, 225/255)
-Colors.class.ROGUE = createColor(255/255, 225/255, 95/255) 
-Colors.class.SHAMAN = createColor(32/255, 122/255, 222/255) 
-Colors.class.WARLOCK = createColor(148/255, 130/255, 201/255) 
-Colors.class.WARRIOR = createColor(229/255, 156/255, 110/255) 
+Colors.class.ROGUE = createColor(255/255, 225/255, 95/255)
+Colors.class.SHAMAN = createColor(32/255, 122/255, 222/255)
+Colors.class.WARLOCK = createColor(148/255, 130/255, 201/255)
+Colors.class.WARRIOR = createColor(229/255, 156/255, 110/255)
 Colors.class.UNKNOWN = createColor(195/255, 202/255, 217/255)
 
 -- Reactions
@@ -139,7 +140,7 @@ Colors.reaction = {}
 Colors.reaction[1] = createColor(205/255, 46/255, 36/255) -- hated
 Colors.reaction[2] = createColor(205/255, 46/255, 36/255) -- hostile
 Colors.reaction[3] = createColor(192/255, 68/255, 0/255) -- unfriendly
-Colors.reaction[4] = createColor(249/255, 188/255, 65/255) -- neutral 
+Colors.reaction[4] = createColor(249/255, 188/255, 65/255) -- neutral
 Colors.reaction[5] = createColor( 64/255, 131/255, 38/255) -- friendly
 Colors.reaction[6] = createColor( 64/255, 131/255, 69/255) -- honored
 Colors.reaction[7] = createColor( 64/255, 131/255, 104/255) -- revered
@@ -147,11 +148,11 @@ Colors.reaction[8] = createColor( 64/255, 131/255, 131/255) -- exalted
 Colors.reaction.civilian = createColor(64/255, 131/255, 38/255) -- used for friendly player nameplates
 
 -- Friendship
--- Just using these as pointers to the reaction colors, 
+-- Just using these as pointers to the reaction colors,
 -- so there won't be a need to ever edit these.
 Colors.friendship = {}
 Colors.friendship[1] = Colors.reaction[3] -- Stranger
-Colors.friendship[2] = Colors.reaction[4] -- Acquaintance 
+Colors.friendship[2] = Colors.reaction[4] -- Acquaintance
 Colors.friendship[3] = Colors.reaction[5] -- Buddy
 Colors.friendship[4] = Colors.reaction[6] -- Friend (honored color)
 Colors.friendship[5] = Colors.reaction[7] -- Good Friend (revered color)
