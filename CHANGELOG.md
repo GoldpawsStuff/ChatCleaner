@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.19-Release] 2022-09-24
+### Fixed
+- Added the missing Evoker color entry to make this work for Dragonflight.
+
 ## [1.0.18-Release] 2022-09-07
 - Switching to single addon multiple toc-file format.
 
