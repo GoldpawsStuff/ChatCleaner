@@ -97,17 +97,119 @@ local BUSY = FRIENDS_LIST_BUSY -- "Busy"
 local COMPLETE = COMPLETE -- "Complete"
 local RESTED = TUTORIAL_TITLE26 -- "Rested"
 
+-- These channels will be ignored by the general parsing.
+-- This does not affect the chat event filters,
+-- and is only meant to avoid normal chat messages
+-- giving off false positives as system messages.
+local ignoredIDs = {}
+for _,index in ipairs({
+
+	--"SYSTEM",
+	"SAY",
+	"PARTY",
+	"RAID",
+	"GUILD",
+	"OFFICER",
+	"YELL",
+	"WHISPER",
+	"SMART_WHISPER",
+	"WHISPER_INFORM",
+	"REPLY",
+	"EMOTE",
+	"TEXT_EMOTE",
+	"MONSTER_SAY",
+	"MONSTER_PARTY",
+	"MONSTER_YELL",
+	"MONSTER_WHISPER",
+	"MONSTER_EMOTE",
+	"CHANNEL",
+	"CHANNEL_JOIN",
+	"CHANNEL_LEAVE",
+	"CHANNEL_LIST",
+	"CHANNEL_NOTICE",
+	"CHANNEL_NOTICE_USER",
+	"TARGETICONS",
+	"AFK",
+	"DND",
+	"IGNORED",
+	--"SKILL",
+	--"LOOT",
+	--"CURRENCY",
+	--"MONEY",
+	--"OPENING",
+	--"TRADESKILLS",
+	"PET_INFO",
+	"COMBAT_MISC_INFO",
+	--"COMBAT_XP_GAIN",
+	--"COMBAT_HONOR_GAIN",
+	--"COMBAT_FACTION_CHANGE",
+	"BG_SYSTEM_NEUTRAL",
+	"BG_SYSTEM_ALLIANCE",
+	"BG_SYSTEM_HORDE",
+	"RAID_LEADER",
+	"RAID_WARNING",
+	"RAID_BOSS_WHISPER",
+	"RAID_BOSS_EMOTE",
+	"QUEST_BOSS_EMOTE",
+	"FILTERED",
+	"INSTANCE_CHAT",
+	"INSTANCE_CHAT_LEADER",
+	"RESTRICTED",
+	"CHANNEL1",
+	"CHANNEL2",
+	"CHANNEL3",
+	"CHANNEL4",
+	"CHANNEL5",
+	"CHANNEL6",
+	"CHANNEL7",
+	"CHANNEL8",
+	"CHANNEL9",
+	"CHANNEL10",
+	"CHANNEL11",
+	"CHANNEL12",
+	"CHANNEL13",
+	"CHANNEL14",
+	"CHANNEL15",
+	"CHANNEL16",
+	"CHANNEL17",
+	"CHANNEL18",
+	"CHANNEL19",
+	"CHANNEL20",
+	--"ACHIEVEMENT",
+	"PARTY_LEADER",
+	"BN_WHISPER",
+	"BN_WHISPER_INFORM",
+	"BN_ALERT",
+	"BN_BROADCAST",
+	"BN_BROADCAST_INFORM",
+	"BN_INLINE_TOAST_ALERT",
+	"BN_INLINE_TOAST_BROADCAST",
+	"BN_INLINE_TOAST_BROADCAST_INFORM",
+	"BN_WHISPER_PLAYER_OFFLINE",
+	"COMMUNITIES_CHANNEL",
+	"VOICE_TEXT"
+
+}) do
+	local id = GetChatTypeIndex(index)
+	if (id) then
+		ignoredIDs[id] = true
+	end
+end
+
 Core.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	if (not msg) or (msg == "") then
 		return
 	end
-	if (next(self.blacklist)) then
-		if (self.blacklist(chatFrame, msg, r, g, b, chatID, ...)) then
-			return
+	-- Don't filter or parse any of the above channels
+	if not(chatID and ignoredIDs[chatID]) then
+		if (next(self.blacklist)) then
+			if (self.blacklist(chatFrame, msg, r, g, b, chatID, ...)) then
+				return
+			end
 		end
-	end
-	if (next(self.replacements)) then
-		msg = self.replacements(msg, r, g, b, chatID, ...)
+		if (next(self.replacements)) then
+			msg = self.replacements(msg, r, g, b, chatID, ...)
+		end
 	end
 	return self.MethodCache[chatFrame](chatFrame, msg, r, g, b, chatID, ...)
 end

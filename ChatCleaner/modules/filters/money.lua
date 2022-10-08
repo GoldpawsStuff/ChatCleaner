@@ -39,10 +39,13 @@ local ANIMA_V2 = POWER_TYPE_ANIMA_V2
 -- Colorize the anima label.
 local ANIMA_LABEL = Private.Colors.quality.Rare.colorCode .. ANIMA .. "|r"
 
+-- To correctly track frame and font sizes
+local CURRENT_CHAT_FRAME
+
 -- Return a coin texture string.
 local Coin = setmetatable({}, { __index = function(t,k)
 	local useBlizz = Core.db.useBlizzardCoins
-	local frame = DEFAULT_CHAT_FRAME or ChatFrame1 -- do we need this fallback?
+	local frame = CURRENT_CHAT_FRAME or DEFAULT_CHAT_FRAME or ChatFrame1 -- do we need this fallback?
 	local _,size = frame:GetFont()
 	size = math_floor((size or 20) * (useBlizz and .6 or .8))
 	if (k == "Gold") then
@@ -255,6 +258,22 @@ Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 	end
 end
 
+-- Output the message only to windows with the MONEY channel enabled.
+Module.AddMessage = function(self, msg, r, g, b, chatID, ...)
+	local chatWindow
+	for _,chatFrameName in ipairs(CHAT_FRAMES) do
+		chatWindow = _G[chatFrameName]
+		-- Don't use ChatFrame_ContainsChannel,
+		-- that only registers manually joined channels,
+		-- it does not apply to message groups.
+		if (chatWindow and ChatFrame_ContainsMessageGroup(chatWindow, "MONEY")) then
+			CURRENT_CHAT_FRAME = chatWindow
+			chatWindow:AddMessage(msg, r, g, b, chatID, ...)
+			CURRENT_CHAT_FRAME = nil
+		end
+	end
+end
+
 Module.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		self.playerMoney = GetMoney()
@@ -284,12 +303,12 @@ Module.OnEvent = function(self, event, ...)
 			if (money > 0) then
 				local msg = string_format(self.output.money, formatMoney(g,s,c))
 				local info = ChatTypeInfo["MONEY"]
-				DEFAULT_CHAT_FRAME:AddMessage(msg, info.r, info.g, info.b, info.id)
+				self:AddMessage(msg, info.r, info.g, info.b, info.id)
 
 			elseif (money < 0) then
 				local msg = string_format(self.output.money_deficit, formatMoney(g,s,c, Private.Colors.palered.colorCode))
 				local info = ChatTypeInfo["MONEY"]
-				DEFAULT_CHAT_FRAME:AddMessage(msg, info.r, info.g, info.b, info.id)
+				self:AddMessage(msg, info.r, info.g, info.b, info.id)
 			end
 		end
 		self.playerMoney = currentMoney
