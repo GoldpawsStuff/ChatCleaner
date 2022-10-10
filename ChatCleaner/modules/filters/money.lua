@@ -9,6 +9,7 @@ local Module = Core:NewModule("Money")
 local math_abs = math.abs
 local math_floor = math.floor
 local math_mod = math.fmod
+local pairs = pairs
 local rawget = rawget
 local rawset = rawset
 local setmetatable = setmetatable
@@ -261,7 +262,7 @@ end
 -- Output the message only to windows with the MONEY channel enabled.
 Module.AddMessage = function(self, msg, r, g, b, chatID, ...)
 	local chatWindow
-	for _,chatFrameName in ipairs(CHAT_FRAMES) do
+	for _,chatFrameName in pairs(CHAT_FRAMES) do
 		chatWindow = _G[chatFrameName]
 		-- Don't use ChatFrame_ContainsChannel,
 		-- that only registers manually joined channels,
