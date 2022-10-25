@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.21-Release] 2022-10-25
+- Bumped retail version to the 10.0.0 patch.
+
 ## [1.0.20-Release] 2022-10-08
 ### Changed
 - Money messages should now appear only in windows you have enabled money display for, instead of always being forced into the primary chat window as before.
