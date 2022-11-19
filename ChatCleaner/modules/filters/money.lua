@@ -46,9 +46,14 @@ local CURRENT_CHAT_FRAME
 -- Return a coin texture string.
 local Coin = setmetatable({}, { __index = function(t,k)
 	local useBlizz = Core.db.useBlizzardCoins
-	local frame = CURRENT_CHAT_FRAME or DEFAULT_CHAT_FRAME or ChatFrame1 -- do we need this fallback?
+	local frame = CURRENT_CHAT_FRAME or DEFAULT_CHAT_FRAME or ChatFrame1
 	local _,size = frame:GetFont()
-	size = math_floor((size or 20) * (useBlizz and .6 or .8))
+	size = size or 20
+	if (size > 15) then
+		size = math_floor(size * (useBlizz and .6 or .8))
+	else
+		size = math_floor(size * (useBlizz and 1 or 1.25))
+	end
 	if (k == "Gold") then
 		if (useBlizz) then
 			return string_format([[|TInterface\MoneyFrame\UI-GoldIcon:%d:%d:2:0|t]], size, size)

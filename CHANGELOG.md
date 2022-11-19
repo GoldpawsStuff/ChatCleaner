@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.23-Release] 2022-11-19
+### Changed
+- Slightly changed how the size of money icons are calculated. Might need further adjustments.
+- The NPC chat removal module is now disabled by default unless you download the addon directly from GitHub. This module doesn't follow the filtering scheme of the rest of the addon, and was never really meant to be public anyway.
+
 ## [1.0.22-Release] 2022-11-16
 - Bump to retail client patch 10.0.2.
 

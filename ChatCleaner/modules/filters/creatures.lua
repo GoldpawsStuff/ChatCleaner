@@ -50,7 +50,11 @@ Module.OnInit = function(self)
 	self.db = self:GetParent():GetSavedSettings()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
-	if (self.db["DisableFilter:"..self:GetName()]) then
+
+	-- This is a module that doesn't do what the addon says it does,
+	-- so even though I personally find it helpful, it's best to disable it for the public.
+	-- I'll leave it on by default for dev/git versions.
+	if (self.db["DisableFilter:"..self:GetName()]) or (Private.Version ~= "Development") then
 		return self:SetUserDisabled()
 	end
 end
