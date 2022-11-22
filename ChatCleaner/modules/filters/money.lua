@@ -45,7 +45,7 @@ local CURRENT_CHAT_FRAME
 
 -- Return a coin texture string.
 local Coin = setmetatable({}, { __index = function(t,k)
-	local useBlizz = Core.db.useBlizzardCoins
+	local useBlizz = true
 	local frame = CURRENT_CHAT_FRAME or DEFAULT_CHAT_FRAME or ChatFrame1
 	local _,size = frame:GetFont()
 	size = size or 20
@@ -56,19 +56,19 @@ local Coin = setmetatable({}, { __index = function(t,k)
 	end
 	if (k == "Gold") then
 		if (useBlizz) then
-			return string_format([[|TInterface\MoneyFrame\UI-GoldIcon:%d:%d:2:0|t]], size, size)
+			return string_format([[|Tinterface/moneyframe/ui-goldicon:%d:%d:2:0|t]], size, size)
 		else
 			return string_format([[|TInterface\AddOns\%s\media\coins.tga:%d:%d:-2:0:64:64:0:32:0:32|t]], Addon, size, size)
 		end
 	elseif (k == "Silver") then
 		if (useBlizz) then
-			return string_format([[|TInterface\MoneyFrame\UI-SilverIcon:%d:%d:2:0|t]], size, size)
+			return string_format([[|Tinterface/moneyframe/ui-silvericon:%d:%d:2:0|t]], size, size)
 		else
 			return string_format([[|TInterface\AddOns\%s\media\coins.tga:%d:%d:-2:0:64:64:32:64:0:32|t]], Addon, size, size)
 		end
 	elseif (k == "Copper") then
 		if (useBlizz) then
-			return string_format([[|TInterface\MoneyFrame\UI-CopperIcon:%d:%d:2:0|t]], size, size)
+			return string_format([[|Tinterface/moneyframe/ui-coppericon:%d:%d:2:0|t]], size, size)
 		else
 			return string_format([[|TInterface\AddOns\%s\media\coins.tga:%d:%d:-2:0:64:64:0:32:32:64|t]], Addon, size, size)
 		end
