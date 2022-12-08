@@ -16,6 +16,7 @@ local string_match = string.match
 -- WoW Globals
 local SET_COMPLETE = ERR_COMPLETED_TRANSMOG_SET_S -- "You've completed the set %s."
 local QUEST_ACCEPTED = ERR_QUEST_ACCEPTED_S -- "Quest accepted: %s"
+local QUEST_ALREADY_DONE = ERR_QUEST_ALREADY_DONE -- "You have completed that quest.";
 local QUEST_COMPLETE = ERR_QUEST_COMPLETE_S -- "%s completed."
 local QUEST = BATTLE_PET_SOURCE_2 -- "Quest"
 local ACCEPTED = CALENDAR_STATUS_ACCEPTED -- "Accepted"
@@ -54,11 +55,15 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		return false, string_format(self.output.quest_accepted, ACCEPTED, name), author, ...
 	end
 
-	name = string_match(message, P[QUEST_COMPLETE])
-	if (name) then
-		name = string_gsub(name, "[%[/%]]", "")
-		return false, string_format(self.output.quest_complete, COMPLETE, name), author, ...
+	-- Avoid false positives on quest completion.
+	if (not string_match(message, P[QUEST_ALREADY_DONE])) then
+		name = string_match(message, P[QUEST_COMPLETE])
+		if (name) then
+			name = string_gsub(name, "[%[/%]]", "")
+			return false, string_format(self.output.quest_complete, COMPLETE, name), author, ...
+		end
 	end
+
 end
 
 Module.OnInit = function(self)
