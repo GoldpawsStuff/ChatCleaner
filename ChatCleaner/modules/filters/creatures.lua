@@ -26,7 +26,8 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 	elseif (event == "CHAT_MSG_MONSTER_EMOTE") then
 		-- These returns a formatstring, which we need to paste the author/monster into.
-		RaidNotice_AddMessage(RaidBossEmoteFrame, string_format(message, author), ChatTypeInfo["MONSTER_EMOTE"])
+		-- *These do NOT always return a formatstring. What the fuck?
+		--RaidNotice_AddMessage(RaidBossEmoteFrame, string_format(message, author), ChatTypeInfo["MONSTER_EMOTE"])
 		return true
 
 	elseif (event == "CHAT_MSG_MONSTER_WHISPER") then

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.25-Release] 2023-01-09
+### Fixed
+- Fixed a bug.
+
 ## [1.0.24-Release] 2022-12-08
 ### Fixed
 - Quests you have completed and thus fail to pickup from NPCs or friends who share them should no longer wrongly be filtered as a completed quest. The error message will remain unchanged.
