@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.28-Release] 2023-03-25
+- Updated for WoW 10.0.7.
+
+### Fixed
+- Fixed a bug that would sometimes show the wrong person getting loot or currency in Wrath.
+
 ## [1.0.27-Release] 2023-01-26
 - Updated for WoW 10.0.5.
 

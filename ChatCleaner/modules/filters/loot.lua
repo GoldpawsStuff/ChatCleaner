@@ -69,17 +69,17 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 					local countString = string_sub(message, last + 1)
 					local count = tonumber(string_match(countString, "(%d+)"))
 					if (count) and (count > 1) then
-						if (name) then
-							return false, string_format(self.output.item_multiple_other, name, item, count), author, ...
-						else
+						--if (name) then
+						--	return false, string_format(self.output.item_multiple_other, name, item, count), author, ...
+						--else
 							return false, string_format(self.output.item_multiple, item, count), author, ...
-						end
+						--end
 					else
-						if (name) then
-							return false, string_format(self.output.item_single_other, name, item), author, ...
-						else
+						--if (name) then
+						--	return false, string_format(self.output.item_single_other, name, item), author, ...
+						--else
 							return false, string_format(self.output.item_single, item), author, ...
-						end
+						--end
 					end
 				end
 			end
