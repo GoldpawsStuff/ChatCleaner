@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.1.29-Release] 2023-05-03
+## [1.0.29-Release] 2023-05-03
 - Updated for WoW 10.1.0.
 
 ## [1.0.28-Release] 2023-03-25
