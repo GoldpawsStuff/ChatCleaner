@@ -5,6 +5,9 @@ if (not Core) then
 end
 local Module = Core:NewModule("Blacklist")
 
+-- Addon Localization
+local L = Core.L
+
 -- WoW Globals
 local NOT_IN_INSTANCE_GROUP = ERR_NOT_IN_INSTANCE_GROUP -- "You aren't in an instance group."
 local NOT_IN_RAID = ERR_NOT_IN_RAID -- "You are not in a raid group"
@@ -23,8 +26,9 @@ Module.OnInit = function(self)
 	self.db = self:GetParent():GetSavedSettings()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
+
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

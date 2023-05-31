@@ -28,7 +28,7 @@ Module.OnInit = function(self)
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

@@ -1,10 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
+	<Include file="libs\libs.xml"/>
 	<Include file="core\load_core.xml"/>
-
 	<Script file="modules\main.lua"/>
 	<Script file="modules\gui.lua"/>
-
 	<Script file="modules\filters\development.lua"/>
 	<Script file="modules\filters\achievements.lua"/>
 	<Script file="modules\filters\auctions.lua"/>

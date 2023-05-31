@@ -5,6 +5,9 @@ if (not Core) then
 end
 local Module = Core:NewModule("Reputation")
 
+-- Addon Localization
+local L = Core.L
+
 -- Lua API
 local ipairs = ipairs
 local string_format = string.format
@@ -147,8 +150,14 @@ Module.OnInit = function(self)
 	self.db = self:GetParent():GetSavedSettings()
 	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
+
+	Core:GetModule("GUI"):AddMenuItem(self:GetName(),
+		L["Reputation"],
+		L["Simplify messages about reputation gain and loss."]
+	)
+
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

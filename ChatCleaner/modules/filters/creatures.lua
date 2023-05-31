@@ -56,7 +56,7 @@ Module.OnInit = function(self)
 	-- so even though I personally find it helpful, it's best to disable it for the public.
 	-- I'll leave it on by default for dev/git versions.
 	if (self.db["DisableFilter:"..self:GetName()]) or (Private.Version ~= "Development") then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

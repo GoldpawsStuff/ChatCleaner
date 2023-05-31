@@ -27,7 +27,7 @@ Module.OnInit = function(self)
 		end
 	end
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

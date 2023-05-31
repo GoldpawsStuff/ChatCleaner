@@ -17,7 +17,7 @@ Module.OnInit = function(self)
 		table_insert(self.replacements, { color.colorCode, Colors.quality[i].colorCode })
 	end
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

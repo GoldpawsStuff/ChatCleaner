@@ -8,6 +8,9 @@ if (not Core) then
 end
 local Module = Core:NewModule("Achievements")
 
+-- Addon Localization
+local L = Core.L
+
 -- Lua API
 local rawget = rawget
 local rawset = rawset
@@ -52,14 +55,13 @@ Module.OnInit = function(self)
 	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 
-	local GUI = Core:GetModule("GUI")
-	if (GUI) then
-		local L = self:GetParent():GetLocale()
-		GUI:RegisterModule(self, L["Achievements"], L[""])
-	end
+	Core:GetModule("GUI"):AddMenuItem(self:GetName(),
+		L["Achievements"],
+		L["Simplify Achievement messages."]
+	)
 
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

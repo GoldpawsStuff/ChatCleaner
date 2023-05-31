@@ -3,9 +3,9 @@ local Core = Private:NewModule("Core")
 
 -- Default settings.
 -----------------------------------------------------------
-local db = (function(db) _G[Addon.."_DB"] = db; return db end)({
+ChatCleaner_DB = {
 
-})
+}
 
 -- Localization system.
 -----------------------------------------------------------
@@ -51,8 +51,45 @@ end)({
 		["G"] = true, 		-- Guild
 		["O"] = true, 		-- Officer
 
-		-- Will use a WoW global if it's available, but have a fallback if not.
-		["Achievements"] = TRACKER_HEADER_ACHIEVEMENTS or "Achievements"
+		["Filter Selection"] = true,
+		["Choose which chat filters should be activated. Setting changes require a reload to take effect."] = true,
+		["Apply the current settings and reload the UI. Settings will still be stored if you don't do this, but won't be applied until you reload the user interface, relog or exit the game."] = true,
+
+		["Achievements"] = true,
+		["Simplify Achievement messages."] = true,
+
+		["Auctions"] = true,
+		["Suppress auction messages while auction frame is open, display summary after."] = true,
+
+		["Chat Channel Names"] = true,
+		["Abbreviate and simplify chat channel display names."] = true,
+
+		["Experience"] = true,
+		["Abbreviate and simplify experience- and level gains."] = true,
+
+		["Garrison Followers"] = true,
+		["Abbreviate and simplify garrison- and mission table messages related to gained or lost followers."] = true,
+
+		["Loot"] = true,
+		["Abbreviate and simplify loot-, currency- and received item messages."] = true,
+
+		["Player Names"] = true,
+		["Remove brackets from player names."] = true,
+
+		["Quests"] = true,
+		["Simplify quest completion- and progress messages."] = true,
+
+		["Reputation"] = true,
+		["Simplify messages about reputation gain and loss."] = true,
+
+		["Learning (Spells)"] = true,
+		["Blacklist messages about new or removed spells, typically spammed on specialization changes."] = true,
+
+		["Player Status"] = true,
+		["Simplify status messages about AFK, DND and being rested."] = true,
+
+		["Learning (Crafting)"] = true,
+		["Simplify messages about new or improved trade skills."] = true
 
 	},
 	["deDE"] = {},
@@ -67,9 +104,13 @@ end)({
 	["zhTW"] = {}
 
 -- The primary/default locale of your addon.
--- * You should change this code to your default locale.
+-- * You should set this to your addon's default locale.
+-- * This setting is unrelated to the game client's locale.
 -- * Note that you MUST include a full table for your primary/default locale!
 }, "enUS")
+
+-- Give modules access to localization.
+Core.L = L
 
 -- Lua API
 local ipairs = ipairs
@@ -78,13 +119,6 @@ local setmetatable = setmetatable
 local string_gsub = string.gsub
 local table_insert = table.insert
 local unpack = unpack
-
--- WoW API
-local FCF_GetCurrentChatFrame = FCF_GetCurrentChatFrame
-local hooksecurefunc = hooksecurefunc
-
--- WoW Objects
-local CHAT_FRAMES = CHAT_FRAMES
 
 -- WoW Globals
 local ACCEPTED = CALENDAR_STATUS_ACCEPTED -- "Accepted"
@@ -278,7 +312,7 @@ Core.GetOutputTemplates = function(self)
 end
 
 Core.GetSavedSettings = function(self)
-	return db
+	return ChatCleaner_DB
 end
 
 Core.GetLocale = function(self)
@@ -289,7 +323,7 @@ Core.OnEvent = function(self, event, ...)
 end
 
 Core.OnInit = function(self)
-	self.db = db
+	self.db = self:GetSavedSettings()
 
 	-- Output patterns.
 	-- *uses a simple color tag system for new strings.

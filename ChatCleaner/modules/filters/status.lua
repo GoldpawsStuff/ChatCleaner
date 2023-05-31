@@ -5,6 +5,9 @@ if (not Core) then
 end
 local Module = Core:NewModule("Status")
 
+-- Addon Localization
+local L = Core.L
+
 -- Lua API
 local rawget = rawget
 local rawset = rawset
@@ -87,8 +90,14 @@ Module.OnInit = function(self)
 	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
+
+	Core:GetModule("GUI"):AddMenuItem(self:GetName(),
+		L["Player Status"],
+		L["Simplify status messages about AFK, DND and being rested."]
+	)
+
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

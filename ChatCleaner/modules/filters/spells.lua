@@ -5,6 +5,9 @@ if (not Core) then
 end
 local Module = Core:NewModule("Spells")
 
+-- Addon Localization
+local L = Core.L
+
 -- Lua API
 local rawget = rawget
 local rawset = rawset
@@ -45,8 +48,14 @@ Module.OnInit = function(self)
 	self.db = self:GetParent():GetSavedSettings()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
+
+	Core:GetModule("GUI"):AddMenuItem(self:GetName(),
+		L["Learning (Spells)"],
+		L["Blacklist messages about new or removed spells, typically spammed on specialization changes."]
+	)
+
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

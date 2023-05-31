@@ -5,6 +5,9 @@ if (not Core) then
 end
 local Module = Core:NewModule("Tradeskills")
 
+-- Addon Localization
+local L = Core.L
+
 -- Lua API
 local rawget = rawget
 local rawset = rawset
@@ -72,8 +75,14 @@ Module.OnInit = function(self)
 	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
+
+	Core:GetModule("GUI"):AddMenuItem(self:GetName(),
+		L["Learning (Crafting)"],
+		L["Simplify messages about new or improved trade skills."]
+	)
+
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

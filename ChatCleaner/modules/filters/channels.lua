@@ -5,6 +5,9 @@ if (not Core) then
 end
 local Module = Core:NewModule("Channels")
 
+-- Addon Localization
+local L = Core.L
+
 -- Lua API
 local string_match = string.match
 local table_insert = table.insert
@@ -43,8 +46,13 @@ Module.OnInit = function(self)
 	table_insert(self.replacements, {"|Hchannel:(%w+):(%d)|h%[(%d)%. (%w+)%]|h", "|Hchannel:%1:%2|h%3.|h"})
 	table_insert(self.replacements, {"|Hchannel:(%w+)|h%[(%w+)%]|h", "|Hchannel:%1|h%2|h"})
 
+	Core:GetModule("GUI"):AddMenuItem(self:GetName(),
+		L["Chat Channel Names"],
+		L["Abbreviate and simplify chat channel display names."]
+	)
+
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

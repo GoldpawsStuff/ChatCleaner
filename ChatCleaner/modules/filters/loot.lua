@@ -5,6 +5,9 @@ if (not Core) then
 end
 local Module = Core:NewModule("Loot")
 
+-- Addon Localization
+local L = Core.L
+
 -- Lua API
 local ipairs = ipairs
 local string_find = string.find
@@ -245,8 +248,14 @@ Module.OnInit = function(self)
 	end
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
+
+	Core:GetModule("GUI"):AddMenuItem(self:GetName(),
+		L["Loot"],
+		L["Abbreviate and simplify loot-, currency- and received item messages."]
+	)
+
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

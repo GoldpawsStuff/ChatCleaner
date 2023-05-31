@@ -331,7 +331,7 @@ Module.OnInit = function(self)
 	MailFrame:HookScript("OnHide", self.hooks.proxy)
 	MerchantFrame:HookScript("OnHide", self.hooks.proxy)
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

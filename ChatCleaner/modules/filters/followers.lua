@@ -8,6 +8,9 @@ if (not Core) then
 end
 local Module = Core:NewModule("Followers")
 
+-- Addon Localization
+local L = Core.L
+
 -- Lua API
 local rawget = rawget
 local rawset = rawset
@@ -71,8 +74,14 @@ Module.OnInit = function(self)
 	self.db = self:GetParent():GetSavedSettings()
 	self.output = self:GetParent():GetOutputTemplates()
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
+
+	Core:GetModule("GUI"):AddMenuItem(self:GetName(),
+		L["Garrison Followers"],
+		L["Abbreviate and simplify garrison- and mission table messages related to gained or lost followers."]
+	)
+
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

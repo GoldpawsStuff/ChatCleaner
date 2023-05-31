@@ -5,6 +5,9 @@ if (not Core) then
 end
 local Module = Core:NewModule("Auctions")
 
+-- Addon Localization
+local L = Core.L
+
 -- Lua API
 local rawget = rawget
 local rawset = rawset
@@ -136,8 +139,14 @@ Module.OnInit = function(self)
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
 	self.AuctionFrameWasHiddenProxy = function(...) return (self.filterEnabled) and self:AuctionFrameWasHidden(...) end
+
+	Core:GetModule("GUI"):AddMenuItem(self:GetName(),
+		L["Auctions"],
+		L["Suppress auction messages while auction frame is open, display summary after."]
+	)
+
 	if (self.db["DisableFilter:"..self:GetName()]) then
-		return self:SetUserDisabled()
+		return self:SetUserDisabled(true)
 	end
 end
 

@@ -4,221 +4,117 @@ if (not Core) then
 	return
 end
 
-local L = Core.L
 local GUI = Core:NewModule("GUI")
 
--- Lua API
-local pairs = pairs
-local rawget = rawget
-local rawset = rawset
-local setmetatable = setmetatable
-local table_insert = table.insert
-local table_sort = table.sort
-local type = type
+-- Addon Localization
+local L = Core.L
 
--- WoW API
-local CreateFont = CreateFont
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
+local AceGUI = LibStub("AceGUI-3.0")
 
--- Utility
------------------------------------------------------------
--- Metatable that automatically
--- creates the needed tables and font objects.
-local font_metatable
-do
-	local prefix, count = Addon.."Font", 0
-	font_metatable = {
-		__index = function(t,k)
-			if (type(k) == "string") then
-				local new = setmetatable({},font_metatable)
-				rawset(t,k,new)
-				return new
-			elseif (type(k) == "number") then
-				count = count + 1
-				local new = CreateFont(prefix..count)
-				rawset(t,k,new)
-				return new
-			end
-		end
+local setter = function(info,val)
+	Core:GetSavedSettings()["DisableFilter:"..info[#info]] = not val
+end
+
+local getter = function(info)
+	return not Core:GetSavedSettings()["DisableFilter:"..info[#info]]
+end
+
+GUI.AddMenuItem = function(self, moduleName, optionName, optionDescription)
+	if (not self.objects) then
+		self.objects = {}
+	end
+	self.objects[#self.objects + 1] = {
+		name = moduleName,
+		item = {
+			name = optionName,
+			desc = optionDescription,
+			width = "full",
+			type = "toggle",
+			set = setter,
+			get = getter
+		}
 	}
 end
 
--- Return a font object, re-use existing ones that match.
-local Fonts = setmetatable({}, font_metatable)
-local GetFont = function(size, outline, type)
-	local inherit = type == "Chat" and ChatFontNormal or type == "Number" and NumberFont_Normal_Med or Game16Font
-	local fontObject = Fonts[type or "Normal"][outline and "Outline" or "None"][size]
-	if (fontObject:GetFontObject() ~= inherit) then
-		fontObject:SetFontObject(inherit)
-		fontObject:SetFont(fontObject:GetFont(), size, outline and "OUTLINE" or "")
-		fontObject:SetShadowColor(0,0,0,0)
-		fontObject:SetShadowOffset(0,0)
-	end
-	return fontObject
-end
-
--- Retrieve media from the disk
-local GetMedia = function(name, type)
-	return ([[Interface\AddOns\%s\media\%s.%s]]):format(Addon, name, type or "tga")
-end
-
-local SortByName = function(a,b)
-	if (a) and (b) then
-		if (a.title) and (b.title) then
-			return (a.title > b.title)
-		else
-			return (a.title) and true or false
-		end
-	else
-		return (a) and true or false
-	end
-end
-
--- Widget API
------------------------------------------------------------
-
-
--- Module API
------------------------------------------------------------
-GUI.GetGUI = function(self)
-	if (not self.gui) then
-		local gui = CreateFrame("Frame", nil, UIParent, Private.BackdropTemplate)
-		gui:Hide()
-
-		gui:SetIgnoreParentScale(true)
-		gui:SetScale(768/1080)
-		gui:SetSize(660,60)
-		gui:SetPoint("CENTER")
-
-		local r, g, b, a = 0, 0, 0, .75
-		local centerSize = 660/3
-
-		local center = gui:CreateTexture(nil, "BACKGROUND")
-		center:SetPoint("RIGHT", gui, "CENTER", centerSize/2, 0)
-		center:SetPoint("LEFT", gui, "CENTER", -centerSize/2, 0)
-		center:SetPoint("TOP", gui, "TOP")
-		center:SetPoint("BOTTOM", gui, "BOTTOM")
-		center:SetColorTexture(r, g, b, a)
-
-		local left = gui:CreateTexture(nil, "BACKGROUND")
-		left:SetPoint("RIGHT", center, "LEFT")
-		left:SetPoint("LEFT", gui, "LEFT")
-		left:SetPoint("TOP", gui, "TOP")
-		left:SetPoint("BOTTOM", gui, "BOTTOM")
-		left:SetColorTexture(r, g, b, a)
-		left:SetGradientAlpha("HORIZONTAL", 1, 1, 1, 0, 1, 1, 1, 1)
-
-		local right = gui:CreateTexture(nil, "BACKGROUND")
-		right:SetPoint("LEFT", center, "RIGHT")
-		right:SetPoint("RIGHT", gui, "RIGHT")
-		right:SetPoint("TOP", gui, "TOP")
-		right:SetPoint("BOTTOM", gui, "BOTTOM")
-		right:SetColorTexture(r, g, b, a)
-		right:SetGradientAlpha("HORIZONTAL", 1, 1, 1, 1, 1, 1, 1, 0)
-
-		local label = gui:CreateFontString(nil, "OVERLAY")
-		label:SetFontObject(GetFont(32), true)
-		label:SetTextColor(unpack(Private.Colors.offwhite))
-		label:SetPoint("CENTER")
-		label:SetJustifyH("CENTER")
-		label:SetJustifyV("MIDDLE")
-		label:SetText("Achievements")
-
-		local createDummyList = function()
-			local list = {
-				"Achievements",
-				"Auctions",
-				"Experience",
-				"Loot & Currency",
-				"Learning & Unlearning",
-				"Reputation",
-				"Colors: Class",
-				"Colors: Quality",
+GUI.GenerateOptionsObject = function(self)
+	local options = {
+		type = "group",
+		args = {
+			header = {
+				order = 1,
+				type = "header",
+				name = L["Filter Selection"]
+			},
+			applyHeader = {
+				order = 1000,
+				type = "header",
+				name = APPLY
+			},
+			apply = {
+				order = 1001,
+				name = RELOADUI,
+				type = "execute",
+				width = "full",
+				desc = L["Apply the current settings and reload the UI. Settings will still be stored if you don't do this, but won't be applied until you reload the user interface, relog or exit the game."],
+				func = ReloadUI
 			}
-		end
-		createDummyList()
-
-		local onShow = function(self)
-			-- Pass keyboard input to other frames while visible.
-			self:SetPropagateKeyboardInput(true)
-		end
-
-		local onKeyDown = function(self, key)
-			if (key == "ESCAPE") then
-				-- If Escape is pressed, consume the input,
-				-- to prevent it from closing any other windows than ours.
-				self:SetPropagateKeyboardInput(false)
-				self:Hide()
-			end
-		end
-
-		local onEnter = function(self)
-		end
-
-		local onLeave = function(self)
-		end
-
-		gui:EnableKeyboard(true)
-		gui:EnableMouse(true)
-		gui:EnableMouseWheel(true)
-		gui:SetMouseMotionEnabled(true)
-		gui:SetMouseClickEnabled(true)
-		gui:SetScript("OnKeyDown", onKeyDown)
-		gui:SetScript("OnEnter", onEnter)
-		gui:SetScript("OnLeave", onLeave)
-		gui:SetScript("OnShow", onShow)
-
-		self.gui = gui
-	end
-	return self.gui
+		}
+	}
+	return options
 end
 
-GUI.OpenGUI = function(self)
-	local gui = self:GetGUI()
-	if (not gui) then
-		return
+GUI.GenerateOptionsMenu = function(self)
+	if (not self.objects) then return end
+
+	-- Sort groups by localized name.
+	table.sort(self.objects, function(a,b) return a.name < b.name end)
+
+	-- Generate the options table.
+	local options = self:GenerateOptionsObject()
+	local order,count = 0,0
+	for i,data in ipairs(self.objects) do
+
+		local item
+		if (type(data.item) == "function") then
+			item = data.item()
+		else
+			item = data.item
+		end
+		if (item) then
+			count = count + 1
+			order = order + 10
+			item.order = order
+			options.args[data.name] = item
+		end
 	end
-	gui:Show()
+
+	AceConfigRegistry:RegisterOptionsTable(Addon, options)
+	AceConfigDialog:SetDefaultSize(Addon, 400, 180 + count*24)
 end
 
-GUI.CloseGUI = function(self)
-	local gui = self:GetGUI()
-	if (not gui) then
-		return
+GUI.OpenOptionsMenu = function(self)
+	if (AceConfigRegistry:GetOptionsTable(Addon)) then
+		AceConfigDialog:Open(Addon)
 	end
-	gui:Hide()
 end
 
-GUI.ToggleGUI = function(self)
-	local gui = self:GetGUI()
-	if (not gui) then
-		return
+GUI.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
+		local isInitialLogin, isReloadingUi = ...
+		if (isInitialLogin or isReloadingUi) then
+			self:GenerateOptionsMenu()
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+		end
 	end
-	gui:SetShown((not gui:IsShown()))
-end
-
-GUI.RegisterModule = function(self, module, title, description)
-	local card = { module = module, title = title, description = description }
-	if (not self.cards) then
-		self.cards = {}
-	end
-	table_insert(self.cards, card)
-	table_sort(self.cards, SortByName)
-
-	if (not self.cardsByModule) then
-		self.cardsByModule = {}
-	end
-	self.cardsByModule[module] = card
 end
 
 GUI.OnInit = function(self)
-	if (Private.Version ~= "Development2") then
-		return
-	end
-	self:RegisterChatCommand("cc", "ToggleGUI")
+	self:RegisterChatCommand("/cc", "OpenOptionsMenu")
+	self:RegisterChatCommand("/chatcleaner", "OpenOptionsMenu")
 end
 
 GUI.OnEnable = function(self)
-end
-
-GUI.OnDisable = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 end
