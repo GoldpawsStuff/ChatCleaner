@@ -69,7 +69,7 @@ GUI.GenerateOptionsMenu = function(self)
 	if (not self.objects) then return end
 
 	-- Sort groups by localized name.
-	table.sort(self.objects, function(a,b) return a.name < b.name end)
+	table.sort(self.objects, function(a,b) return a.item.name < b.item.name end)
 
 	-- Generate the options table.
 	local options = self:GenerateOptionsObject()
