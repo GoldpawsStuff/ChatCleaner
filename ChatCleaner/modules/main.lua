@@ -397,8 +397,8 @@ Core.OnInit = function(self)
 	self.output = output
 
 	self.blacklist = setmetatable({}, {
-		__call = function(funcs, ...)
-			for _,func in next,funcs do
+		__call = function(self, ...)
+			for _,func in next,self do
 				if (func(...)) then
 					return true
 				end
@@ -407,8 +407,8 @@ Core.OnInit = function(self)
 	})
 
 	self.replacements = setmetatable({}, {
-		__call = function(sets, msg, ...)
-			for i,set in next,sets do
+		__call = function(self, msg, ...)
+			for i,set in next,self do
 				if (type(set) == "table") then
 					for k,data in ipairs(set) do
 						if (type(data) == "table") then
