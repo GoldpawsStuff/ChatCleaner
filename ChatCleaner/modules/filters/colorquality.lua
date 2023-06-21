@@ -23,7 +23,7 @@ end
 
 Module.OnEnable = function(self)
 	self.filterEnabled = true
-	self:GetParent():AddReplacementSet(self.replacements)
+	self:GetParent():AddReplacementSet(self.replacements, true)
 end
 
 Module.OnDisable = function(self)

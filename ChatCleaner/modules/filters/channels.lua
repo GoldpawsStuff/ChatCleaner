@@ -28,8 +28,7 @@ local CHAT_OFFICER_GET = CHAT_OFFICER_GET
 Module.OnInit = function(self)
 	self.db = self:GetParent():GetSavedSettings()
 	self.replacements = {}
-
-	local L = self:GetParent():GetLocale()
+																																								local L = self:GetParent():GetLocale()
 	if (Private.IsClassic) then
 		table_insert(self.replacements, {"%["..string_match(CHAT_BATTLEGROUND_LEADER_GET, "%[(.-)%]") .. "%]", L["BGL"]})
 		table_insert(self.replacements, {"%["..string_match(CHAT_BATTLEGROUND_GET, "%[(.-)%]") .. "%]", L["BG"]})
@@ -43,8 +42,16 @@ Module.OnInit = function(self)
 	table_insert(self.replacements, {"%["..string_match(CHAT_GUILD_GET, "%[(.-)%]") .. "%]", L["G"]})
 	table_insert(self.replacements, {"%["..string_match(CHAT_OFFICER_GET, "%[(.-)%]") .. "%]", L["O"]})
 	table_insert(self.replacements, {"%["..string_match(CHAT_RAID_WARNING_GET, "%[(.-)%]") .. "%]", "|cffff0000!|r"})
-	table_insert(self.replacements, {"|Hchannel:(%w+):(%d)|h%[(%d)%. (%w+)%]|h", "|Hchannel:%1:%2|h%3.|h"})
-	table_insert(self.replacements, {"|Hchannel:(%w+)|h%[(%w+)%]|h", "|Hchannel:%1|h%2|h"})
+
+	-- Turns "[1. General - The Barrens]" into "General"
+	--table_insert(self.replacements, {"|Hchannel:(.-):(%d+)|h%[(%d)%. (.-)(%s%-%s.-)%]|h", "|Hchannel:%1:%2|h%4.|h"})
+
+	-- Turns "[1. General - The Barrens]" into "1."
+	--table_insert(self.replacements, {"|Hchannel:(.-):(%d+)|h%[(.-)%]|h", "|Hchannel:%1:%2|h%2.|h"})
+	table_insert(self.replacements, {"|Hchannel:(.-):(%d+)|h%[(%d)%. (.-)(%s%-%s.-)%]|h", "|Hchannel:%1:%2|h%3.|h"})
+
+	--table_insert(self.replacements, {"|Hchannel:(%w+):(%d+)|h%[(%d)%. (%w+)%]|h", "|Hchannel:%1:%2|h%3.|h"})
+	--table_insert(self.replacements, {"|Hchannel:(%w+)|h%[(%w+)%]|h", "|Hchannel:%1|h%2|h"})
 
 	Core:GetModule("GUI"):AddMenuItem(self:GetName(),
 		L["Chat Channel Names"],
@@ -58,7 +65,7 @@ end
 
 Module.OnEnable = function(self)
 	self.filterEnabled = true
-	self:GetParent():AddReplacementSet(self.replacements)
+	self:GetParent():AddReplacementSet(self.replacements, true)
 end
 
 Module.OnDisable = function(self)

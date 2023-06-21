@@ -209,7 +209,7 @@ for _,index in ipairs({
 	"CHANNEL18",
 	"CHANNEL19",
 	"CHANNEL20",
-	--"ACHIEVEMENT",
+	"ACHIEVEMENT",
 	"PARTY_LEADER",
 	"BN_WHISPER",
 	"BN_WHISPER_INFORM",
@@ -234,7 +234,9 @@ Core.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	if (not msg) or (msg == "") then
 		return
 	end
-	-- Don't filter or parse any of the above channels
+	if (next(self.specialreplacements)) then
+		msg = self.specialreplacements(msg, r, g, b, chatID, ...)
+	end
 	if not(chatID and ignoredIDs[chatID]) then
 		if (next(self.blacklist)) then
 			if (self.blacklist(chatFrame, msg, r, g, b, chatID, ...)) then
@@ -279,17 +281,24 @@ Core.RemoveBlacklistMethod = function(self, func)
 	end
 end
 
-Core.AddReplacementSet = function(self, set)
-	for _,inset in next,self.replacements do
+Core.AddReplacementSet = function(self, set, ignoreBlacklist)
+	local group = ignoreBlacklist and self.specialreplacements or self.replacements
+	for _,inset in next,group do
 		if (inset == set) then
 			return
 		end
 	end
-	table_insert(self.replacements, set)
+	table_insert(group, set)
 end
 
 Core.RemoveReplacementSet = function(self, set)
 	for k,inset in next,self.replacements do
+		if (inset == set) then
+			self.replacements[k] = nil
+			break
+		end
+	end
+	for k,inset in next,self.specialreplacements do
 		if (inset == set) then
 			self.replacements[k] = nil
 			break
@@ -424,6 +433,26 @@ Core.OnInit = function(self)
 			return msg
 		end
 	})
+
+	self.specialreplacements = setmetatable({}, {
+		__call = function(self, msg, ...)
+			for i,set in next,self do
+				if (type(set) == "table") then
+					for k,data in ipairs(set) do
+						if (type(data) == "table") then
+							msg = string_gsub(msg, unpack(data))
+						elseif (type(data == "func")) then
+							msg = func(msg, ...) or msg
+						end
+					end
+				elseif (type(set == "func")) then
+					msg = set(msg, ...) or msg
+				end
+			end
+			return msg
+		end
+	})
+
 end
 
 Core.OnEnable = function(self)
