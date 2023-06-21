@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1-0-32-Release] 2023-06-21
+- Bumped to Wrath Classic Client Patch 3.4.2.
+
 ## [1.0.31-Release] 2023-05-31
 ### Added
 - Added an options menu with filter selection, available by typing `/chatcleaner`or `/cc`.
