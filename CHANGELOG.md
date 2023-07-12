@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.34-Release] 2023-07-12
+- Bumped to Retail Client Patch 10.1.5.
+
 ## [1.0.33-Release] 2023-06-21
 ### Fixed
 - Channel- and player names should be properly cleaned up now.
