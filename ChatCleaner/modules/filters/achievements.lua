@@ -26,8 +26,8 @@ local ACHIEVEMENT_BROADCAST = ACHIEVEMENT_BROADCAST -- "%s has earned the achiev
 local makePattern = function(msg)
 	msg = string_gsub(msg, "%%d", "(%%d+)")
 	msg = string_gsub(msg, "%%s", "(.+)")
-	msg = string_gsub(msg, "%%(%d+)%$d", "%%%%%1$(%%d+)")
-	msg = string_gsub(msg, "%%(%d+)%$s", "%%%%%1$(%%s+)")
+	msg = string_gsub(msg, "%%([%d%$]-)d", "(%%d+)")
+	msg = string_gsub(msg, "%%([%d%$]-)s", "(%%s+)")
 	return msg
 end
 
