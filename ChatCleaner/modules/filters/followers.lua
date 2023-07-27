@@ -26,10 +26,10 @@ local GARRISON_FOLLOWER_REMOVED = GARRISON_FOLLOWER_REMOVED -- "%s is no longer 
 
 -- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
-	msg = string_gsub(msg, "%%d", "(%%d+)")
-	msg = string_gsub(msg, "%%s", "(.+)")
+	--msg = string_gsub(msg, "%%d", "(%%d+)")
+	--msg = string_gsub(msg, "%%s", "(.+)")
 	msg = string_gsub(msg, "%%([%d%$]-)d", "(%%d+)")
-	msg = string_gsub(msg, "%%([%d%$]-)s", "(%%s+)")
+	msg = string_gsub(msg, "%%([%d%$]-)s", "(.+)")
 	return msg
 end
 

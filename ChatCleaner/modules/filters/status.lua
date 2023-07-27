@@ -29,10 +29,10 @@ local EXHAUSTION_WELLRESTED = ERR_EXHAUSTION_WELLRESTED -- "You feel well rested
 
 -- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
-	msg = string_gsub(msg, "%%d", "(%%d+)")
-	msg = string_gsub(msg, "%%s", "(.+)")
+	--msg = string_gsub(msg, "%%d", "(%%d+)")
+	--msg = string_gsub(msg, "%%s", "(.+)")
 	msg = string_gsub(msg, "%%([%d%$]-)d", "(%%d+)")
-	msg = string_gsub(msg, "%%([%d%$]-)s", "(%%s+)")
+	msg = string_gsub(msg, "%%([%d%$]-)s", "(.+)")
 	return msg
 end
 
