@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.35-Release] 2023-07-27
+### Fixed
+- Fixed some issue with search patterns in some non-English game clients.
+
 ## [1.0.34-Release] 2023-07-12
 - Bumped to Retail Client Patch 10.1.5.
 
