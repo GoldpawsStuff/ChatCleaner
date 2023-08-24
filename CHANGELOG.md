@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.37-Release] 2023-08-24
+- Updated for Classic client patch 1.14.4.
+
 ## [1.0.36-Release] 2023-07-27
 ### Fixed
 - Fixed the bug introduced in the previous update today.
