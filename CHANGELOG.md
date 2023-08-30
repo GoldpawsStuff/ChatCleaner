@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-08-30
+### Fixed
+- Questie links should no longer be parsed or modified.
+
 ## [1.0.37-Release] 2023-08-24
 - Updated for Classic client patch 1.14.4.
 

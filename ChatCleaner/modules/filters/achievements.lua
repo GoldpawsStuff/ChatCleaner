@@ -15,6 +15,7 @@ local L = Core.L
 local rawget = rawget
 local rawset = rawset
 local setmetatable = setmetatable
+local string_find = string.find
 local string_format = string.format
 local string_gsub = string.gsub
 local string_match = string.match
@@ -39,6 +40,8 @@ local P = setmetatable({}, { __index = function(t,k)
 end })
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
+	if (string_find(message, "|Hquestie")) then return end
+
 	local player_name, achievement = string_match(message, P[ACHIEVEMENT_BROADCAST])
 	if (player_name) and (achievement) then
 

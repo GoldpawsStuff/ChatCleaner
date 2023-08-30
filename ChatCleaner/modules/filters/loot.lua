@@ -54,6 +54,8 @@ local P = setmetatable({}, { __index = function(t,k)
 end })
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
+	if (string_find(message, "|Hquestie")) then return end
+
 	if (event == "CHAT_MSG_CURRENCY") then
 		for i,pattern in ipairs(self.patterns) do
 			-- We use the pattern only as an identifier, not for information.

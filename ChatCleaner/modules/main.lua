@@ -116,6 +116,7 @@ Core.L = L
 local ipairs = ipairs
 local next = next
 local setmetatable = setmetatable
+local string_find = string.find
 local string_gsub = string.gsub
 local table_insert = table.insert
 local unpack = unpack
@@ -234,17 +235,19 @@ Core.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	if (not msg) or (msg == "") then
 		return
 	end
-	if (next(self.specialreplacements)) then
-		msg = self.specialreplacements(msg, r, g, b, chatID, ...)
-	end
-	if not(chatID and ignoredIDs[chatID]) then
-		if (next(self.blacklist)) then
-			if (self.blacklist(chatFrame, msg, r, g, b, chatID, ...)) then
-				return
-			end
+	if (not string_find(msg, "|Hquestie")) then
+		if (next(self.specialreplacements)) then
+			msg = self.specialreplacements(msg, r, g, b, chatID, ...)
 		end
-		if (next(self.replacements)) then
-			msg = self.replacements(msg, r, g, b, chatID, ...)
+		if not(chatID and ignoredIDs[chatID]) then
+			if (next(self.blacklist)) then
+				if (self.blacklist(chatFrame, msg, r, g, b, chatID, ...)) then
+					return
+				end
+			end
+			if (next(self.replacements)) then
+				msg = self.replacements(msg, r, g, b, chatID, ...)
+			end
 		end
 	end
 	return self.MethodCache[chatFrame](chatFrame, msg, r, g, b, chatID, ...)

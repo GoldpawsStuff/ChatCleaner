@@ -12,6 +12,7 @@ local L = Core.L
 local rawget = rawget
 local rawset = rawset
 local setmetatable = setmetatable
+local string_find = string.find
 local string_format = string.format
 local string_gsub = string.gsub
 local string_match = string.match
@@ -58,6 +59,7 @@ Module.AuctionFrameWasHidden = function(self)
 end
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
+	if (string_find(message, "|Hquestie")) then return end
 
 	-- Auction created. Let's queue them?
 	if (message == AUCTION_STARTED) then
