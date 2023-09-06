@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.39-Release] 2023-09-06
+- Updated for Retail client patch 10.1.7.
+
 ## [1.0.38-Release] 2023-09-04
 ### Fixed
 - Questie links should no longer be parsed or modified.
