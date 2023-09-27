@@ -1,0 +1,27 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<!-- Protect the environment -->
+	<Script file="Private.lua"/>
+
+	<!-- Data -->
+	<Script file="Common\Compatibility.lua"/>
+	<Script file="Common\Constants.lua"/>
+	<Script file="Common\Colors.lua"/>
+
+	<!--
+		API
+		* Can rely on anything in the data folder.
+		* Should not cross-reference API files.
+	-->
+	<Script file="API\Addons.lua"/>
+	<Script file="API\Assets.lua"/>
+	<Script file="API\Colors.lua"/>
+
+	<!-- Core -->
+	<Script file="Core.lua"/>
+	<Script file="Options.lua"/>
+
+	<!-- Finalize the environment -->
+	<Script file="Finalize.lua"/>
+
+</Ui>

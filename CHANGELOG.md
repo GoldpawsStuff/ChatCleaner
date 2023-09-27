@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-09-25
+- Restructure to aa fully ace3 based addon.
+- Restructure for externals and more options.
+
 ## [1.0.39-Release] 2023-09-06
 - Updated for Retail client patch 10.1.7.
 

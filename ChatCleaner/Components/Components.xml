@@ -1,0 +1,23 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<Script file="Components\Development.lua"/>
+	<Script file="Components\Achievements.lua"/>
+	<Script file="Components\Auctions.lua"/>
+	<Script file="Components\Blacklist.lua"/>
+	<Script file="Components\Channels.lua"/>
+	<Script file="Components\ColorClass.lua"/>
+	<Script file="Components\ColorQuality.lua"/>
+	<Script file="Components\Creatures.lua"/>
+	<Script file="Components\Experience.lua"/>
+	<Script file="Components\Followers.lua"/>
+	<Script file="Components\Loot.lua"/>
+	<Script file="Components\Money.lua"/>
+	<Script file="Components\PlayerNames.lua"/>
+	<Script file="Components\Quests.lua"/>
+	<Script file="Components\Reputation.lua"/>
+	<Script file="Components\Spells.lua"/>
+	<Script file="Components\Status.lua"/>
+	<Script file="Components\Tradeskills.lua"/>
+	<Script file="Components\Windows.lua"/>
+
+</Ui>

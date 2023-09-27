@@ -1,6 +1,27 @@
 package-as: ChatCleaner
 enable-nolib-creation: no
 
+externals:
+    ChatCleaner/Libs/LibStub:
+        url: svn://svn.wowace.com/wow/libstub/mainline/trunk
+        tag: latest
+    ChatCleaner/Libs/CallbackHandler-1.0:
+        url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
+        tag: latest
+    ChatCleaner/Libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
+    ChatCleaner/Libs/AceEvent-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
+    ChatCleaner/Libs/AceTimer-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
+    ChatCleaner/Libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
+    ChatCleaner/Libs/AceHook-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceHook-3.0
+    ChatCleaner/Libs/AceLocale-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
+    ChatCleaner/Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
+    ChatCleaner/Libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
+    ChatCleaner/Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
+    ChatCleaner/Libs/LibMoreEvents-1.0: https://github.com/GoldpawsStuff/LibMoreEvents-1.0
+    ChatCleaner/Libs/TaintLess:
+        url: https://www.townlong-yak.com/addons.git/taintless
+        commit: default
+
 move-folders:
     ChatCleaner/ChatCleaner: ChatCleaner
 
@@ -15,4 +36,3 @@ ignore:
     - CODE_OF_CONDUCT.md
     - LICENSE.md
     - README.md
-    

@@ -12,5 +12,16 @@
 ## X-License: Custom
 
 ## SavedVariables: ChatCleaner_DB
+## OptionalDeps: TaintLess, Ace3, LibMoreEvents-1.0
 
-ChatCleaner.xml
+# Libraries
+Embeds.xml
+
+# Addon localization
+Locale\Locale.xml
+
+# Addon core
+Core\Core.xml
+
+# Filters & Modules
+Components\Components.xml
