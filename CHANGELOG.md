@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-09-27
 - First part of big v2 rewrite.
-- Restructure to aa fully ace3 based addon.
+- Restructure to a fully ace3 based addon.
 - Restructure for externals and more options.
 
 ## [1.0.39-Release] 2023-09-06
