@@ -25,6 +25,9 @@
 --]]
 local Addon, ns = ...
 
+-- NOT YET IMPLEMENTED!
+do return end
+
 -- Just bail out completely if this module isn't supported.
 if ((function(...)
 	for i = 1,GetNumAddOns() do

@@ -82,40 +82,28 @@ end
 local optionDB = {
 	type = "group",
 	args = {
-		styleWindows = {
-			order = 1,
-			name = L["Style Chat Windows"],
-			desc = L["Will apply a clean, minimalistic styling to the chat windows."],
-			width = "full",
-			type = "toggle",
-			disabled = function(info) return hasaddons("AzeriteUI","TukUI","ElvUI","KkthnxUI","Prat-3.0","ls_Glass") end,
-			set = function(info,value)
-				ns.db.styling = value
-				local windows = ns:GetModule("Windows", true)
-				if (windows) then
-					windows:UpdateSettings()
-				end
-			end,
-			get = function(info) return ns.db.styling end,
-		},
+		-- NOT YET IMPLEMENTED!
+		--styleWindows = {
+		--	order = 1,
+		--	name = L["Style Chat Windows"],
+		--	desc = L["Will apply a clean, minimalistic styling to the chat windows."],
+		--	width = "full",
+		--	type = "toggle",
+		--	disabled = function(info) return hasaddons("AzeriteUI","TukUI","ElvUI","KkthnxUI","Prat-3.0","ls_Glass") end,
+		--	set = function(info,value)
+		--		ns.db.styling = value
+		--		local windows = ns:GetModule("Windows", true)
+		--		if (windows) then
+		--			windows:UpdateSettings()
+		--		end
+		--	end,
+		--	get = function(info) return ns.db.styling end,
+		--},
 		filterHeader = {
 			order = 100,
 			type = "header",
 			name = L["Filter Selection"]
-		},
-		--applyHeader = {
-		--	order = 1000,
-		--	type = "header",
-		--	name = APPLY
-		--},
-		--apply = {
-		--	order = 1001,
-		--	name = RELOADUI,
-		--	type = "execute",
-		--	width = "full",
-		--	desc = L["Apply the current settings and reload the UI. Settings will still be stored if you don't do this, but won't be applied until you reload the user interface, relog or exit the game."],
-		--	func = ReloadUI
-		--}
+		}
 	}
 }
 
