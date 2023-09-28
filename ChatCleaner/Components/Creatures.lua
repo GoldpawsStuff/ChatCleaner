@@ -1,3 +1,28 @@
+--[[
+
+	The MIT License (MIT)
+
+	Copyright (c) 2023 Lars Norberg
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+
+--]]
 local Addon, ns = ...
 
 if (ns.Version ~= "Development") then return end
@@ -5,6 +30,7 @@ if (ns.Version ~= "Development") then return end
 local Module = ns:NewModule("Creatures")
 
 -- GLOBALS: ChatTypeInfo, RaidNotice_AddMessage
+-- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilte
 
 -- Lua API
 local string_format = string.format
@@ -51,6 +77,7 @@ end
 
 Module.OnEnable = function(self)
 	self.filterEnabled = true
+
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_SAY", self.OnChatEventProxy)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_YELL", self.OnChatEventProxy)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", self.OnChatEventProxy)
@@ -59,6 +86,7 @@ end
 
 Module.OnDisable = function(self)
 	self.filterEnabled = nil
+
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONSTER_SAY", self.OnChatEventProxy)
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONSTER_YELL", self.OnChatEventProxy)
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", self.OnChatEventProxy)

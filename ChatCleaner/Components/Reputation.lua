@@ -1,3 +1,28 @@
+--[[
+
+	The MIT License (MIT)
+
+	Copyright (c) 2023 Lars Norberg
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+
+--]]
 local Addon, ns = ...
 
 local Module = ns:NewModule("Reputation")
@@ -5,27 +30,33 @@ local Module = ns:NewModule("Reputation")
 -- Addon Localization
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
--- GLOBALS: ExpandFactionHeader, GetFactionInfo, GetFriendshipReputation, GetNumFactions
+-- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilter
+-- GLOBALS: GetNumFactions, GetFactionInfo, GetFriendshipReputation, CollapseFactionHeader, ExpandFactionHeader
 
 -- Lua API
 local ipairs = ipairs
+local next = next
+local rawget = rawget
+local rawset = rawset
+local setmetatable = setmetatable
 local string_format = string.format
 local string_gsub = string.gsub
 local string_match = string.match
 local table_insert = table.insert
+local tonumber = tonumber
 local type = type
 
 -- WoW Globals
-local INCREASED = FACTION_STANDING_INCREASED -- "Your %s reputation has increased by %d."
-local DECREASED = FACTION_STANDING_DECREASED -- "Your %s reputation has decreased by %d."
-local INCREASED_GENERIC = FACTION_STANDING_INCREASED_GENERIC -- "Reputation with %s increased."
-local DECREASED_GENERIC = FACTION_STANDING_DECREASED_GENERIC -- "Reputation with %s decreased."
-local REPUTATION = REPUTATION
+local G = {
+	INCREASED = FACTION_STANDING_INCREASED, -- "Your %s reputation has increased by %d."
+	DECREASED = FACTION_STANDING_DECREASED, -- "Your %s reputation has decreased by %d."
+	INCREASED_GENERIC = FACTION_STANDING_INCREASED_GENERIC, -- "Reputation with %s increased."
+	DECREASED_GENERIC = FACTION_STANDING_DECREASED_GENERIC, -- "Reputation with %s decreased."
+	REPUTATION = REPUTATION
+}
 
 -- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
-	--msg = string_gsub(msg, "%%d", "(%%d+)")
-	--msg = string_gsub(msg, "%%s", "(.+)")
 	msg = string_gsub(msg, "%%([%d%$]-)d", "(%%d+)")
 	msg = string_gsub(msg, "%%([%d%$]-)s", "(.+)")
 	return msg
@@ -50,7 +81,6 @@ local fix = function(...)
 	end
 	return string,number
 end
-
 
 Module.GetFactionColored = function(self, faction)
 	local Colors = ns.Colors
@@ -78,9 +108,12 @@ Module.GetFactionColored = function(self, faction)
 	-- If nothing was found, the header was most likely collapsed.
 	-- Going to force all headers to be expanded now, and repeat.
 	if (not factionID) then
+		-- Expand all headers in order to search.
+		local collapsedHeaders = {}
 		for i = GetNumFactions(),1,-1 do
 			local factionName, description, standingId, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionId, hasBonusRepGain, canBeLFGBonus = GetFactionInfo(i)
 			if (isHeader) and (isCollapsed) then
+				collapsedHeaders[i] = true
 				ExpandFactionHeader(i)
 			end
 		end
@@ -103,6 +136,10 @@ Module.GetFactionColored = function(self, faction)
 				break
 			end
 		end
+		-- Collapse headers we previously expanded.
+		for i in next,collapsedHeaders do
+			CollapseFactionHeader(i)
+		end
 	end
 	return faction
 end
@@ -110,32 +147,32 @@ end
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	local faction,value
 
-	faction,value = fix(string_match(message,P[INCREASED]))
+	faction,value = fix(string_match(message,P[G.INCREASED]))
 	if (faction) then
 		if (value) then
-			return false, string_format(self.output.standing, value, REPUTATION, faction), author, ...
+			return false, string_format(self.output.standing, value, G.REPUTATION, faction), author, ...
 		else
-			return false, string_format(self.output.standing_generic, REPUTATION, faction), author, ...
+			return false, string_format(self.output.standing_generic, G.REPUTATION, faction), author, ...
 		end
 	end
 
-	faction,value = fix(string_match(message,P[DECREASED]))
+	faction,value = fix(string_match(message,P[G.DECREASED]))
 	if (faction) then
 		if (value) then
-			return false, string_format(self.output.standing_deficit, value, REPUTATION, faction), author, ...
+			return false, string_format(self.output.standing_deficit, value, G.REPUTATION, faction), author, ...
 		else
-			return false, string_format(self.output.standing_deficit_generic, REPUTATION, faction), author, ...
+			return false, string_format(self.output.standing_deficit_generic, G.REPUTATION, faction), author, ...
 		end
 	end
 
-	faction = fix(string_match(message,P[INCREASED_GENERIC]))
+	faction = fix(string_match(message,P[G.INCREASED_GENERIC]))
 	if (faction) then
-		return false, string_format(self.output.standing_generic, REPUTATION, faction), author, ...
+		return false, string_format(self.output.standing_generic, G.REPUTATION, faction), author, ...
 	end
 
-	faction = fix(string_match(message,P[DECREASED_GENERIC]))
+	faction = fix(string_match(message,P[G.DECREASED_GENERIC]))
 	if (faction) then
-		return false, string_format(self.output.standing_deficit_generic, REPUTATION, faction), author, ...
+		return false, string_format(self.output.standing_deficit_generic, G.REPUTATION, faction), author, ...
 	end
 end
 

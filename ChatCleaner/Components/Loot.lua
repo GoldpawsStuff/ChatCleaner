@@ -1,3 +1,28 @@
+--[[
+
+	The MIT License (MIT)
+
+	Copyright (c) 2023 Lars Norberg
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+
+--]]
 local Addon, ns = ...
 
 local Module = ns:NewModule("Loot")
@@ -5,8 +30,14 @@ local Module = ns:NewModule("Loot")
 -- Addon Localization
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
+-- GLOBALS: UnitClass
+-- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilte
+
 -- Lua API
 local ipairs = ipairs
+local rawget = rawget
+local rawset = rawset
+local setmetatable = setmetatable
 local string_find = string.find
 local string_format = string.format
 local string_gsub = string.gsub
@@ -17,27 +48,27 @@ local table_remove = table.remove
 local tonumber = tonumber
 
 -- WoW Globals
-local LEARN_BATTLE_PET = BATTLE_PET_NEW_PET -- "%s has been added to your pet journal!"
-local LEARN_COMPANION = ERR_LEARN_COMPANION_S -- "You have added the pet %s to your collection."
-local LEARN_HEIRLOOM = ERR_LEARN_HEIRLOOM_S -- "%s has been added to your heirloom collection."
-local LEARN_MOUNT = ERR_LEARN_MOUNT_S -- "You have added the mount %s to your collection."
-local LEARN_TOY = ERR_LEARN_TOY_S -- "%s has been added to your Toy Box."
-local LEARN_TRANSMOG = ERR_LEARN_TRANSMOG_S -- "%s has been added to your appearance collection."
-local COMPANIONS = COMPANIONS -- "Companions"
-local HEIRLOOMS = HEIRLOOMS -- "Heirlooms"
-local MOUNTS = MOUNTS -- "Mounts"
-local PETS = PETS -- "Pets"
-local TOY_BOX = TOY_BOX -- "Toy Box"
-local WARDROBE = WARDROBE -- "Appearances"
-local LOOT_SPEC_CHANGED = ERR_LOOT_SPEC_CHANGED_S -- "Loot Specialization set to: %s"
-local SELECT_LOOT_SPECIALIZATION = SELECT_LOOT_SPECIALIZATION -- "Loot Specialization"
+local G = {
+	LEARN_BATTLE_PET = BATTLE_PET_NEW_PET, -- "%s has been added to your pet journal!"
+	LEARN_COMPANION = ERR_LEARN_COMPANION_S, -- "You have added the pet %s to your collection."
+	LEARN_HEIRLOOM = ERR_LEARN_HEIRLOOM_S, -- "%s has been added to your heirloom collection."
+	LEARN_MOUNT = ERR_LEARN_MOUNT_S, -- "You have added the mount %s to your collection."
+	LEARN_TOY = ERR_LEARN_TOY_S, -- "%s has been added to your Toy Box."
+	LEARN_TRANSMOG = ERR_LEARN_TRANSMOG_S, -- "%s has been added to your appearance collection."
+	COMPANIONS = COMPANIONS, -- "Companions"
+	HEIRLOOMS = HEIRLOOMS, -- "Heirlooms"
+	MOUNTS = MOUNTS, -- "Mounts"
+	PETS = PETS, -- "Pets"
+	TOY_BOX = TOY_BOX, -- "Toy Box"
+	WARDROBE = WARDROBE, -- "Appearances"
+	LOOT_SPEC_CHANGED = ERR_LOOT_SPEC_CHANGED_S, -- "Loot Specialization set to: %s"
+	SELECT_LOOT_SPECIALIZATION = SELECT_LOOT_SPECIALIZATION -- "Loot Specialization"
+}
 
 local _,playerClass = UnitClass("player")
 
 -- Convert a WoW global string to a search pattern
 local makePattern = function(msg)
-	--msg = string_gsub(msg, "%%d", "(%%d+)")
-	--msg = string_gsub(msg, "%%s", "(.+)")
 	msg = string_gsub(msg, "%%([%d%$]-)d", "(%%d+)")
 	msg = string_gsub(msg, "%%([%d%$]-)s", "(.+)")
 	return msg
@@ -55,6 +86,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 	if (event == "CHAT_MSG_CURRENCY") then
 		for i,pattern in ipairs(self.patterns) do
+
 			-- We use the pattern only as an identifier, not for information.
 			local item, count = string_match(message,pattern)
 			if (item) then
@@ -64,9 +96,11 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 				-- |cffffffff|Hitem:itemID:::::|h[display name]|h|r
 				local first, last = string_find(message, "|c(.+)|r")
 				if (first and last) then
+
 					-- Find the actual item name
 					local item = string_sub(message, first, last)
 					item = string_gsub(item, "[%[/%]]", "") -- kill brackets
+
 					-- Parse our way to the item count
 					local countString = string_sub(message, last + 1)
 					local count = tonumber(string_match(countString, "(%d+)"))
@@ -89,6 +123,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 	elseif (event == "CHAT_MSG_LOOT") then
 		for i,pattern in ipairs(self.patterns) do
+
 			-- We use the pattern only as an identifier, not for information.
 			local results = { string_match(message,pattern) }
 			if (#results > 0) then
@@ -139,50 +174,50 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	elseif (event == "CHAT_MSG_SYSTEM") then
 
 		-- When new toys are learned and put into the toy box.
-		local toy = string_match(message, P[LEARN_TOY])
+		local toy = string_match(message, P[G.LEARN_TOY])
 		if (toy) then
-			return false, string_format(self.output.item_transfer, TOY_BOX, toy), author, ...
+			return false, string_format(self.output.item_transfer, G.TOY_BOX, toy), author, ...
 		end
 
 		-- When new transmogs are learned and put into the appearance collection.
-		local appearance = string_match(message, P[LEARN_TRANSMOG])
+		local appearance = string_match(message, P[G.LEARN_TRANSMOG])
 		if (appearance) then
-			return false, string_format(self.output.item_transfer, WARDROBE, appearance), author, ...
+			return false, string_format(self.output.item_transfer, G.WARDROBE, appearance), author, ...
 		end
 
 		-- When a new mount is learned
-		local mount = string_match(message, P[LEARN_MOUNT])
+		local mount = string_match(message, P[G.LEARN_MOUNT])
 		if (mount) then
-			return false, string_format(self.output.item_transfer, MOUNTS, mount), author, ...
+			return false, string_format(self.output.item_transfer, G.MOUNTS, mount), author, ...
 		end
 
 		-- When a new companion is learned
-		local companion = string_match(message, P[LEARN_COMPANION])
+		local companion = string_match(message, P[G.LEARN_COMPANION])
 		if (companion) then
-			return false, string_format(self.output.item_transfer, COMPANIONS, companion), author, ...
+			return false, string_format(self.output.item_transfer, G.COMPANIONS, companion), author, ...
 		end
 
 		-- When a new battle pet is learned
-		local pet = string_match(message, P[LEARN_BATTLE_PET])
+		local pet = string_match(message, P[G.LEARN_BATTLE_PET])
 		if (pet) then
-			return false, string_format(self.output.item_transfer, PETS, pet), author, ...
+			return false, string_format(self.output.item_transfer, G.PETS, pet), author, ...
 		end
 
 		-- When a new battle pet is learned
-		local heirloom = string_match(message, P[LEARN_HEIRLOOM])
+		local heirloom = string_match(message, P[G.LEARN_HEIRLOOM])
 		if (heirloom) then
-			return false, string_format(self.output.item_transfer, HEIRLOOMS, heirloom), author, ...
+			return false, string_format(self.output.item_transfer, G.HEIRLOOMS, heirloom), author, ...
 		end
 
 		-- Loot spec changed, or just reported
 		-- This one fires on manual changes after login.
 		-- The initial message on reloads or login is not captured here,
 		-- as the chat frames haven't yet been registered for user events at that point.
-		local lootspec = string_match(message, P[LOOT_SPEC_CHANGED])
+		local lootspec = string_match(message, P[G.LOOT_SPEC_CHANGED])
 		if (lootspec) then
 			--lootspec = ns.Colors.class[playerClass].colorCode .. lootspec .. "|r"
 			--return false, string_format(self.output.item_transfer, SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
-			return false, string_format(self.output.achievement2, SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
+			return false, string_format(self.output.achievement2, G.SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
 		end
 
 	end
@@ -193,11 +228,12 @@ Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 	-- Loot spec changed, or just reported
 	-- This one will fire at the initial PLAYER_ENTERING_WORLD,
 	-- as the chat frames haven't yet been registered for user events at that point.
-	local lootspec = string_match(msg, P[LOOT_SPEC_CHANGED])
+	local lootspec = string_match(msg, P[G.LOOT_SPEC_CHANGED])
 	if (lootspec) then
+
 		--lootspec = ns.Colors.class[playerClass].colorCode .. lootspec .. "|r"
 		--return string_format(self.output.item_transfer, SELECT_LOOT_SPECIALIZATION, lootspec)
-		return string_format(self.output.achievement2, SELECT_LOOT_SPECIALIZATION, lootspec)
+		return string_format(self.output.achievement2, G.SELECT_LOOT_SPECIALIZATION, lootspec)
 	end
 
 end
@@ -205,6 +241,7 @@ end
 Module.OnInitialize = function(self)
 	self.output = ns:GetOutputTemplates()
 	self.patterns = {}
+
 	for i,global in ipairs({
 
 		-- These all return item,
@@ -244,13 +281,16 @@ Module.OnInitialize = function(self)
 			table_insert(self.patterns, makePattern(msg))
 		end
 	end
+
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
 end
 
 Module.OnEnable = function(self)
 	self.filterEnabled = true
+
 	ns:AddReplacementSet(self.OnReplacementSetProxy)
+
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_CURRENCY", self.OnChatEventProxy)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", self.OnChatEventProxy)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
@@ -258,7 +298,9 @@ end
 
 Module.OnDisable = function(self)
 	self.filterEnabled = nil
+
 	ns:RemoveReplacementSet(self.OnReplacementSetProxy)
+
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_CURRENCY", self.OnChatEventProxy)
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_LOOT", self.OnChatEventProxy)
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
