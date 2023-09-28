@@ -460,5 +460,7 @@ ns.OnEnable = function(self)
 			end
 		end
 	end
+
+	self:GetModule("Money"):Enable()
 end
 
