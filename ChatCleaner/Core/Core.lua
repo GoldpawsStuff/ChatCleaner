@@ -373,6 +373,7 @@ ns.OnInitialize = function(self)
 	output.item_single_other = "*offwhite*!**%s*gray*:** %s"
 	output.item_multiple_other = "*offwhite*!**%s*gray*:** %s *offwhite*(%d)**"
 	output.item_deficit = "*red*- %s**"
+	output.item_deficit_multiple = "*red*- %s** *offwhite*(%d)**"
 	output.item_transfer = "*gray*+** *white*%s:** %s"
 	output.money = output.__gain
 	output.money_deficit = "*gray*-** %s"
