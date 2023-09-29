@@ -35,11 +35,9 @@ local replacements = {
 }
 
 Module.OnEnable = function(self)
-	self.filterEnabled = true
 	ns:AddReplacementSet(replacements, true)
 end
 
 Module.OnDisable = function(self)
-	self.filterEnabled = nil
 	ns:RemoveReplacementSet(replacements)
 end

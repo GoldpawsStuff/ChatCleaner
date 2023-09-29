@@ -53,13 +53,9 @@ Module.OnInitialize = function(self)
 end
 
 Module.OnEnable = function(self)
-	self.filterEnabled = true
-
 	ns:AddBlacklistMethod(self.OnAddMessageProxy)
 end
 
 Module.OnDisable = function(self)
-	self.filterEnabled = nil
-
 	ns:RemoveBlacklistMethod(self.OnAddMessageProxy)
 end

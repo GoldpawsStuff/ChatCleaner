@@ -76,8 +76,6 @@ Module.OnInitialize = function(self)
 end
 
 Module.OnEnable = function(self)
-	self.filterEnabled = true
-
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_SAY", self.OnChatEventProxy)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_YELL", self.OnChatEventProxy)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", self.OnChatEventProxy)
@@ -85,8 +83,6 @@ Module.OnEnable = function(self)
 end
 
 Module.OnDisable = function(self)
-	self.filterEnabled = nil
-
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONSTER_SAY", self.OnChatEventProxy)
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONSTER_YELL", self.OnChatEventProxy)
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", self.OnChatEventProxy)

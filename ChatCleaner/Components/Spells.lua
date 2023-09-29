@@ -165,7 +165,6 @@ Module.OnInitialize = function(self)
 end
 
 Module.OnEnable = function(self)
-	self.filterEnabled = true
 	self.abilities = 0
 	self.passives = 0
 	self.spells = 0
@@ -175,7 +174,6 @@ Module.OnEnable = function(self)
 end
 
 Module.OnDisable = function(self)
-	self.filterEnabled = nil
 	self.abilities = 0
 	self.passives = 0
 	self.spells = 0

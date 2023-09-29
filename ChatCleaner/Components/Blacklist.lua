@@ -53,16 +53,12 @@ Module.OnInitialize = function(self)
 end
 
 Module.OnEnable = function(self)
-	self.filterEnabled = true
-
 	ns:AddBlacklistMethod(self.OnAddMessageProxy)
 
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
 end
 
 Module.OnDisable = function(self)
-	self.filterEnabled = nil
-
 	ns:RemoveBlacklistMethod(self.OnAddMessageProxy)
 
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)

@@ -98,13 +98,13 @@ Module.OnInitialize = function(self)
 end
 
 Module.OnEnable = function(self)
-	self.filterEnabled = true
 	ns:AddReplacementSet(self.OnReplacementSetProxy)
+
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SKILL", self.OnChatEventProxy)
 end
 
 Module.OnDisable = function(self)
-	self.filterEnabled = nil
 	ns:RemoveReplacementSet(self.OnReplacementSetProxy)
+
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SKILL", self.OnChatEventProxy)
 end

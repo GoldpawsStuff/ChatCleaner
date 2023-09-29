@@ -149,15 +149,11 @@ Module.OnInitialize = function(self)
 end
 
 Module.OnEnable = function(self)
-	self.filterEnabled = true
-
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_XP_GAIN", self.OnChatEventProxy)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
 end
 
 Module.OnDisable = function(self)
-	self.filterEnabled = nil
-
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_COMBAT_XP_GAIN", self.OnChatEventProxy)
 	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
 end

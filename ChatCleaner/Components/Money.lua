@@ -264,7 +264,7 @@ Module.SpecialFrameWasHidden = function(self, frame)
 end
 
 Module.OnSpecialFrameHide = function(self, frame, ...)
-	return (self.filterEnabled) and self:SpecialFrameWasHidden(frame, ...)
+	return (self:IsEnabled()) and self:SpecialFrameWasHidden(frame, ...)
 end
 
 Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
@@ -377,7 +377,7 @@ Module.OnInitialize = function(self)
 end
 
 Module.OnEnable = function(self)
-	self.filterEnabled = true
+
 	self.playerMoney = GetMoney()
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
@@ -390,7 +390,7 @@ Module.OnEnable = function(self)
 end
 
 Module.OnDisable = function(self)
-	self.filterEnabled = nil
+
 	self.playerMoney = 0
 
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")

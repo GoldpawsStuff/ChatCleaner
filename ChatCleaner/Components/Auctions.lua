@@ -81,6 +81,7 @@ Module.SpecialFrameWasHidden = function(self)
 
 		DEFAULT_CHAT_FRAME:AddMessage(msg, info.r, info.g, info.b, info.id)
 	end
+
 	if (self.queuedStarted) then
 		local msg = (self.queuedStarted > 1) and string_format(self.output.auction_multiple, self.queuedStarted) or self.output.auction_single
 
@@ -93,7 +94,7 @@ Module.SpecialFrameWasHidden = function(self)
 end
 
 Module.OnSpecialFrameHide = function(self, frame, ...)
-	return (self.filterEnabled) and self:SpecialFrameWasHidden(frame, ...)
+	return (self:IsEnabled()) and self:SpecialFrameWasHidden(frame, ...)
 end
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
@@ -108,7 +109,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		if (frame and frame:IsShown()) then
 
 			if (not self:IsHooked(frame, "OnHide")) then
-				self:HookScript(frame, "OnHide", self.OnAuctionFrameHide)
+				self:HookScript(frame, "OnHide", self.OnSpecialFrameHide)
 			end
 
 			return true
@@ -129,7 +130,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		if (frame and frame:IsShown()) then
 
 			if (not self:IsHooked(frame, "OnHide")) then
-				self:HookScript(frame, "OnHide", self.OnAuctionFrameHide)
+				self:HookScript(frame, "OnHide", self.OnSpecialFrameHide)
 			end
 
 			return true
@@ -161,7 +162,7 @@ Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 		if (frame and frame:IsShown()) then
 
 			if (not self:IsHooked(frame, "OnHide")) then
-				self:HookScript(frame, "OnHide", self.OnAuctionFrameHide)
+				self:HookScript(frame, "OnHide", self.OnSpecialFrameHide)
 			end
 
 			return true
@@ -182,7 +183,7 @@ Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 		if (frame and frame:IsShown()) then
 
 			if (not self:IsHooked(frame, "OnHide")) then
-				self:HookScript(frame, "OnHide", self.OnAuctionFrameHide)
+				self:HookScript(frame, "OnHide", self.OnSpecialFrameHide)
 			end
 
 			return true
@@ -202,12 +203,9 @@ Module.OnInitialize = function(self)
 
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
-
-	self.OnAuctionFrameHide = function(...) return (self.filterEnabled) and self:SpecialFrameWasHidden(...) end
 end
 
 Module.OnEnable = function(self)
-	self.filterEnabled = true
 	self.queuedStarted = nil
 	self.queuedRemoved = nil
 
@@ -217,7 +215,6 @@ Module.OnEnable = function(self)
 end
 
 Module.OnDisable = function(self)
-	self.filterEnabled = nil
 	self.queuedStarted = nil
 	self.queuedRemoved = nil
 

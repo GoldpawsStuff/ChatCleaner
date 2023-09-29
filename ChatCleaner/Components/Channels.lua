@@ -80,13 +80,9 @@ Module.OnInitialize = function(self)
 end
 
 Module.OnEnable = function(self)
-	self.filterEnabled = true
-
 	ns:AddReplacementSet(self.replacements, true)
 end
 
 Module.OnDisable = function(self)
-	self.filterEnabled = nil
-
 	ns:RemoveReplacementSet(self.replacements)
 end
