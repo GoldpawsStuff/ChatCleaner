@@ -32,8 +32,6 @@ local Module = ns:NewModule("Followers")
 -- Addon Localization
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
--- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilte
-
 -- Lua API
 local rawget = rawget
 local rawset = rawset
@@ -69,14 +67,14 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	local follower_exhausted_pattern = P[G.GARRISON_FOLLOWER_DISBANDED] -- "%s has been exhausted."
 	local follower_name = string_match(message, follower_exhausted_pattern)
 	if (follower_name) then
-		return false, string_format(self.output.item_deficit, follower_name), author, ...
+		return false, string_format(ns.out.item_deficit, follower_name), author, ...
 	end
 
 	-- Removed
 	local follower_removed_pattern = P[G.GARRISON_FOLLOWER_REMOVED] -- "%s is no longer your follower."
 	follower_name = string_match(message, follower_removed_pattern)
 	if (follower_name) then
-		return false, string_format(self.output.item_deficit, follower_name), author, ...
+		return false, string_format(ns.out.item_deficit, follower_name), author, ...
 	end
 
 	-- Added
@@ -84,7 +82,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	follower_name = string_match(message, follower_added_pattern)
 	if (follower_name) then
 		follower_name = string_gsub(follower_name, "[%[/%]]", "") -- kill brackets
-		return false, string_format(self.output.item_single, follower_name), author, ...
+		return false, string_format(ns.out.item_single, follower_name), author, ...
 	end
 
 	-- GARRISON_FOLLOWER_LEVEL_UP = "LEVEL UP!"
@@ -93,15 +91,14 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	-- GARRISON_FOLLOWER_XP_ADDED_ZONE_SUPPORT_QUALITY_UP = "%s has gained a quality level!"
 end
 
-Module.OnInitialize = function(self)
-	self.output = ns:GetOutputTemplates()
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
+local onChatEventProxy = function(...)
+	return Module:OnChatEvent(...)
 end
 
 Module.OnEnable = function(self)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 end

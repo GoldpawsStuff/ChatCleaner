@@ -31,8 +31,6 @@ local Module = ns:NewModule("Loot")
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 -- GLOBALS: UnitClass
--- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilte
-
 -- Lua API
 local ipairs = ipairs
 local rawget = rawget
@@ -106,15 +104,15 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 					local count = tonumber(string_match(countString, "(%d+)"))
 					if (count) and (count > 1) then
 						--if (name) then
-						--	return false, string_format(self.output.item_multiple_other, name, item, count), author, ...
+						--	return false, string_format(ns.out.item_multiple_other, name, item, count), author, ...
 						--else
-							return false, string_format(self.output.item_multiple, item, count), author, ...
+							return false, string_format(ns.out.item_multiple, item, count), author, ...
 						--end
 					else
 						--if (name) then
-						--	return false, string_format(self.output.item_single_other, name, item), author, ...
+						--	return false, string_format(ns.out.item_single_other, name, item), author, ...
 						--else
-							return false, string_format(self.output.item_single, item), author, ...
+							return false, string_format(ns.out.item_single, item), author, ...
 						--end
 					end
 				end
@@ -155,15 +153,15 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 				if (item) then
 					if (count) and (count > 1) then
 						if (name) then
-							return false, string_format(self.output.item_multiple_other, name, item, count), author, ...
+							return false, string_format(ns.out.item_multiple_other, name, item, count), author, ...
 						else
-							return false, string_format(self.output.item_multiple, item, count), author, ...
+							return false, string_format(ns.out.item_multiple, item, count), author, ...
 						end
 					else
 						if (name) then
-							return false, string_format(self.output.item_single_other, name, item), author, ...
+							return false, string_format(ns.out.item_single_other, name, item), author, ...
 						else
-							return false, string_format(self.output.item_single, item), author, ...
+							return false, string_format(ns.out.item_single, item), author, ...
 						end
 					end
 				end
@@ -176,37 +174,37 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		-- When new toys are learned and put into the toy box.
 		local toy = string_match(message, P[G.LEARN_TOY])
 		if (toy) then
-			return false, string_format(self.output.item_transfer, G.TOY_BOX, toy), author, ...
+			return false, string_format(ns.out.item_transfer, G.TOY_BOX, toy), author, ...
 		end
 
 		-- When new transmogs are learned and put into the appearance collection.
 		local appearance = string_match(message, P[G.LEARN_TRANSMOG])
 		if (appearance) then
-			return false, string_format(self.output.item_transfer, G.WARDROBE, appearance), author, ...
+			return false, string_format(ns.out.item_transfer, G.WARDROBE, appearance), author, ...
 		end
 
 		-- When a new mount is learned
 		local mount = string_match(message, P[G.LEARN_MOUNT])
 		if (mount) then
-			return false, string_format(self.output.item_transfer, G.MOUNTS, mount), author, ...
+			return false, string_format(ns.out.item_transfer, G.MOUNTS, mount), author, ...
 		end
 
 		-- When a new companion is learned
 		local companion = string_match(message, P[G.LEARN_COMPANION])
 		if (companion) then
-			return false, string_format(self.output.item_transfer, G.COMPANIONS, companion), author, ...
+			return false, string_format(ns.out.item_transfer, G.COMPANIONS, companion), author, ...
 		end
 
 		-- When a new battle pet is learned
 		local pet = string_match(message, P[G.LEARN_BATTLE_PET])
 		if (pet) then
-			return false, string_format(self.output.item_transfer, G.PETS, pet), author, ...
+			return false, string_format(ns.out.item_transfer, G.PETS, pet), author, ...
 		end
 
 		-- When a new battle pet is learned
 		local heirloom = string_match(message, P[G.LEARN_HEIRLOOM])
 		if (heirloom) then
-			return false, string_format(self.output.item_transfer, G.HEIRLOOMS, heirloom), author, ...
+			return false, string_format(ns.out.item_transfer, G.HEIRLOOMS, heirloom), author, ...
 		end
 
 		-- Loot spec changed, or just reported
@@ -216,8 +214,8 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		local lootspec = string_match(message, P[G.LOOT_SPEC_CHANGED])
 		if (lootspec) then
 			--lootspec = ns.Colors.class[playerClass].colorCode .. lootspec .. "|r"
-			--return false, string_format(self.output.item_transfer, SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
-			return false, string_format(self.output.achievement2, G.SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
+			--return false, string_format(ns.out.item_transfer, SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
+			return false, string_format(ns.out.achievement2, G.SELECT_LOOT_SPECIALIZATION, lootspec), author, ...
 		end
 
 	end
@@ -232,14 +230,13 @@ Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 	if (lootspec) then
 
 		--lootspec = ns.Colors.class[playerClass].colorCode .. lootspec .. "|r"
-		--return string_format(self.output.item_transfer, SELECT_LOOT_SPECIALIZATION, lootspec)
-		return string_format(self.output.achievement2, G.SELECT_LOOT_SPECIALIZATION, lootspec)
+		--return string_format(ns.out.item_transfer, SELECT_LOOT_SPECIALIZATION, lootspec)
+		return string_format(ns.out.achievement2, G.SELECT_LOOT_SPECIALIZATION, lootspec)
 	end
 
 end
 
 Module.OnInitialize = function(self)
-	self.output = ns:GetOutputTemplates()
 	self.patterns = {}
 
 	for i,global in ipairs({
@@ -282,22 +279,26 @@ Module.OnInitialize = function(self)
 		end
 	end
 
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
-	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
+end
+
+local onChatEventProxy = function(...)
+	return Module:OnChatEvent(...)
+end
+
+local onReplacementSetProxy = function(...)
+	return Module:OnChatEvent(...)
 end
 
 Module.OnEnable = function(self)
-	ns:AddReplacementSet(self.OnReplacementSetProxy)
-
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_CURRENCY", self.OnChatEventProxy)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", self.OnChatEventProxy)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
+	self:RegisterMessageReplacement(onReplacementSetProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_CURRENCY", onChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_LOOT", onChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)
-	ns:RemoveReplacementSet(self.OnReplacementSetProxy)
-
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_CURRENCY", self.OnChatEventProxy)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_LOOT", self.OnChatEventProxy)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
+	self:UnregisterMessageReplacement(onReplacementSetProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_CURRENCY", onChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_LOOT", onChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 end

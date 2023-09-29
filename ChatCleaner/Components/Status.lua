@@ -30,8 +30,6 @@ local Module = ns:NewModule("Status")
 -- Addon Localization
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
--- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilter
-
 -- Lua API
 local rawget = rawget
 local rawset = rawset
@@ -65,58 +63,53 @@ local P = setmetatable({}, { __index = function(t,k)
 	return rawget(t,k)
 end })
 
-Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
-end
-
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 	-- AFK
 	if (message == MARKED_AFK) then
-		return false, self.output.afk_added, author, ...
+		return false, ns.out.afk_added, author, ...
 	end
 	if (message == CLEARED_AFK) then
-		return false, self.output.afk_cleared, author, ...
+		return false, ns.out.afk_cleared, author, ...
 	end
 	local afk_message = string_match(message, P[MARKED_AFK_MESSAGE])
 	if (afk_message) then
 		if (afk_message == DEFAULT_AFK_MESSAGE) then
-			return false, self.output.afk_added, author, ...
+			return false, ns.out.afk_added, author, ...
 		end
-		return false, string_format(self.output.afk_added_message, afk_message), author, ...
+		return false, string_format(ns.out.afk_added_message, afk_message), author, ...
 	end
 
 	-- DND
 	if (message == CLEARED_DND) then
-		return false, self.output.dnd_cleared, author, ...
+		return false, ns.out.dnd_cleared, author, ...
 	end
 	local dnd_message = string_match(message, P[MARKED_DND] )
 	if (dnd_message) then
 		if (dnd_message == DEFAULT_DND_MESSAGE) then
-			return false, self.output.dnd_added, author, ...
+			return false, ns.out.dnd_added, author, ...
 		end
-		return false, string_format(self.output.dnd_added_message, dnd_message), author, ...
+		return false, string_format(ns.out.dnd_added_message, dnd_message), author, ...
 	end
 
 	-- Rested TODO: Move to XP!
 	if (message == EXHAUSTION_WELLRESTED) then
-		return false, self.output.rested_added, author, ...
+		return false, ns.out.rested_added, author, ...
 	end
 	if (message == EXHAUSTION_NORMAL) then
-		return false, self.output.rested_cleared, author, ...
+		return false, ns.out.rested_cleared, author, ...
 	end
 
 end
 
-Module.OnInitialize = function(self)
-	self.output = ns:GetOutputTemplates()
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
-	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
+local onChatEventProxy = function(...)
+	return Module:OnChatEvent(...)
 end
 
 Module.OnEnable = function(self)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 end

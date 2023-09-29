@@ -29,8 +29,6 @@ local Module = ns:NewModule("Money", "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- GLOBALS: ChatTypeInfo, GetMoney, UnitOnTaxi
 -- GLOBALS: AuctionFrame, ClassTrainerFrame, MailFrame, MerchantFrame
--- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilte
-
 -- Lua API
 local math_abs = math.abs
 local math_floor = math.floor
@@ -291,12 +289,12 @@ end
 Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 	local anima = string_match(simplifyNumbers(msg), P[G.ANIMA])
 	if (anima) then
-		return string_format(self.output.item_multiple, G.ANIMA_LABEL, anima)
+		return string_format(ns.out.item_multiple, G.ANIMA_LABEL, anima)
 	end
 
 	anima = string_match(simplifyNumbers(msg), P[G.ANIMA_V2])
 	if (anima) then
-		return string_format(self.output.item_multiple, G.ANIMA_LABEL, anima)
+		return string_format(ns.out.item_multiple, G.ANIMA_LABEL, anima)
 	end
 end
 
@@ -348,13 +346,13 @@ Module.OnEvent = function(self, event, ...)
 			local c = math_mod(value, 100)
 
 			if (money > 0) then
-				local msg = string_format(self.output.money, formatMoney(g,s,c))
+				local msg = string_format(ns.out.money, formatMoney(g,s,c))
 				local info = ChatTypeInfo["MONEY"]
 
 				self:AddMessage(msg, info.r, info.g, info.b, info.id)
 
 			elseif (money < 0) then
-				local msg = string_format(self.output.money_deficit, formatMoney(g,s,c, ns.Colors.palered.colorCode))
+				local msg = string_format(ns.out.money_deficit, formatMoney(g,s,c, ns.Colors.palered.colorCode))
 				local info = ChatTypeInfo["MONEY"]
 
 				self:AddMessage(msg, info.r, info.g, info.b, info.id)
@@ -365,39 +363,54 @@ Module.OnEvent = function(self, event, ...)
 	end
 end
 
-Module.OnInitialize = function(self)
-	self.output = ns:GetOutputTemplates()
+local onChatEventProxy = function(...)
+	return Module:OnChatEvent(...)
+end
 
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
-	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
-	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
+local onAddMessageProxy = function(...)
+	return Module:OnAddMessage(...)
+end
 
-	self:HookScript(MailFrame, "OnHide", "OnSpecialFrameHide")
-	self:HookScript(MerchantFrame, "OnHide", "OnSpecialFrameHide")
+local onReplacementSetProxy = function(...)
+	return Module:OnReplacementSet(...)
 end
 
 Module.OnEnable = function(self)
 
 	self.playerMoney = GetMoney()
 
+	if (not self:IsHooked(MailFrame, "OnHide")) then
+		self:HookScript(MailFrame, "OnHide", "OnSpecialFrameHide")
+	end
+
+	if (not self:IsHooked(MerchantFrame, "OnHide")) then
+		self:HookScript(MerchantFrame, "OnHide", "OnSpecialFrameHide")
+	end
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_MONEY", "OnEvent")
 
-	ns:AddBlacklistMethod(self.OnAddMessageProxy)
-	ns:AddReplacementSet(self.OnReplacementSetProxy)
-
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONEY", self.OnChatEventProxy)
+	self:RegisterBlacklistFilter(onAddMessageProxy)
+	self:RegisterMessageReplacement(onReplacementSetProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_MONEY", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)
 
 	self.playerMoney = 0
 
+	if (self:IsHooked(MailFrame, "OnHide")) then
+		self:Unhook(MailFrame, "OnHide")
+	end
+
+	if (self:IsHooked(MerchantFrame, "OnHide")) then
+		self:Unhook(MerchantFrame, "OnHide")
+	end
+
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:UnregisterEvent("PLAYER_MONEY", "OnEvent")
 
-	ns:RemoveBlacklistMethod(self.OnAddMessageProxy)
-	ns:RemoveReplacementSet(self.OnReplacementSetProxy)
-
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONEY", self.OnChatEventProxy)
+	self:UnregisterBlacklistFilter(onAddMessageProxy)
+	self:UnregisterMessageReplacement(onReplacementSetProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_MONEY", onChatEventProxy)
 end

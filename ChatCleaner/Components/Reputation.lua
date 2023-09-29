@@ -29,8 +29,6 @@ local Module = ns:NewModule("Reputation")
 
 -- Addon Localization
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
-
--- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilter
 -- GLOBALS: GetNumFactions, GetFactionInfo, GetFriendshipReputation, CollapseFactionHeader, ExpandFactionHeader
 
 -- Lua API
@@ -85,6 +83,7 @@ end
 Module.GetFactionColored = function(self, faction)
 	local Colors = ns.Colors
 	local standingID, factionID, isFriend
+
 	for i = 1, GetNumFactions() do
 		local factionName, description, standingId, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionId, hasBonusRepGain, canBeLFGBonus = GetFactionInfo(i)
 
@@ -105,9 +104,11 @@ Module.GetFactionColored = function(self, faction)
 			break
 		end
 	end
+
 	-- If nothing was found, the header was most likely collapsed.
 	-- Going to force all headers to be expanded now, and repeat.
 	if (not factionID) then
+
 		-- Expand all headers in order to search.
 		local collapsedHeaders = {}
 		for i = GetNumFactions(),1,-1 do
@@ -136,6 +137,7 @@ Module.GetFactionColored = function(self, faction)
 				break
 			end
 		end
+
 		-- Collapse headers we previously expanded.
 		for i in next,collapsedHeaders do
 			CollapseFactionHeader(i)
@@ -150,41 +152,40 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	faction,value = fix(string_match(message,P[G.INCREASED]))
 	if (faction) then
 		if (value) then
-			return false, string_format(self.output.standing, value, G.REPUTATION, faction), author, ...
+			return false, string_format(ns.out.standing, value, G.REPUTATION, faction), author, ...
 		else
-			return false, string_format(self.output.standing_generic, G.REPUTATION, faction), author, ...
+			return false, string_format(ns.out.standing_generic, G.REPUTATION, faction), author, ...
 		end
 	end
 
 	faction,value = fix(string_match(message,P[G.DECREASED]))
 	if (faction) then
 		if (value) then
-			return false, string_format(self.output.standing_deficit, value, G.REPUTATION, faction), author, ...
+			return false, string_format(ns.out.standing_deficit, value, G.REPUTATION, faction), author, ...
 		else
-			return false, string_format(self.output.standing_deficit_generic, G.REPUTATION, faction), author, ...
+			return false, string_format(ns.out.standing_deficit_generic, G.REPUTATION, faction), author, ...
 		end
 	end
 
 	faction = fix(string_match(message,P[G.INCREASED_GENERIC]))
 	if (faction) then
-		return false, string_format(self.output.standing_generic, G.REPUTATION, faction), author, ...
+		return false, string_format(ns.out.standing_generic, G.REPUTATION, faction), author, ...
 	end
 
 	faction = fix(string_match(message,P[G.DECREASED_GENERIC]))
 	if (faction) then
-		return false, string_format(self.output.standing_deficit_generic, G.REPUTATION, faction), author, ...
+		return false, string_format(ns.out.standing_deficit_generic, G.REPUTATION, faction), author, ...
 	end
 end
 
-Module.OnInitialize = function(self)
-	self.output = ns:GetOutputTemplates()
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
+local onChatEventProxy = function(...)
+	return Module:OnChatEvent(...)
 end
 
 Module.OnEnable = function(self)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", self.OnChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", self.OnChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_COMBAT_FACTION_CHANGE", onChatEventProxy)
 end

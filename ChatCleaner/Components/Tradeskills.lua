@@ -30,8 +30,6 @@ local Module = ns:NewModule("Tradeskills")
 -- Addon Localization
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
--- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilter
-
 -- Lua API
 local rawget = rawget
 local rawset = rawset
@@ -70,13 +68,13 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	if (skill and gain) then
 		gain = tonumber(gain)
 		if (gain) then
-			return false, string_format(self.output.item_multiple, skill, gain), author, ...
+			return false, string_format(ns.out.item_multiple, skill, gain), author, ...
 		end
 	end
 
 	local craft = string_match(message, P[G.LEARN_RECIPE])
 	if (craft) then
-		return false, string_format(self.output.objective_status, G.LEARNED, craft), author, ...
+		return false, string_format(ns.out.objective_status, G.LEARNED, craft), author, ...
 	end
 
 end
@@ -87,24 +85,24 @@ Module.OnReplacementSet = function(self, msg, r, g, b, chatID, ...)
 	-- as the chat frames haven't yet been registered for user events at that point.
 	local craft = string_match(msg, P[G.LEARN_RECIPE])
 	if (craft) then
-		return string_format(self.output.objective_status, G.LEARNED, craft)
+		return string_format(ns.out.objective_status, G.LEARNED, craft)
 	end
 end
 
-Module.OnInitialize = function(self)
-	self.output = ns:GetOutputTemplates()
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
-	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
+local onChatEventProxy = function(...)
+	return Module:OnChatEvent(...)
+end
+
+local onReplacementSetProxy = function(...)
+	return Module:OnReplacementSet(...)
 end
 
 Module.OnEnable = function(self)
-	ns:AddReplacementSet(self.OnReplacementSetProxy)
-
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SKILL", self.OnChatEventProxy)
+	self:RegisterMessageReplacement(onReplacementSetProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_SKILL", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)
-	ns:RemoveReplacementSet(self.OnReplacementSetProxy)
-
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SKILL", self.OnChatEventProxy)
+	self:UnregisterMessageReplacement(onReplacementSetProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_SKILL", onChatEventProxy)
 end

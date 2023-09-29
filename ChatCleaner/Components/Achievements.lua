@@ -32,8 +32,6 @@ local Module = ns:NewModule("Achievements")
 -- Addon Localization
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
--- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilte
-
 -- Lua API
 local rawget = rawget
 local rawset = rawset
@@ -72,19 +70,18 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		player_name = string_gsub(player_name, "[%[/%]]", "")
 		achievement = string_gsub(achievement, "[%[/%]]", "")
 
-		return false, string_format(self.output.achievement, player_name, achievement), author, ...
+		return false, string_format(ns.out.achievement, player_name, achievement), author, ...
 	end
 end
 
-Module.OnInitialize = function(self)
-	self.output = ns:GetOutputTemplates()
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
+local onChatEventProxy = function(...)
+	return Module:OnChatEvent(...)
 end
 
 Module.OnEnable = function(self)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_ACHIEVEMENT", self.OnChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_ACHIEVEMENT", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_ACHIEVEMENT", self.OnChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_ACHIEVEMENT", onChatEventProxy)
 end

@@ -32,7 +32,6 @@ local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 -- GLOBALS: DEFAULT_CHAT_FRAME
 -- GLOBALS: AuctionFrame, AuctionHouseFrame, ChatTypeInfo
--- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilte
 
 -- Lua API
 local rawget = rawget
@@ -73,7 +72,7 @@ Module.SpecialFrameWasHidden = function(self)
 	end
 
 	if (self.queuedRemoved) then
-		local msg = (self.queuedRemoved > 1) and string_format(self.output.auction_canceled_multiple, self.queuedRemoved) or self.output.auction_canceled_single
+		local msg = (self.queuedRemoved > 1) and string_format(ns.out.auction_canceled_multiple, self.queuedRemoved) or ns.out.auction_canceled_single
 
 		self.queuedRemoved = nil
 
@@ -83,7 +82,7 @@ Module.SpecialFrameWasHidden = function(self)
 	end
 
 	if (self.queuedStarted) then
-		local msg = (self.queuedStarted > 1) and string_format(self.output.auction_multiple, self.queuedStarted) or self.output.auction_single
+		local msg = (self.queuedStarted > 1) and string_format(ns.out.auction_multiple, self.queuedStarted) or ns.out.auction_single
 
 		self.queuedStarted = nil
 
@@ -109,13 +108,13 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		if (frame and frame:IsShown()) then
 
 			if (not self:IsHooked(frame, "OnHide")) then
-				self:HookScript(frame, "OnHide", self.OnSpecialFrameHide)
+				self:HookScript(frame, "OnHide", "OnSpecialFrameHide")
 			end
 
 			return true
 
 		else
-			local message = (self.queuedStarted > 1) and string_format(self.output.auction_multiple, self.queuedStarted) or self.output.auction_single
+			local message = (self.queuedStarted > 1) and string_format(ns.out.auction_multiple, self.queuedStarted) or ns.out.auction_single
 
 			self.queuedStarted = nil
 
@@ -130,12 +129,12 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		if (frame and frame:IsShown()) then
 
 			if (not self:IsHooked(frame, "OnHide")) then
-				self:HookScript(frame, "OnHide", self.OnSpecialFrameHide)
+				self:HookScript(frame, "OnHide", "OnSpecialFrameHide")
 			end
 
 			return true
 		else
-			local message = (self.queuedRemoved > 1) and string_format(self.output.auction_canceled_multiple, self.queuedRemoved) or self.output.auction_canceled_single
+			local message = (self.queuedRemoved > 1) and string_format(ns.out.auction_canceled_multiple, self.queuedRemoved) or ns.out.auction_canceled_single
 
 			self.queuedRemoved = nil
 
@@ -146,7 +145,7 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	-- Auction sold
 	local item = string_match(message, P[G.AUCTION_SOLD])
 	if (item) then
-		return false, string_format(self.output.auction_sold, item), author, ...
+		return false, string_format(ns.out.auction_sold, item), author, ...
 	end
 
 end
@@ -162,13 +161,13 @@ Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 		if (frame and frame:IsShown()) then
 
 			if (not self:IsHooked(frame, "OnHide")) then
-				self:HookScript(frame, "OnHide", self.OnSpecialFrameHide)
+				self:HookScript(frame, "OnHide", "OnSpecialFrameHide")
 			end
 
 			return true
 
 		else
-			local message = (self.queuedStarted > 1) and string_format(self.output.auction_multiple, self.queuedStarted) or self.output.auction_single
+			local message = (self.queuedStarted > 1) and string_format(ns.out.auction_multiple, self.queuedStarted) or ns.out.auction_single
 
 			self.queuedStarted = nil
 
@@ -183,12 +182,12 @@ Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 		if (frame and frame:IsShown()) then
 
 			if (not self:IsHooked(frame, "OnHide")) then
-				self:HookScript(frame, "OnHide", self.OnSpecialFrameHide)
+				self:HookScript(frame, "OnHide", "OnSpecialFrameHide")
 			end
 
 			return true
 		else
-			local message = (self.queuedRemoved > 1) and string_format(self.output.auction_canceled_multiple, self.queuedRemoved) or self.output.auction_canceled_single
+			local message = (self.queuedRemoved > 1) and string_format(ns.out.auction_canceled_multiple, self.queuedRemoved) or ns.out.auction_canceled_single
 
 			self.queuedRemoved = nil
 
@@ -198,27 +197,31 @@ Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 
 end
 
-Module.OnInitialize = function(self)
-	self.output = ns:GetOutputTemplates()
+local onChatEventProxy = function(...)
+	return Module:OnChatEvent(...)
+end
 
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
-	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
+local onAddMessageProxy = function(...)
+	return Module:OnAddMessage(...)
 end
 
 Module.OnEnable = function(self)
 	self.queuedStarted = nil
 	self.queuedRemoved = nil
 
-	ns:AddBlacklistMethod(self.OnAddMessageProxy)
-
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
+	self:RegisterBlacklistFilter(onAddMessageProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)
 	self.queuedStarted = nil
 	self.queuedRemoved = nil
 
-	ns:RemoveBlacklistMethod(self.OnAddMessageProxy)
+	local frame = AuctionHouseFrame or AuctionFrame
+	if (frame and self:IsHooked(frame, "OnHide")) then
+		self:Unhook(frame, "OnHide")
+	end
 
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
+	self:UnregisterBlacklistFilter(onAddMessageProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 end

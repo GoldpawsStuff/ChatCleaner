@@ -35,9 +35,9 @@ local replacements = {
 }
 
 Module.OnEnable = function(self)
-	ns:AddReplacementSet(replacements, true)
+	self:RegisterMessageReplacement(replacements, true)
 end
 
 Module.OnDisable = function(self)
-	ns:RemoveReplacementSet(replacements)
+	self:UnregisterMessageReplacement(replacements)
 end

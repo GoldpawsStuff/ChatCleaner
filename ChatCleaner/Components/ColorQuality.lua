@@ -41,9 +41,9 @@ Module.OnInitialize = function(self)
 end
 
 Module.OnEnable = function(self)
-	ns:AddReplacementSet(self.replacements, true)
+	self:RegisterMessageReplacement(self.replacements, true)
 end
 
 Module.OnDisable = function(self)
-	ns:RemoveReplacementSet(self.replacements)
+	self:UnregisterMessageReplacement(self.replacements)
 end

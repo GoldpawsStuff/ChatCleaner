@@ -126,15 +126,15 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 				local msg
 				local learned = self.abilities + self.passives + self.spells
 				if (learned > 1) then
-					DEFAULT_CHAT_FRAME:AddMessage(string_format(self.output.item_multiple, G.SPELLS, learned), info.r, info.g, info.b, info.id)
+					DEFAULT_CHAT_FRAME:AddMessage(string_format(ns.out.item_multiple, G.SPELLS, learned), info.r, info.g, info.b, info.id)
 				elseif (learned > 0) then
-					DEFAULT_CHAT_FRAME:AddMessage(string_format(self.output.item_single, G.SPELLS), info.r, info.g, info.b, info.id)
+					DEFAULT_CHAT_FRAME:AddMessage(string_format(ns.out.item_single, G.SPELLS), info.r, info.g, info.b, info.id)
 				end
 
 				if (self.unlearned > 1) then
-					DEFAULT_CHAT_FRAME:AddMessage(string_format(self.output.item_deficit_multiple, G.SPELLS, self.unlearned), info.r, info.g, info.b, info.id)
+					DEFAULT_CHAT_FRAME:AddMessage(string_format(ns.out.item_deficit_multiple, G.SPELLS, self.unlearned), info.r, info.g, info.b, info.id)
 				elseif (self.unlearned > 0) then
-					DEFAULT_CHAT_FRAME:AddMessage(string_format(self.output.item_deficit, G.SPELLS), info.r, info.g, info.b, info.id)
+					DEFAULT_CHAT_FRAME:AddMessage(string_format(ns.out.item_deficit, G.SPELLS), info.r, info.g, info.b, info.id)
 				end
 
 				self.abilities = 0
@@ -152,16 +152,12 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 end
 
-Module.OnInitialize = function(self)
-	self.output = ns:GetOutputTemplates()
+local onChatEventProxy = function(...)
+	return Module:OnChatEvent(...)
+end
 
-	self.abilities = 0
-	self.passives = 0
-	self.spells = 0
-	self.unlearned = 0
-
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
-	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
+local onAddMessageProxy = function(...)
+	return Module:OnAddMessage(...)
 end
 
 Module.OnEnable = function(self)
@@ -170,7 +166,7 @@ Module.OnEnable = function(self)
 	self.spells = 0
 	self.unlearned = 0
 
-	ns:AddBlacklistMethod(self.OnAddMessageProxy)
+	self:RegisterBlacklistFilter(onAddMessageProxy)
 end
 
 Module.OnDisable = function(self)
@@ -179,5 +175,5 @@ Module.OnDisable = function(self)
 	self.spells = 0
 	self.unlearned = 0
 
-	ns:RemoveBlacklistMethod(self.OnAddMessageProxy)
+	self:UnregisterBlacklistFilter(onAddMessageProxy)
 end

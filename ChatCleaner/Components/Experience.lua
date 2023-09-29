@@ -27,8 +27,6 @@ local Addon, ns = ...
 
 local Module = ns:NewModule("Experience")
 
--- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilte
-
 -- Addon Localization
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
@@ -109,16 +107,17 @@ end
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	local value,source
+
 	if (event == "CHAT_MSG_COMBAT_XP_GAIN") then
 
 		value,source = fix(string_match(message, P[G.NAMED]))
 		if (value) then
-			return false, string_format(self.output.xp_named, value, G.XP, source), author, ...
+			return false, string_format(ns.out.xp_named, value, G.XP, source), author, ...
 		end
 
 		value = string_match(message, P[G.UNNAMED])
 		if (value) then
-			return false, string_format(self.output.xp_unnamed, value, G.XP), author, ...
+			return false, string_format(ns.out.xp_unnamed, value, G.XP), author, ...
 		end
 
 	elseif (event == "CHAT_MSG_SYSTEM") then
@@ -126,14 +125,14 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		-- Area discovery
 		value,source = fix(string_match(message, P[G.ERR_ZONE_EXPLORED_XP]))
 		if (value) then
-			return false, string_format(self.output.xp_named, value, G.XP, source), author, ...
+			return false, string_format(ns.out.xp_named, value, G.XP, source), author, ...
 		end
 
 		-- Level up
 		value = string_match(message, P[G.LEVEL_UP])
 		if (value) then
 			value = string_gsub(value, "[%[/%]]", "")
-			return false, string_format(self.output.xp_levelup, value), author, ...
+			return false, string_format(ns.out.xp_levelup, value), author, ...
 		end
 
 		-- Quest Completed (also reported in the XP channel)
@@ -143,17 +142,16 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	end
 end
 
-Module.OnInitialize = function(self)
-	self.output = ns:GetOutputTemplates()
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
+local onChatEventProxy = function(...)
+	return Module:OnChatEvent(...)
 end
 
 Module.OnEnable = function(self)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_COMBAT_XP_GAIN", self.OnChatEventProxy)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_COMBAT_XP_GAIN", onChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_COMBAT_XP_GAIN", self.OnChatEventProxy)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_COMBAT_XP_GAIN", onChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 end

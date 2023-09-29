@@ -30,13 +30,8 @@ if (ns.Version ~= "Development") then return end
 local Module = ns:NewModule("Creatures")
 
 -- GLOBALS: ChatTypeInfo, RaidNotice_AddMessage
--- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilte
-
 -- Lua API
 local string_format = string.format
-
-Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
-end
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	-- Should add a check for chat bubbles,
@@ -70,21 +65,20 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	end
 end
 
-Module.OnInitialize = function(self)
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
-	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
+local onChatEventProxy = function(...)
+	return Module:OnChatEvent(...)
 end
 
 Module.OnEnable = function(self)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_SAY", self.OnChatEventProxy)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_YELL", self.OnChatEventProxy)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", self.OnChatEventProxy)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_WHISPER", self.OnChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_MONSTER_SAY", onChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_MONSTER_YELL", onChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", onChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_MONSTER_WHISPER", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONSTER_SAY", self.OnChatEventProxy)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONSTER_YELL", self.OnChatEventProxy)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", self.OnChatEventProxy)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_MONSTER_WHISPER", self.OnChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_MONSTER_SAY", onChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_MONSTER_YELL", onChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", onChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_MONSTER_WHISPER", onChatEventProxy)
 end

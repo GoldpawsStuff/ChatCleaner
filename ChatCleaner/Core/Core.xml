@@ -16,6 +16,7 @@
 	<Script file="API\Addons.lua"/>
 	<Script file="API\Assets.lua"/>
 	<Script file="API\Colors.lua"/>
+	<Script file="API\Output.lua"/>
 
 	<!-- Core -->
 	<Script file="Core.lua"/>

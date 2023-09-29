@@ -35,8 +35,11 @@ local Module = ns:NewModule("DevelopmentFilters")
 -- Lua API
 local string_find = string.find
 
-Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
+local onAddMessageProxy = function(...)
+	return Module:OnAddMessage(...)
+end
 
+Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	-- Kill off MaxDps ace console status messages.
 	-- Definitely not recommended for the general user.
 	if (string_find(msg, "|cff33ff99MaxDps|r%:")) then
@@ -44,18 +47,10 @@ Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	end
 end
 
-Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
-end
-
-Module.OnInitialize = function(self)
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
-	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
-end
-
 Module.OnEnable = function(self)
-	ns:AddBlacklistMethod(self.OnAddMessageProxy)
+	self:RegisterBlacklistFilter(onAddMessageProxy)
 end
 
 Module.OnDisable = function(self)
-	ns:RemoveBlacklistMethod(self.OnAddMessageProxy)
+	self:UnregisterBlacklistFilter(onAddMessageProxy)
 end

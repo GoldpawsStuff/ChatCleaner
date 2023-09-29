@@ -30,8 +30,6 @@ local Module = ns:NewModule("Quests")
 -- Addon Localization
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
--- GLOBALS: ChatFrame_AddMessageEventFilter, ChatFrame_RemoveMessageEventFilter
-
 -- Lua API
 local rawget = rawget
 local rawset = rawset
@@ -76,13 +74,13 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	name = string_match(message, P[G.SET_COMPLETE])
 	if (name) then
 		name = string_gsub(name, "[%[/%]]", "")
-		return false, string_format(self.output.set_complete, G.COMPLETE, name), author, ...
+		return false, string_format(ns.out.set_complete, G.COMPLETE, name), author, ...
 	end
 
 	name = string_match(message, P[G.QUEST_ACCEPTED])
 	if (name) then
 		name = string_gsub(name, "[%[/%]]", "")
-		return false, string_format(self.output.quest_accepted, G.ACCEPTED, name), author, ...
+		return false, string_format(ns.out.quest_accepted, G.ACCEPTED, name), author, ...
 	end
 
 	-- Avoid false positives on quest completion.
@@ -90,21 +88,20 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		name = string_match(message, P[G.QUEST_COMPLETE])
 		if (name) then
 			name = string_gsub(name, "[%[/%]]", "")
-			return false, string_format(self.output.quest_complete, G.COMPLETE, name), author, ...
+			return false, string_format(ns.out.quest_complete, G.COMPLETE, name), author, ...
 		end
 	end
 
 end
 
-Module.OnInitialize = function(self)
-	self.output = ns:GetOutputTemplates()
-	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
+local onChatEventProxy = function(...)
+	return Module:OnChatEvent(...)
 end
 
 Module.OnEnable = function(self)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)
-	ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", self.OnChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 end

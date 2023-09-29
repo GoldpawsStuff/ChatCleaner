@@ -27,9 +27,6 @@ local Addon, ns = ...
 
 ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
 
--- Keep modules disabled by default
-ns:SetDefaultModuleState(false)
-
 -- GLOBALS: CHAT_FRAMES, FCF_GetCurrentChatFrame, GetChatTypeIndex
 
 -- Lua API
@@ -146,6 +143,49 @@ for _,index in ipairs({
 		ignoredIDs[id] = true
 	end
 end
+
+local modulePrototype = {
+
+	-- @input event <string>
+	-- @input method <string,func>
+	RegisterMessageEventFilter = function(self, event, method)
+		local func = (type(method) == "string") and self[method]
+		ChatFrame_AddMessageEventFilter(event, func or method)
+	end,
+
+	-- @input event <string>
+	-- @input method <string,func>
+	UnregisterMessageEventFilter = function(self, event, method)
+		local func = (type(method) == "string") and self[method]
+		ChatFrame_RemoveMessageEventFilter(event, func or method)
+	end,
+
+	-- @input set <table,func>
+	RegisterBlacklistFilter = function(self, method)
+		local func = (type(method) == "string") and self[method]
+		ns:AddBlacklistMethod(func or method)
+	end,
+
+	-- @input set <table,func>
+	UnregisterBlacklistFilter = function(self, method)
+		local func = (type(method) == "string") and self[method]
+		ns:RemoveBlacklistMethod(func or method)
+	end,
+
+	-- @input set <table,func>
+	RegisterMessageReplacement = function(self, set)
+		ns:AddReplacementSet(set)
+	end,
+
+	-- @input set <table,func>
+	UnregisterMessageReplacement = function(self, set)
+		ns:RemoveReplacementSet(set)
+	end
+}
+
+-- Setup the module defaults.
+ns:SetDefaultModuleState(false)
+ns:SetDefaultModulePrototype(modulePrototype)
 
 -- Addon default settings.
 local defaults = {
@@ -271,10 +311,6 @@ ns.CacheAllMessageMethods = function(self)
 	end
 end
 
-ns.GetOutputTemplates = function(self)
-	return self.output
-end
-
 ns.UpgradeSettings = function(self)
 
 	-- Have the db been upgraded?
@@ -326,86 +362,6 @@ end
 
 ns.OnInitialize = function(self)
 	self.db = self:UpgradeSettings()
-
-	-- Output patterns.
-	-- *uses a simple color tag system for new strings.
-	local output = setmetatable({}, { __newindex = function(t,k,msg)
-		-- Have to do this with an indexed table,
-		-- as the order of the entires matters.
-		for _,entry in ipairs({
-			{ "%*title%*", 		ns.Colors.title.colorCode },
-			{ "%*white%*", 		ns.Colors.highlight.colorCode },
-			{ "%*offwhite%*", 	ns.Colors.offwhite.colorCode },
-			{ "%*palered%*", 	ns.Colors.palered.colorCode },
-			{ "%*red%*", 		ns.Colors.quest.red.colorCode },
-			{ "%*darkorange%*", ns.Colors.quality.Legendary.colorCode },
-			{ "%*orange%*", 	ns.Colors.quest.orange.colorCode },
-			{ "%*yellow%*", 	ns.Colors.quest.yellow.colorCode },
-			{ "%*green%*", 		ns.Colors.quest.green.colorCode },
-			{ "%*gray%*", 		ns.Colors.quest.gray.colorCode },
-			{ "%*%*", "|r" } -- Always keep this at the end.
-		}) do
-			msg = string_gsub(msg, unpack(entry))
-		end
-		rawset(t,k,msg)
-	end })
-
-	-- WoW Global Strings
-	local AUCTION_SOLD_MAIL = _G.AUCTION_SOLD_MAIL_SUBJECT -- "Auction successful: %s"
-	local AUCTION_CREATED = string_gsub(_G.ERR_AUCTION_STARTED, "%.", "") -- "Auction created."
-	local AUCTION_REMOVED = string_gsub(_G.ERR_AUCTION_REMOVED, "%.", "") -- "Auction cancelled."
-	local AWAY = _G.FRIENDS_LIST_AWAY -- "Away"
-	local BUSY = _G.FRIENDS_LIST_BUSY -- "Busy"
-	local COMPLETE = _G.COMPLETE -- "Complete"
-	local RESTED = _G.TUTORIAL_TITLE26 -- "Rested"
-
-	-- Templates we use for multiple things
-	-- *don't use these directly in the modules,
-	--  only use them in the definitions below.
-	output.__gain = "*gray*+** %s"
-	output.__gain_yellow = "*gray*+** *white*%s:** *yellow*%s**"
-
-	-- Output formats used in the modules.
-	-- *everything should be gathered here, in this file.
-	output.achievement = "*offwhite*!**%s: %s"
-	output.achievement2 = "*offwhite*!***green*%s:** *white*%s**"
-	output.afk_added = "*orange*+ "..AWAY.."**"
-	output.afk_added_message = "*orange*+ "..AWAY..": ***white*%s**"
-	output.afk_cleared = "*green*- "..AWAY.."**"
-	output.auction_sold = "*offwhite*!***green*"..string_gsub(AUCTION_SOLD_MAIL, "%%s", "*white*%%s**").."**"
-	output.auction_single = "*gray*+** *white*"..AUCTION_CREATED.."**"
-	output.auction_multiple = "*gray*+** *white*"..AUCTION_CREATED.."** *offwhite*(%d)**"
-	output.auction_canceled_single = "*palered*- "..AUCTION_REMOVED.."**"
-	output.auction_canceled_multiple = "*palered*- "..AUCTION_REMOVED.."** *offwhite*(%d)**"
-	output.currency = "*gray*+** *white*%d** %s"
-	output.dnd_added = "*darkorange*+ "..BUSY.."**"
-	output.dnd_added_message = "*darkorange*+ "..BUSY..": ***white*%s**"
-	output.dnd_cleared = "*green*- "..BUSY.."**"
-	output.item_single = output.__gain
-	output.item_multiple = "*gray*+** %s *offwhite*(%d)**"
-	output.item_single_other = "*offwhite*!**%s*gray*:** %s"
-	output.item_multiple_other = "*offwhite*!**%s*gray*:** %s *offwhite*(%d)**"
-	output.item_deficit = "*red*- %s**"
-	output.item_deficit_multiple = "*red*- %s** *offwhite*(%d)**"
-	output.item_transfer = "*gray*+** *white*%s:** %s"
-	output.money = output.__gain
-	output.money_deficit = "*gray*-** %s"
-	output.objective_status = output.__gain_yellow
-	output.quest_accepted = output.__gain_yellow
-	output.quest_complete = output.__gain_yellow
-	output.rested_added = "*gray*+ "..RESTED.."**"
-	output.rested_cleared = "*orange*- "..RESTED.."**"
-	output.set_complete = output.__gain_yellow
-	output.standing = "*gray*+** *white*".."%d** *white*%s:** %s"
-	output.standing_generic = "*gray*+ %s:** %s"
-	output.standing_deficit = "*red*-** *white*".."%d** *white*%s:** %s"
-	output.standing_deficit_generic = "*red*-** *palered** %s:** %s"
-	output.xp_levelup = "*offwhite*!**%s*white*!**"
-	output.xp_named = "*gray*+** *white*%d** *white*%s:** *yellow*%s**"
-	output.xp_unnamed = "*gray*+** *white*%d** *white*%s**"
-
-	-- Give the modules access
-	self.output = output
 
 	self.blacklist = setmetatable({}, {
 		__call = function(self, ...)
