@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 
-local Module = ns:NewModule("Auctions")
+local Module = ns:NewModule("Auctions", "AceHook-3.0")
 
 -- Addon Localization
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
@@ -65,7 +65,7 @@ local P = setmetatable({}, { __index = function(t,k)
 	return rawget(t,k)
 end })
 
-Module.AuctionFrameWasHidden = function(self)
+Module.SpecialFrameWasHidden = function(self)
 	local frame = AuctionHouseFrame or AuctionFrame
 
 	if (frame and frame:IsShown()) then
@@ -92,6 +92,10 @@ Module.AuctionFrameWasHidden = function(self)
 	end
 end
 
+Module.OnSpecialFrameHide = function(self, frame, ...)
+	return (self.filterEnabled) and self:SpecialFrameWasHidden(frame, ...)
+end
+
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	if (ns:IsProtectedMessage(message)) then return end
 
@@ -102,9 +106,9 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 		local frame = AuctionHouseFrame or AuctionFrame
 		if (frame and frame:IsShown()) then
-			if (not self.proxied) then
-				frame:HookScript("OnHide", self.AuctionFrameWasHiddenProxy)
-				self.proxied = true
+
+			if (not self:IsHooked(frame, "OnHide")) then
+				self:HookScript(frame, "OnHide", self.OnAuctionFrameHide)
 			end
 
 			return true
@@ -123,9 +127,9 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
 		local frame = AuctionHouseFrame or AuctionFrame
 		if (frame and frame:IsShown()) then
-			if (not self.proxied) then
-				frame:HookScript("OnHide", self.AuctionFrameWasHiddenProxy)
-				self.proxied = true
+
+			if (not self:IsHooked(frame, "OnHide")) then
+				self:HookScript(frame, "OnHide", self.OnAuctionFrameHide)
 			end
 
 			return true
@@ -155,9 +159,9 @@ Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 
 		local frame = AuctionHouseFrame or AuctionFrame
 		if (frame and frame:IsShown()) then
-			if (not self.proxied) then
-				frame:HookScript("OnHide", self.AuctionFrameWasHiddenProxy)
-				self.proxied = true
+
+			if (not self:IsHooked(frame, "OnHide")) then
+				self:HookScript(frame, "OnHide", self.OnAuctionFrameHide)
 			end
 
 			return true
@@ -176,9 +180,9 @@ Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 
 		local frame = AuctionHouseFrame or AuctionFrame
 		if (frame and frame:IsShown()) then
-			if (not self.proxied) then
-				frame:HookScript("OnHide", self.AuctionFrameWasHiddenProxy)
-				self.proxied = true
+
+			if (not self:IsHooked(frame, "OnHide")) then
+				self:HookScript(frame, "OnHide", self.OnAuctionFrameHide)
 			end
 
 			return true
@@ -195,9 +199,11 @@ end
 
 Module.OnInitialize = function(self)
 	self.output = ns:GetOutputTemplates()
+
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
-	self.AuctionFrameWasHiddenProxy = function(...) return (self.filterEnabled) and self:AuctionFrameWasHidden(...) end
+
+	self.OnAuctionFrameHide = function(...) return (self.filterEnabled) and self:SpecialFrameWasHidden(...) end
 end
 
 Module.OnEnable = function(self)
