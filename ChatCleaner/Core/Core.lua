@@ -30,7 +30,6 @@ ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsol
 -- Keep modules disabled by default
 ns:SetDefaultModuleState(false)
 
--- GLOBALS: hooksecurefunc
 -- GLOBALS: CHAT_FRAMES, FCF_GetCurrentChatFrame, GetChatTypeIndex
 
 -- Lua API
@@ -170,11 +169,17 @@ local defaults = {
 
 ChatCleaner_DB = CopyTable(defaults)
 
-ns.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
-	if (not msg) or (msg == "") then
-		return
+ns.IsProtectedMessage = function(self, msg)
+	if (not msg or msg == "") then return end
+	if (string_find(msg, "|Hquestie")) then
+		return true
 	end
-	if (not string_find(msg, "|Hquestie")) then
+end
+
+ns.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
+	if (not msg or msg == "") then return end
+
+	if (not ns:IsProtectedMessage(msg)) then
 		if (next(self.specialreplacements)) then
 			msg = self.specialreplacements(msg, r, g, b, chatID, ...)
 		end
@@ -189,6 +194,7 @@ ns.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 			end
 		end
 	end
+
 	return self.MethodCache[chatFrame](chatFrame, msg, r, g, b, chatID, ...)
 end
 
@@ -196,16 +202,19 @@ ns.CacheMessageMethod = function(self, chatFrame)
 	if (not self.MethodCache) then
 		self.MethodCache = {}
 	end
+
 	if (not self.MethodCache[chatFrame]) then
 		-- Copy the current AddMessage method from the frame.
 		-- *this also functions as our "has been handled" indicator.
 		self.MethodCache[chatFrame] = chatFrame.AddMessage
 	end
+
 	-- Replace with our filtered AddMessage method.
 	chatFrame.AddMessage = function(...) self:AddMessageFiltered(...) end
 end
 
 ns.AddBlacklistMethod = function(self, func)
+	-- Make sure the function isn't in our database already.
 	for _,infunc in next,self.blacklist do
 		if (infunc == func) then
 			return
@@ -225,6 +234,7 @@ end
 
 ns.AddReplacementSet = function(self, set, ignoreBlacklist)
 	local group = ignoreBlacklist and self.specialreplacements or self.replacements
+	-- Make sure the replacement set hasn't already been added.
 	for _,inset in next,group do
 		if (inset == set) then
 			return
@@ -248,13 +258,16 @@ ns.RemoveReplacementSet = function(self, set)
 	end
 end
 
+local messageProxy = function()
+	ns:CacheMessageMethod((FCF_GetCurrentChatFrame()))
+end
+
 ns.CacheAllMessageMethods = function(self)
 	for _,chatFrameName in ipairs(CHAT_FRAMES) do
 		self:CacheMessageMethod(_G[chatFrameName])
 	end
-	if (not self.tempWindowsHooked) then
-		self.tempWindowsHooked = true
-		hooksecurefunc("FCF_OpenTemporaryWindow", function() self:CacheMessageMethod((FCF_GetCurrentChatFrame())) end)
+	if (not self:IsHooked("FCF_OpenTemporaryWindow", messageProxy)) then
+		self:SecureHook("FCF_OpenTemporaryWindow", messageProxy)
 	end
 end
 

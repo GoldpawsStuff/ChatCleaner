@@ -253,12 +253,18 @@ Module.SpecialFrameWasHidden = function(self, frame)
 	end
 
 	local money = GetMoney()
+
 	if ((self.playerMoney or 0) > money) then
 		self.playerMoney = money
+
 		return
 	end
 
 	self:OnEvent("PLAYER_MONEY")
+end
+
+Module.OnSpecialFrameHide = function(self, frame, ...)
+	return (self.filterEnabled) and self:SpecialFrameWasHidden(frame, ...)
 end
 
 Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
@@ -319,16 +325,17 @@ Module.OnEvent = function(self, event, ...)
 		local currentMoney = GetMoney()
 
 		if (MerchantFrame:IsShown()) or (MailFrame:IsShown()) or (ClassTrainerFrame and ClassTrainerFrame:IsShown()) then
-			-- The trainer frame is an addon, just hook it on-the-fly, don't check for loading.
-			if (ClassTrainerFrame) and (not self.hooks[ClassTrainerFrame]) then
-				self.hooks[ClassTrainerFrame] = true
-				ClassTrainerFrame:HookScript("OnHide", self.hooks.proxy)
+			if (not self:IsHooked(ClassTrainerFrame, "OnHide")) then
+				self:HookScript(ClassTrainerFrame, "OnHide", "OnSpecialFrameHide")
 			end
+
 			return
 		end
 
 		if (AuctionHouseFrame and AuctionHouseFrame:IsShown()) or (AuctionFrame and AuctionFrame:IsShown()) or (UnitOnTaxi("player")) then
+
 			self.playerMoney = currentMoney
+
 			return
 		end
 
@@ -343,11 +350,13 @@ Module.OnEvent = function(self, event, ...)
 			if (money > 0) then
 				local msg = string_format(self.output.money, formatMoney(g,s,c))
 				local info = ChatTypeInfo["MONEY"]
+
 				self:AddMessage(msg, info.r, info.g, info.b, info.id)
 
 			elseif (money < 0) then
 				local msg = string_format(self.output.money_deficit, formatMoney(g,s,c, ns.Colors.palered.colorCode))
 				local info = ChatTypeInfo["MONEY"]
+
 				self:AddMessage(msg, info.r, info.g, info.b, info.id)
 			end
 		end
@@ -357,14 +366,14 @@ Module.OnEvent = function(self, event, ...)
 end
 
 Module.OnInitialize = function(self)
-	self.hooks = { proxy = function(...) return (self.filterEnabled) and self:SpecialFrameWasHidden(...) end }
 	self.output = ns:GetOutputTemplates()
+
 	self.OnChatEventProxy = function(...) return self:OnChatEvent(...) end
 	self.OnAddMessageProxy = function(...) return self:OnAddMessage(...) end
 	self.OnReplacementSetProxy = function(...) return self:OnReplacementSet(...) end
 
-	MailFrame:HookScript("OnHide", self.hooks.proxy)
-	MerchantFrame:HookScript("OnHide", self.hooks.proxy)
+	self:HookScript(MailFrame, "OnHide", "OnSpecialFrameHide")
+	self:HookScript(MerchantFrame, "OnHide", "OnSpecialFrameHide")
 end
 
 Module.OnEnable = function(self)
@@ -382,6 +391,7 @@ end
 
 Module.OnDisable = function(self)
 	self.filterEnabled = nil
+	self.playerMoney = 0
 
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:UnregisterEvent("PLAYER_MONEY", "OnEvent")
