@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 
-local Module = ns:NewModule("Money", "LibMoreEvents-1.0")
+local Module = ns:NewModule("Money", "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- GLOBALS: ChatTypeInfo, GetMoney, UnitOnTaxi
 -- GLOBALS: AuctionFrame, ClassTrainerFrame, MailFrame, MerchantFrame
