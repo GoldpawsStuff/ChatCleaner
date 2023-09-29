@@ -63,10 +63,10 @@ local P = setmetatable({}, { __index = function(t,k)
 end })
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
-	if (string_find(message, "|Hquestie")) then return end
+	if (ns:IsProtectedMessage(message)) then return end
 
 	local player_name, achievement = string_match(message, P[G.ACHIEVEMENT_BROADCAST])
-	if (player_name) and (achievement) then
+	if (player_name and achievement) then
 
 		-- kill brackets
 		player_name = string_gsub(player_name, "[%[/%]]", "")

@@ -93,7 +93,7 @@ Module.AuctionFrameWasHidden = function(self)
 end
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
-	if (string_find(message, "|Hquestie")) then return end
+	if (ns:IsProtectedMessage(message)) then return end
 
 	-- Auction created. Let's queue them?
 	if (message == G.AUCTION_STARTED) then
