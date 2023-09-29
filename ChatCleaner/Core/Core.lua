@@ -144,6 +144,54 @@ for _,index in ipairs({
 	end
 end
 
+local blacklist = setmetatable({}, {
+	__call = function(self, ...)
+		for _,func in next,self do
+			if (func(...)) then
+				return true
+			end
+		end
+	end
+})
+
+local replacements = setmetatable({}, {
+	__call = function(self, msg, ...)
+		for i,set in next,self do
+			if (type(set) == "table") then
+				for k,data in ipairs(set) do
+					if (type(data) == "table") then
+						msg = string_gsub(msg, unpack(data))
+					elseif (type(data == "func")) then
+						msg = data(msg, ...) or msg
+					end
+				end
+			elseif (type(set == "func")) then
+				msg = set(msg, ...) or msg
+			end
+		end
+		return msg
+	end
+})
+
+local specialreplacements = setmetatable({}, {
+	__call = function(self, msg, ...)
+		for i,set in next,self do
+			if (type(set) == "table") then
+				for k,data in ipairs(set) do
+					if (type(data) == "table") then
+						msg = string_gsub(msg, unpack(data))
+					elseif (type(data == "func")) then
+						msg = data(msg, ...) or msg
+					end
+				end
+			elseif (type(set == "func")) then
+				msg = set(msg, ...) or msg
+			end
+		end
+		return msg
+	end
+})
+
 local modulePrototype = {
 
 	-- @input event <string>
@@ -220,17 +268,25 @@ ns.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	if (not msg or msg == "") then return end
 
 	if (not ns:IsProtectedMessage(msg)) then
-		if (next(self.specialreplacements)) then
-			msg = self.specialreplacements(msg, r, g, b, chatID, ...)
+
+		-- Parse replacements that ignore the blacklists.
+		if (next(specialreplacements)) then
+			msg = specialreplacements(msg, r, g, b, chatID, ...)
 		end
+
+		-- Parse regular blacklists and replacements.
 		if not(chatID and ignoredIDs[chatID]) then
-			if (next(self.blacklist)) then
-				if (self.blacklist(chatFrame, msg, r, g, b, chatID, ...)) then
+
+			-- Completely filter out matches.
+			if (next(blacklist)) then
+				if (blacklist(chatFrame, msg, r, g, b, chatID, ...)) then
 					return
 				end
 			end
-			if (next(self.replacements)) then
-				msg = self.replacements(msg, r, g, b, chatID, ...)
+
+			-- Return a modified string.
+			if (next(replacements)) then
+				msg = replacements(msg, r, g, b, chatID, ...)
 			end
 		end
 	end
@@ -255,25 +311,25 @@ end
 
 ns.AddBlacklistMethod = function(self, func)
 	-- Make sure the function isn't in our database already.
-	for _,infunc in next,self.blacklist do
+	for _,infunc in next,blacklist do
 		if (infunc == func) then
 			return
 		end
 	end
-	table_insert(self.blacklist, func)
+	table_insert(blacklist, func)
 end
 
 ns.RemoveBlacklistMethod = function(self, func)
-	for k,infunc in next,self.blacklist do
+	for k,infunc in next,blacklist do
 		if (infunc == func) then
-			self.blacklist[k] = nil
+			blacklist[k] = nil
 			break
 		end
 	end
 end
 
 ns.AddReplacementSet = function(self, set, ignoreBlacklist)
-	local group = ignoreBlacklist and self.specialreplacements or self.replacements
+	local group = ignoreBlacklist and specialreplacements or replacements
 	-- Make sure the replacement set hasn't already been added.
 	for _,inset in next,group do
 		if (inset == set) then
@@ -284,15 +340,15 @@ ns.AddReplacementSet = function(self, set, ignoreBlacklist)
 end
 
 ns.RemoveReplacementSet = function(self, set)
-	for k,inset in next,self.replacements do
+	for k,inset in next,replacements do
 		if (inset == set) then
-			self.replacements[k] = nil
+			replacements[k] = nil
 			break
 		end
 	end
-	for k,inset in next,self.specialreplacements do
+	for k,inset in next,specialreplacements do
 		if (inset == set) then
-			self.replacements[k] = nil
+			replacements[k] = nil
 			break
 		end
 	end
@@ -357,64 +413,15 @@ ns.UpgradeSettings = function(self)
 	return ChatCleaner_DB
 end
 
-ns.OnEvent = function(self, event, ...)
-end
-
 ns.OnInitialize = function(self)
 	self.db = self:UpgradeSettings()
 
-	self.blacklist = setmetatable({}, {
-		__call = function(self, ...)
-			for _,func in next,self do
-				if (func(...)) then
-					return true
-				end
-			end
-		end
-	})
-
-	self.replacements = setmetatable({}, {
-		__call = function(self, msg, ...)
-			for i,set in next,self do
-				if (type(set) == "table") then
-					for k,data in ipairs(set) do
-						if (type(data) == "table") then
-							msg = string_gsub(msg, unpack(data))
-						elseif (type(data == "func")) then
-							msg = data(msg, ...) or msg
-						end
-					end
-				elseif (type(set == "func")) then
-					msg = set(msg, ...) or msg
-				end
-			end
-			return msg
-		end
-	})
-
-	self.specialreplacements = setmetatable({}, {
-		__call = function(self, msg, ...)
-			for i,set in next,self do
-				if (type(set) == "table") then
-					for k,data in ipairs(set) do
-						if (type(data) == "table") then
-							msg = string_gsub(msg, unpack(data))
-						elseif (type(data == "func")) then
-							msg = data(msg, ...) or msg
-						end
-					end
-				elseif (type(set == "func")) then
-					msg = set(msg, ...) or msg
-				end
-			end
-			return msg
-		end
-	})
-
+	-- Always enable the options menu module.
 	self:GetModule("Options"):Enable()
 end
 
 ns.OnEnable = function(self)
+	-- Initial caching of all chat frame message methods.
 	self:CacheAllMessageMethods()
 
 	-- Enable modules.
@@ -430,6 +437,7 @@ ns.OnEnable = function(self)
 		end
 	end
 
+	-- Always enable the money module.
 	self:GetModule("Money"):Enable()
 end
 
