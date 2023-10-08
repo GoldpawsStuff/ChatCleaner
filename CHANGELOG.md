@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.41-Release] 2023-10-08
+### Fixed
+- Fixed a bug that would mock up all the output.
+
 ## [2.0.40-Release] 2023-09-28
 - Rewrote the addon, see git for details.
 
