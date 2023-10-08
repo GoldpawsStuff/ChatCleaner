@@ -24,8 +24,6 @@
 
 --]]
 local _, ns = ...
-local out = ns.out or {}
-ns.out = out
 
 -- Lua API
 local _G = _G
@@ -44,29 +42,36 @@ local BUSY = _G.FRIENDS_LIST_BUSY -- "Busy"
 local COMPLETE = _G.COMPLETE -- "Complete"
 local RESTED = _G.TUTORIAL_TITLE26 -- "Rested"
 
+-- Private API
+local Colors = ns.Private.Colors
+
 -- Output patterns.
 -- *uses a simple color tag system for new strings.
-local output = setmetatable({}, { __newindex = function(t,k,msg)
+ns.out = setmetatable(ns.out or {}, { __newindex = function(t,k,msg)
+
+	local colors = Colors or ns.Colors
 
 	-- Have to do this with an indexed table,
 	-- as the order of the entires matters.
 	for _,entry in ipairs({
-		{ "%*title%*", 		ns.Colors.title.colorCode },
-		{ "%*white%*", 		ns.Colors.highlight.colorCode },
-		{ "%*offwhite%*", 	ns.Colors.offwhite.colorCode },
-		{ "%*palered%*", 	ns.Colors.palered.colorCode },
-		{ "%*red%*", 		ns.Colors.quest.red.colorCode },
-		{ "%*darkorange%*", ns.Colors.quality.Legendary.colorCode },
-		{ "%*orange%*", 	ns.Colors.quest.orange.colorCode },
-		{ "%*yellow%*", 	ns.Colors.quest.yellow.colorCode },
-		{ "%*green%*", 		ns.Colors.quest.green.colorCode },
-		{ "%*gray%*", 		ns.Colors.quest.gray.colorCode },
+		{ "%*title%*", 		colors.title.colorCode },
+		{ "%*white%*", 		colors.highlight.colorCode },
+		{ "%*offwhite%*", 	colors.offwhite.colorCode },
+		{ "%*palered%*", 	colors.palered.colorCode },
+		{ "%*red%*", 		colors.quest.red.colorCode },
+		{ "%*darkorange%*", colors.quality.Legendary.colorCode },
+		{ "%*orange%*", 	colors.quest.orange.colorCode },
+		{ "%*yellow%*", 	colors.quest.yellow.colorCode },
+		{ "%*green%*", 		colors.quest.green.colorCode },
+		{ "%*gray%*", 		colors.quest.gray.colorCode },
 		{ "%*%*", "|r" } -- Always keep this at the end.
 	}) do
 		msg = string_gsub(msg, unpack(entry))
 	end
 	rawset(t,k,msg)
 end })
+
+local out = ns.out
 
 -- Templates we use for multiple things
 -- *don't use these directly in the modules,
