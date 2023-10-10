@@ -73,11 +73,9 @@ end })
 
 local out = ns.out
 
--- Templates we use for multiple things
--- *don't use these directly in the modules,
---  only use them in the definitions below.
-out.__gain = "*gray*+** %s"
-out.__gain_yellow = "*gray*+** *white*%s:** *yellow*%s**"
+-- Local templates
+local plus = "*gray*+** %s"
+local plus_yellow = "*gray*+** *white*%s:** *yellow*%s**"
 
 -- Output formats used in the modules.
 -- *everything should be gathered here, in this file.
@@ -95,21 +93,21 @@ out.currency = "*gray*+** *white*%d** %s"
 out.dnd_added = "*darkorange*+ "..BUSY.."**"
 out.dnd_added_message = "*darkorange*+ "..BUSY..": ***white*%s**"
 out.dnd_cleared = "*green*- "..BUSY.."**"
-out.item_single = out.__gain
+out.item_single = plus
 out.item_multiple = "*gray*+** %s *offwhite*(%d)**"
 out.item_single_other = "*offwhite*!**%s*gray*:** %s"
 out.item_multiple_other = "*offwhite*!**%s*gray*:** %s *offwhite*(%d)**"
 out.item_deficit = "*red*- %s**"
 out.item_deficit_multiple = "*red*- %s** *offwhite*(%d)**"
 out.item_transfer = "*gray*+** *white*%s:** %s"
-out.money = out.__gain
+out.money = plus
 out.money_deficit = "*gray*-** %s"
-out.objective_status = out.__gain_yellow
-out.quest_accepted = out.__gain_yellow
-out.quest_complete = out.__gain_yellow
+out.objective_status = plus_yellow
+out.quest_accepted = plus_yellow
+out.quest_complete = plus_yellow
 out.rested_added = "*gray*+ "..RESTED.."**"
 out.rested_cleared = "*orange*- "..RESTED.."**"
-out.set_complete = out.__gain_yellow
+out.set_complete = plus_yellow
 out.standing = "*gray*+** *white*".."%d** *white*%s:** %s"
 out.standing_generic = "*gray*+ %s:** %s"
 out.standing_deficit = "*red*-** *white*".."%d** *white*%s:** %s"
