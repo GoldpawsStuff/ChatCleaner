@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.42-Release] 2023-10-11
+- Updated for WoW Client Patch 3.4.3.
+
 ## [2.0.41-Release] 2023-10-08
 ### Fixed
 - Fixed a bug that would mock up all the output.
