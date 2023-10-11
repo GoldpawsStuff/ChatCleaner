@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.43-Release] 2023-10-11
+### Fixed
+- Fixed the issue where the addon sometimes would attempt to hook into the hiding of the `ClassTrainerFrame` before it had been loaded.
+
 ## [2.0.42-Release] 2023-10-11
 - Updated for WoW Client Patch 3.4.3.
 

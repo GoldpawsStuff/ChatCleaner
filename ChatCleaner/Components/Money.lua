@@ -323,7 +323,7 @@ Module.OnEvent = function(self, event, ...)
 		local currentMoney = GetMoney()
 
 		if (MerchantFrame:IsShown()) or (MailFrame:IsShown()) or (ClassTrainerFrame and ClassTrainerFrame:IsShown()) then
-			if (not self:IsHooked(ClassTrainerFrame, "OnHide")) then
+			if (ClassTrainerFrame and not self:IsHooked(ClassTrainerFrame, "OnHide")) then
 				self:HookScript(ClassTrainerFrame, "OnHide", "OnSpecialFrameHide")
 			end
 
