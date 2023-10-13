@@ -156,39 +156,54 @@ local blacklist = setmetatable({}, {
 
 local replacements = setmetatable({}, {
 	__call = function(self, msg, ...)
+
+		-- Iterate all registered replacement sets.
 		for i,set in next,self do
+
+			-- Check if the module has supplied
+			-- a table of string replacements or a func.
 			if (type(set) == "table") then
+
+				-- The module has supplied a table, iterate it.
 				for k,data in ipairs(set) do
-					if (type(data) == "table") then
-						msg = string_gsub(msg, unpack(data))
-					elseif (type(data == "func")) then
-						msg = data(msg, ...) or msg
+					if (string_match(msg, data[1])) then
+						msg = string_gsub(msg, data[1], data[2])
 					end
 				end
+
 			elseif (type(set == "func")) then
 				msg = set(msg, ...) or msg
 			end
 		end
-		return msg
+
+		return msg, ...
 	end
 })
 
-local specialreplacements = setmetatable({}, {
+local specialreplacements
+specialreplacements = setmetatable({}, {
 	__call = function(self, msg, ...)
+
+		-- Iterate all registered replacement sets.
 		for i,set in next,self do
+
+			-- Check if the module has supplied
+			-- a table of string replacements or a func.
 			if (type(set) == "table") then
+
+				-- The module has supplied a table, iterate it.
 				for k,data in ipairs(set) do
-					if (type(data) == "table") then
-						msg = string_gsub(msg, unpack(data))
-					elseif (type(data == "func")) then
-						msg = data(msg, ...) or msg
+					if (string_match(msg, data[1])) then
+						msg = string_gsub(msg, data[1], data[2])
 					end
 				end
+
 			elseif (type(set == "func")) then
 				msg = set(msg, ...) or msg
 			end
 		end
-		return msg
+
+		return msg, ...
 	end
 })
 
@@ -221,8 +236,8 @@ local modulePrototype = {
 	end,
 
 	-- @input set <table,func>
-	RegisterMessageReplacement = function(self, set)
-		ns:AddReplacementSet(set)
+	RegisterMessageReplacement = function(self, set, ignoreBlacklist)
+		ns:AddReplacementSet(set, ignoreBlacklist)
 	end,
 
 	-- @input set <table,func>
@@ -330,12 +345,14 @@ end
 
 ns.AddReplacementSet = function(self, set, ignoreBlacklist)
 	local group = ignoreBlacklist and specialreplacements or replacements
+
 	-- Make sure the replacement set hasn't already been added.
 	for _,inset in next,group do
 		if (inset == set) then
 			return
 		end
 	end
+
 	table_insert(group, set)
 end
 
@@ -421,6 +438,7 @@ ns.OnInitialize = function(self)
 end
 
 ns.OnEnable = function(self)
+
 	-- Initial caching of all chat frame message methods.
 	self:CacheAllMessageMethods()
 
@@ -437,7 +455,10 @@ ns.OnEnable = function(self)
 		end
 	end
 
-	-- Always enable the money module.
+	-- Always enabled modules.
 	self:GetModule("Money"):Enable()
+	self:GetModule("ClassColors"):Enable()
+	self:GetModule("QualityColors"):Enable()
+
 end
 
