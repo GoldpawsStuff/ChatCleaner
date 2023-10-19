@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.45-Release] 2023-10-19
+### Changed
+- We're now also parsing for Guild Achievements, as well as filtering out duplicate entries that for some reason are posted both in the regular achievement channel and the guild achievement channel.
+
 ## [2.0.44-Release] 2023-10-13
 ### Fixed
 - Fixed an issue that caused many chat replacements like the removal of brackets around player names to not be registered and processed.
