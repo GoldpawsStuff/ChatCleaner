@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-10-20
+### Changed
+- The system messages notifying you of honor- and arenapoints gained is now completely filtered out, as this also is represented as loot gained and would be a duplicate message.
+
 ## [2.0.45-Release] 2023-10-19
 ### Changed
 - We're now also parsing for Guild Achievements, as well as filtering out duplicate entries that for some reason are posted both in the regular achievement channel and the guild achievement channel.
