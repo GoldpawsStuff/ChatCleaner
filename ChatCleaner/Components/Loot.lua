@@ -60,7 +60,10 @@ local G = {
 	TOY_BOX = TOY_BOX, -- "Toy Box"
 	WARDROBE = WARDROBE, -- "Appearances"
 	LOOT_SPEC_CHANGED = ERR_LOOT_SPEC_CHANGED_S, -- "Loot Specialization set to: %s"
-	SELECT_LOOT_SPECIALIZATION = SELECT_LOOT_SPECIALIZATION -- "Loot Specialization"
+	SELECT_LOOT_SPECIALIZATION = SELECT_LOOT_SPECIALIZATION, -- "Loot Specialization"
+	COMBATLOG_HONORAWARD = COMBATLOG_HONORAWARD, -- "You have been awarded %d honor points."
+	COMBATLOG_ARENAPOINTSAWARD = COMBATLOG_ARENAPOINTSAWARD -- "You have been awarded %d arena points."
+
 }
 
 local _,playerClass = UnitClass("player")
@@ -78,6 +81,20 @@ local P = setmetatable({}, { __index = function(t,k)
 	rawset(t,k,makePattern(k))
 	return rawget(t,k)
 end })
+
+Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
+
+	local honorpoints = string_match(msg,P[G.COMBATLOG_HONORAWARD])
+	if (honorpoints) then
+		return true
+	end
+
+	local arenapoints = string_match(msg,P[G.COMBATLOG_ARENAPOINTSAWARD])
+	if (arenapoints) then
+		return true
+	end
+
+end
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	if (ns:IsProtectedMessage(message)) then return end
@@ -281,6 +298,10 @@ Module.OnInitialize = function(self)
 
 end
 
+local onAddMessageProxy = function(...)
+	return Module:OnAddMessage(...)
+end
+
 local onChatEventProxy = function(...)
 	return Module:OnChatEvent(...)
 end
@@ -290,6 +311,7 @@ local onReplacementSetProxy = function(...)
 end
 
 Module.OnEnable = function(self)
+	self:RegisterBlacklistFilter(onAddMessageProxy)
 	self:RegisterMessageReplacement(onReplacementSetProxy)
 	self:RegisterMessageEventFilter("CHAT_MSG_CURRENCY", onChatEventProxy)
 	self:RegisterMessageEventFilter("CHAT_MSG_LOOT", onChatEventProxy)
@@ -297,6 +319,7 @@ Module.OnEnable = function(self)
 end
 
 Module.OnDisable = function(self)
+	self:UnregisterBlacklistFilter(onAddMessageProxy)
 	self:UnregisterMessageReplacement(onReplacementSetProxy)
 	self:UnregisterMessageEventFilter("CHAT_MSG_CURRENCY", onChatEventProxy)
 	self:UnregisterMessageEventFilter("CHAT_MSG_LOOT", onChatEventProxy)
