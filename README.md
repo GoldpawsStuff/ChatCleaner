@@ -5,7 +5,7 @@ This addon doesn't really add or remove chat content, it simply restyles it to l
 You can toggle active filters through the options menu accessible with `/chatcleaner`or `/cc`.
 
 ## Downloading & Installing
-I recommend downloading the UI from either [CurseForge](https://www.curseforge.com/wow/addons/chat-cleaner) or [Wago](https://addons.wago.io/addons/chatcleaner), or use their respective download clients which provides the same versions and installs them automatically for you. Be aware that only these download locations provide finished packaged addons with all libraries included.
+I recommend downloading the addon from either [CurseForge](https://www.curseforge.com/wow/addons/chat-cleaner) or [Wago](https://addons.wago.io/addons/chatcleaner), or use their respective download clients which provides the same versions and installs them automatically for you. Be aware that only these download locations provide finished packaged addons with all libraries included.
 
 If you choose to download and manually install directly from GitHub, you'll have to install the following libraries as standalones in order for the UI to work:
 - [Ace3](https://www.curseforge.com/wow/addons/ace3)
