@@ -16,7 +16,6 @@ externals:
     ChatCleaner/Libs/AceLocale-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
     ChatCleaner/Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
     ChatCleaner/Libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
-    ChatCleaner/Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
     ChatCleaner/Libs/LibMoreEvents-1.0: https://github.com/GoldpawsStuff/LibMoreEvents-1.0
     ChatCleaner/Libs/TaintLess:
         url: https://www.townlong-yak.com/addons.git/taintless
