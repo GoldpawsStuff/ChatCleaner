@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.47-Release] 2023-10-23
+### Fixed
+- Removed a double embed of AceConfig. This update has no effect on the end user, but still needed to be fixed.
+
 ## [2.0.46-Release] 2023-10-21
 ### Changed
 - The system messages notifying you of honor- and arenapoints gained is now completely filtered out, as this also is represented as loot gained and would be a duplicate message.
