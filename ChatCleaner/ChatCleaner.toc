@@ -1,4 +1,4 @@
-## Interface: 100107
+## Interface: 100200
 ## IconTexture: Interface\ICONS\Pet_Type_Mechanical
 
 ## Title: Cleaner: |cffffffffChat|r
