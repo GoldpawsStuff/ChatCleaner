@@ -115,7 +115,11 @@ end })
 
 -- Remove large number formatting
 local simplifyNumbers = function(message)
-	return string_gsub(message, "(%d)%"..G.LARGE_NUMBER_SEPERATOR.."(%d)", "%1%2")
+	if (G.LARGE_NUMBER_SEPERATOR and G.LARGE_NUMBER_SEPERATOR ~= "") then
+		return string_gsub(message or "", "(%d)%"..G.LARGE_NUMBER_SEPERATOR.."(%d)", "%1%2")
+	else
+		return message or ""
+	end
 end
 
 -- Add pretty spacing to large numbers
