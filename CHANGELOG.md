@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.49-Release] 2023-11-14
+### Fixed
+- Fixed an issue that caused money parsing to sometimes bug out in esES, frFR and ruRU clients.
+
 ## [2.0.48-Release] 2023-11-07
 - Updated for WoW Client Patch 10.2.0.
 
