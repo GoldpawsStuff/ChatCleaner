@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.50-Release] 2023-11-17
+- Updated for WoW Client Patch 1.15.0.
+
+### Changed
+- Re-enabled various development filters in the development version. Does not affect general users downloading the addon through its supported addon websites and download clients.
+
 ## [2.0.49-Release] 2023-11-14
 ### Fixed
 - Fixed an issue that caused money parsing to sometimes bug out in esES, frFR and ruRU clients.
