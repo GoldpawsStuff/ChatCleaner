@@ -460,5 +460,12 @@ ns.OnEnable = function(self)
 	self:GetModule("ClassColors"):Enable()
 	self:GetModule("QualityColors"):Enable()
 
+	-- Enable development version modules.
+	-- *not recommended for the public
+	if (ns.Version == "Development") then
+		self:GetModule("DevelopmentFilters"):Enable()
+		self:GetModule("Creatures"):Enable()
+	end
+
 end
 
