@@ -47,6 +47,7 @@ local tonumber = tonumber
 
 -- WoW Globals
 local G = {
+
 	LEARN_BATTLE_PET = BATTLE_PET_NEW_PET, -- "%s has been added to your pet journal!"
 	LEARN_COMPANION = ERR_LEARN_COMPANION_S, -- "You have added the pet %s to your collection."
 	LEARN_HEIRLOOM = ERR_LEARN_HEIRLOOM_S, -- "%s has been added to your heirloom collection."
@@ -61,7 +62,10 @@ local G = {
 	WARDROBE = WARDROBE, -- "Appearances"
 	LOOT_SPEC_CHANGED = ERR_LOOT_SPEC_CHANGED_S, -- "Loot Specialization set to: %s"
 	SELECT_LOOT_SPECIALIZATION = SELECT_LOOT_SPECIALIZATION, -- "Loot Specialization"
+	HONOR_POINTS = HONOR_POINTS, -- "Honor Points"
 	COMBATLOG_HONORAWARD = COMBATLOG_HONORAWARD, -- "You have been awarded %d honor points."
+	COMBATLOG_HONORGAIN  = COMBATLOG_HONORGAIN, -- "%s dies, honorable kill Rank: %s (%d Honor Points)"
+	COMBATLOG_HONORGAIN_NO_RANK  = COMBATLOG_HONORGAIN_NO_RANK, -- "%s dies, honorable kill (%d Honor Points)"
 	COMBATLOG_ARENAPOINTSAWARD = COMBATLOG_ARENAPOINTSAWARD -- "You have been awarded %d arena points."
 
 }
@@ -84,11 +88,27 @@ end })
 
 Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
 
+	-- Not sure any of these Honor entries are parsed, or even needed.
+
+	-- "%s dies, honorable kill Rank: %s (%d Honor Points)"
+	local honorpoints = string_match(msg,P[G.COMBATLOG_HONORGAIN])
+	if (honorpoints) then
+		return true
+	end
+
+	-- "%s dies, honorable kill (%d Honor Points)"
+	local honorpoints = string_match(msg,P[G.COMBATLOG_HONORGAIN_NO_RANK])
+	if (honorpoints) then
+		return true
+	end
+
+	-- "You have been awarded %d honor points."
 	local honorpoints = string_match(msg,P[G.COMBATLOG_HONORAWARD])
 	if (honorpoints) then
 		return true
 	end
 
+	-- "You have been awarded %d arena points."
 	local arenapoints = string_match(msg,P[G.COMBATLOG_ARENAPOINTSAWARD])
 	if (arenapoints) then
 		return true
@@ -99,7 +119,10 @@ end
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	if (ns:IsProtectedMessage(message)) then return end
 
-	if (event == "CHAT_MSG_CURRENCY") then
+	if (event == "CHAT_MSG_COMBAT_HONOR_GAIN") then
+		return true
+
+	elseif (event == "CHAT_MSG_CURRENCY") then
 		for i,pattern in ipairs(self.patterns) do
 
 			-- We use the pattern only as an identifier, not for information.
@@ -313,6 +336,7 @@ end
 Module.OnEnable = function(self)
 	self:RegisterBlacklistFilter(onAddMessageProxy)
 	self:RegisterMessageReplacement(onReplacementSetProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_COMBAT_HONOR_GAIN", onChatEventProxy)
 	self:RegisterMessageEventFilter("CHAT_MSG_CURRENCY", onChatEventProxy)
 	self:RegisterMessageEventFilter("CHAT_MSG_LOOT", onChatEventProxy)
 	self:RegisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
@@ -321,6 +345,7 @@ end
 Module.OnDisable = function(self)
 	self:UnregisterBlacklistFilter(onAddMessageProxy)
 	self:UnregisterMessageReplacement(onReplacementSetProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_COMBAT_HONOR_GAIN", onChatEventProxy)
 	self:UnregisterMessageEventFilter("CHAT_MSG_CURRENCY", onChatEventProxy)
 	self:UnregisterMessageEventFilter("CHAT_MSG_LOOT", onChatEventProxy)
 	self:UnregisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)

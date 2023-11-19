@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.51-Release] 2023-11-19
+### Fixed
+- The loot filter should hide the game's own honor messages better than before now.
+
 ## [2.0.50-Release] 2023-11-17
 - Updated for WoW Client Patch 1.15.0.
 
