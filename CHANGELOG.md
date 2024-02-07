@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.53-Release] 2024-02-07
+- Updated for WoW Client Patch 1.15.1.
+
 ## [2.0.52-Release] 2024-01-17
 - Updated for WoW Client Patch 10.2.5.
 
