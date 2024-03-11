@@ -318,10 +318,10 @@ ns.CacheMessageMethod = function(self, chatFrame)
 		-- Copy the current AddMessage method from the frame.
 		-- *this also functions as our "has been handled" indicator.
 		self.MethodCache[chatFrame] = chatFrame.AddMessage
-	end
 
-	-- Replace with our filtered AddMessage method.
-	chatFrame.AddMessage = function(...) self:AddMessageFiltered(...) end
+		-- Replace with our filtered AddMessage method.
+		chatFrame.AddMessage = function(...) self:AddMessageFiltered(...) end
+	end
 end
 
 ns.AddBlacklistMethod = function(self, func)
@@ -439,6 +439,8 @@ end
 
 ns.OnEnable = function(self)
 
+	self.WAIT_FOR_EXTERNAL = ns.API.IsAddOnEnabled("AzeriteUI")
+
 	-- Initial caching of all chat frame message methods.
 	self:CacheAllMessageMethods()
 
@@ -459,6 +461,7 @@ ns.OnEnable = function(self)
 	self:GetModule("Money"):Enable()
 	self:GetModule("ClassColors"):Enable()
 	self:GetModule("QualityColors"):Enable()
+	self:GetModule("Blacklist"):Enable()
 
 	-- Enable development version modules.
 	-- *not recommended for the public

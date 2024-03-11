@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.54-Release] 2024-03-11
+### Added
+- Messages about not being in a raid group while in a battleground should now be suppressed.
+
 ## [2.0.53-Release] 2024-02-07
 - Updated for WoW Client Patch 1.15.1.
 

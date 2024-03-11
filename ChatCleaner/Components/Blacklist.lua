@@ -42,7 +42,8 @@ end
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 	if (B[message]) then
-		return true
+		-- These problems mostly occur in battlegrounds and other PvP.
+		return IsInInstance()
 	end
 end
 
