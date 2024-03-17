@@ -59,8 +59,6 @@ local G = {
 local makePattern = function(msg)
 	msg = string_gsub(msg, "%%([%d%$]-)d", "(%%d+)")
 	msg = string_gsub(msg, "%%([%d%$]-)s", "(.+)")
-	msg = string_gsub(msg, "%[", "%%[")
-	msg = string_gsub(msg, "%]", "%%]")
 	return msg
 end
 
@@ -96,17 +94,10 @@ Module.OnInitialize = function(self)
 
 	-- Turns "[1. General - The Barrens]" into "1."
 	--table_insert(self.replacements, {"|Hchannel:(.-):(%d+)|h%[(.-)%]|h", "|Hchannel:%1:%2|h%2.|h"})
-	table_insert(self.replacements, {"|Hchannel:(.-):(%d+)|h%[(%d)%. (.-)(%s%-%s.-)%]|h", "|Hchannel:%1:%2|h%3.|h"})
+	table_insert(self.replacements, {"^|Hchannel:(.-):(%d+)|h%[(%d)%. (.-)(%s%-%s.-)%]|h", "|Hchannel:%1:%2|h%3.|h"})
 
 	--table_insert(self.replacements, {"|Hchannel:(%w+):(%d+)|h%[(%d)%. (%w+)%]|h", "|Hchannel:%1:%2|h%3.|h"})
 	--table_insert(self.replacements, {"|Hchannel:(%w+)|h%[(%w+)%]|h", "|Hchannel:%1|h%2|h"})
-
-	-- Make sure these filters only apply
-	-- when the channel name is at the start of the message.
-	-- This is to prevent false positives when changing zone channels.
-	for i,set in next,self.replacements do
-		self.replacements[i][1] = "^"..self.replacements[i][1]
-	end
 end
 
 Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
