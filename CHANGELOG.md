@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2024-03-17
 ### Changed
-- Messages about joining channels on zone changes should now be suppressed while chat channel name abbreviations are enabled.
+- Messages when changing zone channels are for the time being displayed in full.
 
 ## [2.0.54-Release] 2024-03-11
 ### Added
