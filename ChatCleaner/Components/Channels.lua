@@ -52,23 +52,8 @@ local G = {
 	CHAT_RAID_WARNING_GET = CHAT_RAID_WARNING_GET,
 	CHAT_OFFICER_GET = CHAT_OFFICER_GET,
 	CHAT_YOU_CHANGED_NOTICE =  CHAT_YOU_CHANGED_NOTICE, -- "Changed Channel: |Hchannel:%d|h[%s]|h"
-	CHAT_YOU_CHANGED_NOTICE_BN =  CHAT_YOU_CHANGED_NOTICE_BN, -- "Changed Channel: |Hchannel:CHANNEL:%d|h[%s]|h"
+	CHAT_YOU_CHANGED_NOTICE_BN =  CHAT_YOU_CHANGED_NOTICE_BN -- "Changed Channel: |Hchannel:CHANNEL:%d|h[%s]|h"
 }
-
--- Convert a WoW global string to a search pattern
-local makePattern = function(msg)
-	msg = string_gsub(msg, "%%([%d%$]-)d", "(%%d+)")
-	msg = string_gsub(msg, "%%([%d%$]-)s", "(.+)")
-	return msg
-end
-
-
--- Search Pattern Cache.
--- This will generate the pattern on the first lookup.
-local P = setmetatable({}, { __index = function(t,k)
-	rawset(t,k,makePattern(k))
-	return rawget(t,k)
-end })
 
 Module.OnInitialize = function(self)
 
@@ -93,32 +78,19 @@ Module.OnInitialize = function(self)
 	--table_insert(self.replacements, {"|Hchannel:(.-):(%d+)|h%[(%d)%. (.-)(%s%-%s.-)%]|h", "|Hchannel:%1:%2|h%4.|h"})
 
 	-- Turns "[1. General - The Barrens]" into "1."
-	--table_insert(self.replacements, {"|Hchannel:(.-):(%d+)|h%[(.-)%]|h", "|Hchannel:%1:%2|h%2.|h"})
+	-- *Only works half of the time. What is wrong?
 	table_insert(self.replacements, {"^|Hchannel:(.-):(%d+)|h%[(%d)%. (.-)(%s%-%s.-)%]|h", "|Hchannel:%1:%2|h%3.|h"})
 
-	--table_insert(self.replacements, {"|Hchannel:(%w+):(%d+)|h%[(%d)%. (%w+)%]|h", "|Hchannel:%1:%2|h%3.|h"})
-	--table_insert(self.replacements, {"|Hchannel:(%w+)|h%[(%w+)%]|h", "|Hchannel:%1|h%2|h"})
-end
+	-- Only works for English, will add a better solution later.
+	--table_insert(self.replacements, { "^Changed Channel:.*(.-)", "%1" })
+	-- |Hchannel:%d|h[%s]|h
 
-Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
-
-	local joined = string_match(msg,P[G.CHAT_YOU_CHANGED_NOTICE])
-	if (joined) then
-		return true
-	end
-
-end
-
-local onAddMessageProxy = function(...)
-	return Module:OnAddMessage(...)
 end
 
 Module.OnEnable = function(self)
-	self:RegisterBlacklistFilter(onAddMessageProxy)
 	self:RegisterMessageReplacement(self.replacements, true)
 end
 
 Module.OnDisable = function(self)
-	self:UnregisterBlacklistFilter(onAddMessageProxy)
 	self:UnregisterMessageReplacement(self.replacements)
 end
