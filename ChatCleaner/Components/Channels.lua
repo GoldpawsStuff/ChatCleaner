@@ -31,41 +31,63 @@ local Module = ns:NewModule("Channels")
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 -- Lua API
+local rawget = rawget
+local rawset = rawset
+local setmetatable = setmetatable
+local string_gsub = string.gsub
 local string_match = string.match
 local table_insert = table.insert
 
+-- WoW Globals
+local G = {
+	CHAT_BATTLEGROUND_GET = CHAT_BATTLEGROUND_GET,
+	CHAT_BATTLEGROUND_LEADER_GET = CHAT_BATTLEGROUND_LEADER_GET,
+	CHAT_GUILD_GET = CHAT_GUILD_GET,
+	CHAT_INSTANCE_CHAT_GET = CHAT_INSTANCE_CHAT_GET,
+	CHAT_INSTANCE_CHAT_LEADER_GET = CHAT_INSTANCE_CHAT_LEADER_GET,
+	CHAT_PARTY_GET = CHAT_PARTY_GET,
+	CHAT_PARTY_LEADER_GET = CHAT_PARTY_LEADER_GET,
+	CHAT_RAID_GET = CHAT_RAID_GET,
+	CHAT_RAID_LEADER_GET = CHAT_RAID_LEADER_GET,
+	CHAT_RAID_WARNING_GET = CHAT_RAID_WARNING_GET,
+	CHAT_OFFICER_GET = CHAT_OFFICER_GET,
+	CHAT_YOU_CHANGED_NOTICE =  CHAT_YOU_CHANGED_NOTICE, -- "Changed Channel: |Hchannel:%d|h[%s]|h"
+	CHAT_YOU_CHANGED_NOTICE_BN =  CHAT_YOU_CHANGED_NOTICE_BN, -- "Changed Channel: |Hchannel:CHANNEL:%d|h[%s]|h"
+}
+
+-- Convert a WoW global string to a search pattern
+local makePattern = function(msg)
+	msg = string_gsub(msg, "%%([%d%$]-)d", "(%%d+)")
+	msg = string_gsub(msg, "%%([%d%$]-)s", "(.+)")
+	return msg
+end
+
+
+-- Search Pattern Cache.
+-- This will generate the pattern on the first lookup.
+local P = setmetatable({}, { __index = function(t,k)
+	rawset(t,k,makePattern(k))
+	return rawget(t,k)
+end })
 
 Module.OnInitialize = function(self)
-
-	-- WoW Globals
-	local CHAT_BATTLEGROUND_GET = CHAT_BATTLEGROUND_GET
-	local CHAT_BATTLEGROUND_LEADER_GET = CHAT_BATTLEGROUND_LEADER_GET
-	local CHAT_GUILD_GET = CHAT_GUILD_GET
-	local CHAT_INSTANCE_CHAT_GET = CHAT_INSTANCE_CHAT_GET
-	local CHAT_INSTANCE_CHAT_LEADER_GET = CHAT_INSTANCE_CHAT_LEADER_GET
-	local CHAT_PARTY_GET = CHAT_PARTY_GET
-	local CHAT_PARTY_LEADER_GET = CHAT_PARTY_LEADER_GET
-	local CHAT_RAID_GET = CHAT_RAID_GET
-	local CHAT_RAID_LEADER_GET = CHAT_RAID_LEADER_GET
-	local CHAT_RAID_WARNING_GET = CHAT_RAID_WARNING_GET
-	local CHAT_OFFICER_GET = CHAT_OFFICER_GET
 
 	self.replacements = {}
 
 	if (ns.IsClassic) then
-		table_insert(self.replacements, {"%["..string_match(CHAT_BATTLEGROUND_LEADER_GET, "%[(.-)%]") .. "%]", L["BGL"]})
-		table_insert(self.replacements, {"%["..string_match(CHAT_BATTLEGROUND_GET, "%[(.-)%]") .. "%]", L["BG"]})
+		table_insert(self.replacements, {"%["..string_match(G.CHAT_BATTLEGROUND_LEADER_GET, "%[(.-)%]") .. "%]", L["BGL"]})
+		table_insert(self.replacements, {"%["..string_match(G.CHAT_BATTLEGROUND_GET, "%[(.-)%]") .. "%]", L["BG"]})
 	end
 
-	table_insert(self.replacements, {"%["..string_match(CHAT_PARTY_LEADER_GET, "%[(.-)%]") .. "%]", L["PL"]})
-	table_insert(self.replacements, {"%["..string_match(CHAT_PARTY_GET, "%[(.-)%]") .. "%]", L["P"]})
-	table_insert(self.replacements, {"%["..string_match(CHAT_RAID_LEADER_GET, "%[(.-)%]") .. "%]", L["RL"]})
-	table_insert(self.replacements, {"%["..string_match(CHAT_RAID_GET, "%[(.-)%]") .. "%]", L["R"]})
-	table_insert(self.replacements, {"%["..string_match(CHAT_INSTANCE_CHAT_LEADER_GET, "%[(.-)%]") .. "%]", L["IL"]})
-	table_insert(self.replacements, {"%["..string_match(CHAT_INSTANCE_CHAT_GET, "%[(.-)%]") .. "%]", L["I"]})
-	table_insert(self.replacements, {"%["..string_match(CHAT_GUILD_GET, "%[(.-)%]") .. "%]", L["G"]})
-	table_insert(self.replacements, {"%["..string_match(CHAT_OFFICER_GET, "%[(.-)%]") .. "%]", L["O"]})
-	table_insert(self.replacements, {"%["..string_match(CHAT_RAID_WARNING_GET, "%[(.-)%]") .. "%]", "|cffff0000!|r"})
+	table_insert(self.replacements, {"%["..string_match(G.CHAT_PARTY_LEADER_GET, "%[(.-)%]") .. "%]", L["PL"]})
+	table_insert(self.replacements, {"%["..string_match(G.CHAT_PARTY_GET, "%[(.-)%]") .. "%]", L["P"]})
+	table_insert(self.replacements, {"%["..string_match(G.CHAT_RAID_LEADER_GET, "%[(.-)%]") .. "%]", L["RL"]})
+	table_insert(self.replacements, {"%["..string_match(G.CHAT_RAID_GET, "%[(.-)%]") .. "%]", L["R"]})
+	table_insert(self.replacements, {"%["..string_match(G.CHAT_INSTANCE_CHAT_LEADER_GET, "%[(.-)%]") .. "%]", L["IL"]})
+	table_insert(self.replacements, {"%["..string_match(G.CHAT_INSTANCE_CHAT_GET, "%[(.-)%]") .. "%]", L["I"]})
+	table_insert(self.replacements, {"%["..string_match(G.CHAT_GUILD_GET, "%[(.-)%]") .. "%]", L["G"]})
+	table_insert(self.replacements, {"%["..string_match(G.CHAT_OFFICER_GET, "%[(.-)%]") .. "%]", L["O"]})
+	table_insert(self.replacements, {"%["..string_match(G.CHAT_RAID_WARNING_GET, "%[(.-)%]") .. "%]", "|cffff0000!|r"})
 
 	-- Turns "[1. General - The Barrens]" into "General"
 	--table_insert(self.replacements, {"|Hchannel:(.-):(%d+)|h%[(%d)%. (.-)(%s%-%s.-)%]|h", "|Hchannel:%1:%2|h%4.|h"})
@@ -79,10 +101,25 @@ Module.OnInitialize = function(self)
 
 end
 
+Module.OnAddMessage = function(self, chatFrame, msg, r, g, b, chatID, ...)
+
+	local joined = string_match(msg,P[G.CHAT_YOU_CHANGED_NOTICE])
+	if (joined) then
+		return true
+	end
+
+end
+
+local onAddMessageProxy = function(...)
+	return Module:OnAddMessage(...)
+end
+
 Module.OnEnable = function(self)
-	self:RegisterMessageReplacement(self.replacements, true)
+	self:RegisterBlacklistFilter(onAddMessageProxy)
+	self:RegisterMessageReplacement(self.replacements--[[, true]])
 end
 
 Module.OnDisable = function(self)
+	self:UnregisterBlacklistFilter(onAddMessageProxy)
 	self:UnregisterMessageReplacement(self.replacements)
 end
