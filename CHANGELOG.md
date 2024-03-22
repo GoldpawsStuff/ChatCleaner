@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-03-17
-### Changed
-- Messages when changing zone channels are for the time being displayed in full.
+## [2.0.55-Release] 2024-03-22
+- Updated for WoW Client Patch 10.2.6.
+- Updated for WoW Client Patch 4.4.0.
+
+### Fixed
+- Zone changes for general public channels are now correctly abbreviated.
 
 ## [2.0.54-Release] 2024-03-11
 ### Added

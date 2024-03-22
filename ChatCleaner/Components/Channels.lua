@@ -77,13 +77,15 @@ Module.OnInitialize = function(self)
 	-- Turns "[1. General - The Barrens]" into "General"
 	--table_insert(self.replacements, {"|Hchannel:(.-):(%d+)|h%[(%d)%. (.-)(%s%-%s.-)%]|h", "|Hchannel:%1:%2|h%4.|h"})
 
+	-- Only works for English, will add a better solution later.
+	--table_insert(self.replacements, { "^Changed Channel: |Hchannel:(.-):(%d+)|h%[(%d)%. (.-)(%s%-%s.-)%]|h", "|Hchannel:%1:%2|h%3. %5|h" })
+	table_insert(self.replacements, { "^Changed Channel: |Hchannel:(.-):(%d+)|h%[(%d)%. (.-)%]|h", "|Hchannel:%1:%2|h%3. %4|h" })
+	-- |Hchannel:%d|h[%s]|h
+
 	-- Turns "[1. General - The Barrens]" into "1."
 	-- *Only works half of the time. What is wrong?
-	table_insert(self.replacements, {"^|Hchannel:(.-):(%d+)|h%[(%d)%. (.-)(%s%-%s.-)%]|h", "|Hchannel:%1:%2|h%3.|h"})
-
-	-- Only works for English, will add a better solution later.
-	--table_insert(self.replacements, { "^Changed Channel:.*(.-)", "%1" })
-	-- |Hchannel:%d|h[%s]|h
+	table_insert(self.replacements, {"|Hchannel:(.-):(%d+)|h%[(%d)%. (.-)(%s%-%s.-)%]|h", "|Hchannel:%1:%2|h%3.|h"})
+	table_insert(self.replacements, {"|Hchannel:(.-):(%d+)|h%[(%d)%. (.-)%]|h", "|Hchannel:%1:%2|h%3.|h"})
 
 end
 
