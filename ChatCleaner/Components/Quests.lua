@@ -44,6 +44,9 @@ local G = {
 	SET_COMPLETE = ERR_COMPLETED_TRANSMOG_SET_S, -- "You've completed the set %s."
 	QUEST_ACCEPTED = ERR_QUEST_ACCEPTED_S, -- "Quest accepted: %s"
 	QUEST_ALREADY_DONE = ERR_QUEST_ALREADY_DONE, -- "You have completed that quest.";
+	QUEST_ALREADY_DONE_DAILY = ERR_QUEST_ALREADY_DONE_DAILY, -- "You have completed that daily quest today."
+	QUEST_FAILED_TOO_MANY_DAILY = ERR_QUEST_FAILED_TOO_MANY_DAILY_QUESTS_I, -- "You have already completed %d daily quests today"
+	NO_DAILY_QUESTS_REMAINING = NO_DAILY_QUESTS_REMAINING, -- "You cannot complete any more daily quests today."
 	QUEST_COMPLETE = ERR_QUEST_COMPLETE_S, -- "%s completed."
 	QUEST = BATTLE_PET_SOURCE_2, -- "Quest"
 	ACCEPTED = CALENDAR_STATUS_ACCEPTED, -- "Accepted"
@@ -65,9 +68,21 @@ local P = setmetatable({}, { __index = function(t,k)
 end })
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
-	if (string_find(message, "|Hquestie")) then return end
 
 	local name
+
+	-- Questie links. Only remove brackets.
+	if (event == "CHAT_MSG_CHANNEL") then
+
+		name = string_match(message, "|Hquestie")
+		if (name) then
+			name = string_gsub(name, "[%[/%]]", "")
+			return false, name, author, ...
+		end
+
+		return
+	end
+	if (string_find(message, "|Hquestie")) then return end
 
 	-- Adding completed transmog sets here,
 	-- to make sure they don't fire as completed quests.
@@ -83,8 +98,13 @@ Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 		return false, string_format(ns.out.quest_accepted, G.ACCEPTED, name), author, ...
 	end
 
+
 	-- Avoid false positives on quest completion.
-	if (not string_match(message, P[G.QUEST_ALREADY_DONE])) then
+	if (not string_match(message, P[G.QUEST_ALREADY_DONE]) and
+		not string_match(message, P[G.QUEST_ALREADY_DONE_DAILY]) and
+		not string_match(message, P[G.QUEST_FAILED_TOO_MANY_DAILY]) and
+		not string_match(message, P[G.NO_DAILY_QUESTS_REMAINING])) then
+
 		name = string_match(message, P[G.QUEST_COMPLETE])
 		if (name) then
 			name = string_gsub(name, "[%[/%]]", "")
@@ -100,6 +120,7 @@ end
 
 Module.OnEnable = function(self)
 	self:RegisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_CHANNEL", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)
