@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-04-03
+### Changed
+- Messages containing links from Questie are now parsed. Will monitor the situation.
+
+### Fixed
+- Fixed some false positives on quest completion leading to weirdly formated messages.
+
 ## [2.0.56-Release] 2024-04-03
 - Updated for WoW Client Patch 1.15.2.
 
