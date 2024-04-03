@@ -69,20 +69,24 @@ end })
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
 
+	if (string_find(message, "|Hquestie")) then return end
+
 	local name
 
 	-- Questie links. Only remove brackets.
-	if (event == "CHAT_MSG_CHANNEL") then
-
-		name = string_match(message, "|Hquestie")
-		if (name) then
-			name = string_gsub(name, "[%[/%]]", "")
-			return false, name, author, ...
-		end
-
-		return
-	end
-	if (string_find(message, "|Hquestie")) then return end
+	-- *Totally failed.
+	--if (event == "CHAT_MSG_CHANNEL") then
+	--
+	--	name = string_match(message, "|Hquestie")
+	--	if (name) then
+	--		-- This replacement breaks Questie's links.
+	-- 		-- I need to look into how their links are designed.
+	--		name = string_gsub(name, "[%[/%]]", "")
+	--		return false, name, author, ...
+	--	end
+	--
+	--	return
+	--end
 
 	-- Adding completed transmog sets here,
 	-- to make sure they don't fire as completed quests.
@@ -125,4 +129,5 @@ end
 
 Module.OnDisable = function(self)
 	self:UnregisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
+	self:UnregisterMessageEventFilter("CHAT_MSG_CHANNEL", onChatEventProxy)
 end
