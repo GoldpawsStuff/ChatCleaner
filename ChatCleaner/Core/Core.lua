@@ -274,9 +274,10 @@ ChatCleaner_DB = CopyTable(defaults)
 
 ns.IsProtectedMessage = function(self, msg)
 	if (not msg or msg == "") then return end
-	if (string_find(msg, "|Hquestie")) then
-		return true
-	end
+	-- This used to cause a bug, but might not be the case anymore.
+	--if (string_find(msg, "|Hquestie")) then
+	--	return true
+	--end
 end
 
 ns.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
