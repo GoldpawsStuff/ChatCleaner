@@ -68,25 +68,9 @@ local P = setmetatable({}, { __index = function(t,k)
 end })
 
 Module.OnChatEvent = function(self, chatFrame, event, message, author, ...)
-
-	if (string_find(message, "|Hquestie")) then return end
+	if (ns:IsProtectedMessage(message)) then return end
 
 	local name
-
-	-- Questie links. Only remove brackets.
-	-- *Totally failed.
-	--if (event == "CHAT_MSG_CHANNEL") then
-	--
-	--	name = string_match(message, "|Hquestie")
-	--	if (name) then
-	--		-- This replacement breaks Questie's links.
-	-- 		-- I need to look into how their links are designed.
-	--		name = string_gsub(name, "[%[/%]]", "")
-	--		return false, name, author, ...
-	--	end
-	--
-	--	return
-	--end
 
 	-- Adding completed transmog sets here,
 	-- to make sure they don't fire as completed quests.
@@ -125,6 +109,7 @@ end
 Module.OnEnable = function(self)
 	self:RegisterMessageEventFilter("CHAT_MSG_SYSTEM", onChatEventProxy)
 	self:RegisterMessageEventFilter("CHAT_MSG_CHANNEL", onChatEventProxy)
+	self:RegisterMessageEventFilter("CHAT_MSG_WHISPER", onChatEventProxy)
 end
 
 Module.OnDisable = function(self)

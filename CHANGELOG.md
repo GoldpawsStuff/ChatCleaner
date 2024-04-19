@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-04-03
+## [2.0.57-Release] 2024-04-19
 ### Changed
 - Messages containing links from Questie are now parsed. Will monitor the situation.
+- Adjusted class coloring to match the latest alpha builds of AzeriteUI.
 
 ### Fixed
 - Fixed some false positives on quest completion leading to weirdly formated messages.

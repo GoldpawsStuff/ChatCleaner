@@ -274,15 +274,17 @@ ChatCleaner_DB = CopyTable(defaults)
 
 ns.IsProtectedMessage = function(self, msg)
 	if (not msg or msg == "") then return end
-	-- This used to cause a bug, but might not be the case anymore.
-	--if (string_find(msg, "|Hquestie")) then
-	--	return true
-	--end
+	if (string_find(msg, "|Hquestie")) then
+		return true
+	end
 end
 
 ns.AddMessageFiltered = function(self, chatFrame, msg, r, g, b, chatID, ...)
 	if (not msg or msg == "") then return end
 
+	-- TODO:
+	-- *Encode Questie links, parse encoded string, decode Questie link.
+	--  This will ensure their links is uncorrupted but the line parsed in full.
 	if (not ns:IsProtectedMessage(msg)) then
 
 		-- Parse replacements that ignore the blacklists.

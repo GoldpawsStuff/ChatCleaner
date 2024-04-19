@@ -395,7 +395,11 @@ Module.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_MONEY", "OnEvent")
 
 	self:RegisterBlacklistFilter(onAddMessageProxy)
-	self:RegisterMessageReplacement(onReplacementSetProxy)
+
+	if (ns.IsWoW10) then
+		self:RegisterMessageReplacement(onReplacementSetProxy)
+	end
+
 	self:RegisterMessageEventFilter("CHAT_MSG_MONEY", onChatEventProxy)
 end
 
@@ -415,6 +419,10 @@ Module.OnDisable = function(self)
 	self:UnregisterEvent("PLAYER_MONEY", "OnEvent")
 
 	self:UnregisterBlacklistFilter(onAddMessageProxy)
-	self:UnregisterMessageReplacement(onReplacementSetProxy)
+
+	if (ns.IsWoW10) then
+		self:UnregisterMessageReplacement(onReplacementSetProxy)
+	end
+
 	self:UnregisterMessageEventFilter("CHAT_MSG_MONEY", onChatEventProxy)
 end
