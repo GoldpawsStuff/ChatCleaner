@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.58-Release] 2024-07-10
+- Updated for WoW Retail Client Patch 10.2.7.
+- Updated for WoW Classic Era Client Patch 1.15.3.
+
 ## [2.0.57-Release] 2024-04-19
 ### Changed
 - Messages containing links from Questie are now parsed. Will monitor the situation.
