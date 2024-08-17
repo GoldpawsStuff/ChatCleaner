@@ -30,21 +30,26 @@ ns.API = API
 -- Lua API
 local string_lower = string.lower
 
+-- WoW 11.0.x
+local GetAddOnEnableState = GetAddOnEnableState or function(character, name) return C_AddOns.GetAddOnEnableState(name, character) end
+local GetAddOnInfo = GetAddOnInfo or C_AddOns.GetAddOnInfo
+local GetNumAddOns = GetNumAddOns or C_AddOns.GetNumAddOns
+
 -- GLOBALS: UnitName, GetAddOnEnableState, GetAddOnInfo, GetNumAddOns
 
 local PLAYER_NAME = UnitName("player")
 
 -- Proxy for the Blizzard method, which also includes the 'enabled' flag.
 local GetAddOnInfo = function(index)
-	local name, title, notes, loadable, reason, security = _G.GetAddOnInfo(index)
-	local enabled = not(_G.GetAddOnEnableState(PLAYER_NAME, index) == 0)
+	local name, title, notes, loadable, reason, security = GetAddOnInfo(index)
+	local enabled = not(GetAddOnEnableState(PLAYER_NAME, index) == 0)
 	return name, title, notes, enabled, loadable, reason, security
 end
 
 -- Check if an addon exists	in the addon listing
 local IsAddOnAvailable = function(target)
 	local target = string_lower(target)
-	for i = 1,_G.GetNumAddOns() do
+	for i = 1,GetNumAddOns() do
 		local name = GetAddOnInfo(i)
 		if (string_lower(name) == target) then
 			return true
@@ -56,7 +61,7 @@ end
 -- *Making this available as a generic library method.
 local IsAddOnEnabled = function(target)
 	local target = string_lower(target)
-	for i = 1,_G.GetNumAddOns() do
+	for i = 1,GetNumAddOns() do
 		local name, _, _, enabled, loadable = GetAddOnInfo(i)
 		if (string_lower(name) == target) then
 			if (enabled and loadable) then
@@ -69,7 +74,7 @@ end
 -- Check if an addon exists in the addon listing and loadable on demand
 local IsAddOnLoadable = function(target, ignoreLoD)
 	local target = string_lower(target)
-	for i = 1,_G.GetNumAddOns() do
+	for i = 1,GetNumAddOns() do
 		local name, _, _, _, loadable = GetAddOnInfo(i)
 		if (string_lower(name) == target) then
 			if (loadable or ignoreLoD) then

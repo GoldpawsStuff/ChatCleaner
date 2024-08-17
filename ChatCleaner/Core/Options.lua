@@ -46,6 +46,11 @@ local string_upper = string.upper
 local table_sort = table.sort
 local type = type
 
+-- WoW 11.0.x
+local GetAddOnEnableState = GetAddOnEnableState or function(character, name) return C_AddOns.GetAddOnEnableState(name, character) end
+local GetAddOnInfo = GetAddOnInfo or C_AddOns.GetAddOnInfo
+local GetNumAddOns = GetNumAddOns or C_AddOns.GetNumAddOns
+
 -- Utility
 -------------------------------------------------------
 local hasaddons = function(...)

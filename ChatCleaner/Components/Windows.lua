@@ -28,6 +28,11 @@ local Addon, ns = ...
 -- NOT YET IMPLEMENTED!
 do return end
 
+-- WoW 11.0.x
+local GetAddOnEnableState = GetAddOnEnableState or function(character, name) return C_AddOns.GetAddOnEnableState(name, character) end
+local GetAddOnInfo = GetAddOnInfo or C_AddOns.GetAddOnInfo
+local GetNumAddOns = GetNumAddOns or C_AddOns.GetNumAddOns
+
 -- Just bail out completely if this module isn't supported.
 if ((function(...)
 	for i = 1,GetNumAddOns() do
